@@ -2,7 +2,9 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsCommon\Base\CommonHashForm;
 use Iliich246\YicmsFeedback\Base\FeedbackDevTranslateForm;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Iliich246\YicmsFeedback\Base\FeedbackStages;
 use Iliich246\YicmsFeedback\Base\FeedbackStagesDevTranslateForm;
 use Yii;
@@ -68,13 +70,13 @@ class DeveloperController extends Controller
         if ($feedback->load(Yii::$app->request->post()) && $feedback->validate()) {
 
             if ($feedback->create()) {
-                return $this->redirect(Url::toRoute(['update-update', 'id' => $feedback->id]));
+                return $this->redirect(Url::toRoute(['update-feedback', 'id' => $feedback->id]));
             } else {
                 //TODO: add bootbox error
             }
         }
 
-        return $this->render('/developer/create_update_feedback', [
+        return $this->render('/developer/create-update-feedback', [
             'feedback' => $feedback,
         ]);
     }
@@ -102,13 +104,13 @@ class DeveloperController extends Controller
                 $success = false;
             }
 
-            return $this->render('/developer/create_update_essence', [
+            return $this->render('/developer/create-update-feedback', [
                 'feedback' => $feedback,
                 'success'  => $success
             ]);
         }
 
-        return $this->render('/developer/create_update_essence', [
+        return $this->render('/developer/create-update-feedback', [
             'feedback' => $feedback,
         ]);
     }
@@ -148,22 +150,45 @@ class DeveloperController extends Controller
                 $translateModel->save();
             }
 
-            return $this->render('/developer/feedback_translates', [
+            return $this->render('/developer/feedback-translates', [
                 'feedback'        => $feedback,
                 'translateModels' => $translateModels,
                 'success'         => true,
             ]);
         }
 
-        return $this->render('/developer/feedback_translates', [
+        return $this->render('/developer/feedback-translates', [
             'feedback'        => $feedback,
             'translateModels' => $translateModels,
         ]);
     }
 
+    /**
+     * Action for delete feedback
+     * @param $id
+     * @param bool|false $deletePass
+     * @return \yii\web\Response
+     * @throws BadRequestHttpException
+     * @throws FeedbackException
+     * @throws NotFoundHttpException
+     */
     public function actionDeleteFeedback($id, $deletePass = false)
     {
+        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
 
+        $feedback = Feedback::getInstance($id);
+
+        if (!$feedback)
+            throw new NotFoundHttpException('Wrong feedback id');
+
+        if ($feedback->isConstraints())
+            if (!Yii::$app->security->validatePassword($deletePass, CommonHashForm::DEV_HASH))
+                throw new FeedbackException('Wrong dev password');
+
+        if ($feedback->delete())
+            return $this->redirect(Url::toRoute(['list']));
+
+        throw new FeedbackException('Delete error');
     }
 
     /**
@@ -246,11 +271,35 @@ class DeveloperController extends Controller
         ]);
     }
 
+    /**
+     * Creates new feedback stage
+     * @param $id
+     * @return string|\yii\web\Response
+     * @throws FeedbackException
+     * @throws NotFoundHttpException
+     */
     public function actionCreateStage($id)
     {
         $feedback = Feedback::getInstance($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
+
+        $feedbackStage = new FeedbackStages();
+        $feedbackStage->setFeedback($feedback);
+        $feedbackStage->scenario = FeedbackStages::SCENARIO_CREATE;
+
+        if ($feedbackStage->load(Yii::$app->request->post()) && $feedbackStage->validate()) {
+
+            if ($feedbackStage->create()) {
+                return $this->redirect(Url::toRoute(['update-stage', 'id' => $feedback->id]));
+            } else {
+                //TODO: add bootbox error
+            }
+        }
+
+        return $this->render('/developer/create-update-stage', [
+            'feedbackStage' => $feedbackStage,
+        ]);
     }
 
 
@@ -268,6 +317,7 @@ class DeveloperController extends Controller
      */
     public function actionStageTranslates($id)
     {
+        /** @var FeedbackStages $feedbackStage */
         $feedbackStage = FeedbackStages::findOne($id);
 
         if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
@@ -293,14 +343,14 @@ class DeveloperController extends Controller
                 $translateModel->save();
             }
 
-            return $this->render('/developer/feedback_stages_translates', [
+            return $this->render('/developer/feedback-stages-translates', [
                 'feedbackStage'   => $feedbackStage,
                 'translateModels' => $translateModels,
                 'success'         => true,
             ]);
         }
 
-        return $this->render('/developer/feedback_stages_translates', [
+        return $this->render('/developer/feedback-stages-translates', [
             'feedbackStage'   => $feedbackStage,
             'translateModels' => $translateModels,
         ]);

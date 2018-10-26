@@ -47,7 +47,7 @@ class FeedbackDevTranslateForm extends AbstractTranslateForm
      */
     public static function getViewName()
     {
-        return '@yicms-essences/Views/translates/feedback_name_translate';
+        return '@yicms-feedback/Views/translates/feedback-name-translate';
     }
 
     /**
@@ -90,7 +90,7 @@ class FeedbackDevTranslateForm extends AbstractTranslateForm
         $this->currentTranslateDb = FeedbackNamesTranslatesDb::find()
             ->where([
                 'common_language_id' => $this->language->id,
-                'essence_id'         => $this->feedback->id,
+                'feedback_id'        => $this->feedback->id,
             ])
             ->one();
 

@@ -37,12 +37,38 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
     const SCENARIO_CREATE = 0;
     const SCENARIO_UPDATE = 1;
 
+    /** @var Feedback instance */
+    private $feedback = null;
+
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
         return '{{%feedback_stages}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        $this->visible  = true;
+        $this->editable = true;
+
+        parent::init();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'program_name' => 'Program Name',
+            'editable'     => 'Editable',
+            'visible'      => 'Visible',
+        ];
     }
 
     /**
@@ -108,18 +134,6 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function attributeLabels()
-    {
-        return [
-            'program_name' => 'Program Name',
-            'editable'     => 'Editable',
-            'visible'      => 'Visible',
-        ];
-    }
-
-    /**
      * Validates the program name.
      * @param $attribute
      * @param $params
@@ -143,13 +157,55 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
     }
 
     /**
+     * Creates new feedback stage with all service records
+     * @return bool
+     * @throws FeedbackException
+     */
+    public function create()
+    {
+        if ($this->scenario == self::SCENARIO_CREATE) {
+            $this->stage_order = $this->maxOrder();
+        }
+
+        if (!$this->save(false))
+            throw new FeedbackException('Can not create feedback stage '. $this->program_name);
+
+        return true;
+    }
+
+    public function isConstraints()
+    {
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        return true;
+    }
+
+    /**
      * Return associated feedback db instance
      * @return Feedback|null
      * @throws FeedbackException
      */
     public function getFeedback()
     {
-        return Feedback::getInstance($this->feedback_id);
+        if (!is_null($this->feedback))
+            return $this->feedback;
+
+        return $this->feedback = Feedback::getInstance($this->feedback_id);
+    }
+
+    /**
+     * Feedback setter
+     * @param Feedback $feedback
+     */
+    public function setFeedback(Feedback $feedback)
+    {
+        $this->feedback = $feedback;
     }
 
     /**

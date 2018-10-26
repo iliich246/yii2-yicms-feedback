@@ -40,6 +40,17 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     /**
      * @inheritdoc
      */
+    public function init()
+    {
+        $this->visible  = true;
+        $this->editable = true;
+
+        parent::init();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function attributeLabels()
     {
         return [
@@ -156,9 +167,38 @@ class Feedback extends ActiveRecord implements SortOrderInterface
         return new self();//TODO: makes mark as empty essence
     }
 
+    /**
+     * Creates new feedback with all service records
+     * @return bool
+     * @throws FeedbackException
+     */
     public function create()
     {
+        if ($this->scenario == self::SCENARIO_CREATE) {
+            $this->feedback_order = $this->maxOrder();
+        }
 
+        if (!$this->save(false))
+            throw new FeedbackException('Can not create feedback'. $this->program_name);
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isConstraints()
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        return true;
+        //return parent::delete();
     }
 
 

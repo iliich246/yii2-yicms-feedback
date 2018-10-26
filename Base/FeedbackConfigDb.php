@@ -2,6 +2,8 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsCommon\Base\AbstractModuleConfiguratorDb;
+
 /**
  * Class FeedbackConfigDb
  *
@@ -9,7 +11,7 @@ namespace Iliich246\YicmsFeedback\Base;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class FeedbackConfigDb
+class FeedbackConfigDb extends AbstractModuleConfiguratorDb
 {
     /**
      * @inheritdoc

@@ -7,7 +7,41 @@ use yii\helpers\Url;
 
 $js = <<<JS
 ;(function() {
-    
+    var createFeedbackButton = $('.create-feedback-button');
+    var homeUrl              = $(createFeedbackButton).data('homeUrl');
+
+    var pjaxContainer = $('#update-feedback-list-container');
+
+    $(document).on('click', '.glyphicon-arrow-up', function() {
+        $.pjax({
+            url: $(this).data('url'),
+            container: '#update-feedback-list-container',
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500
+        });
+    });
+
+    $(document).on('click', '.glyphicon-arrow-down', function() {
+        $.pjax({
+            url: $(this).data('url'),
+            container: '#update-feedback-list-container',
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500
+        });
+    });
+
+    $(pjaxContainer).on('pjax:error', function(xhr, textStatus) {
+        bootbox.alert({
+            size: 'large',
+            title: "There are some error on ajax request!",
+            message: textStatus.responseText,
+            className: 'bootbox-error'
+        });
+    });
 })();
 JS;
 
@@ -25,7 +59,7 @@ $this->registerJs($js, $this::POS_READY);
                 <div class="col-xs-12">
                     <a href="<?= Url::toRoute(['create-feedback']) ?>"
                        class="btn btn-primary create-feedback-button"
-                       data-home-url="<?= Url::base() ?>">
+                       data-url="<?= Url::base() ?>">
                         Create new feedback
                     </a>
                 </div>

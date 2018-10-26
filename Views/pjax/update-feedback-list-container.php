@@ -18,7 +18,7 @@ use yii\helpers\Url;
     <?php foreach($feedback as $oneFeedback): ?>
         <div class="row list-items">
             <div class="col-xs-10 list-title">
-                <a href="<?= Url::toRoute(['update-essence', 'id' => $oneFeedback->id]) ?>">
+                <a href="<?= Url::toRoute(['update-feedback', 'id' => $oneFeedback->id]) ?>">
                     <p>
                         <?= $oneFeedback->program_name ?>
                     </p>
@@ -35,11 +35,11 @@ use yii\helpers\Url;
                 <?php endif; ?>
                 <?php if ($oneFeedback->canUpOrder()): ?>
                     <span class="glyphicon glyphicon-arrow-up"
-                          data-essence-id="<?= $oneFeedback->id ?>"></span>
+                          data-url="<?= Url::toRoute(['/feedback/dev/feedback-up-order', 'id' => $oneFeedback->id]) ?>"></span>
                 <?php endif; ?>
                 <?php if ($oneFeedback->canDownOrder()): ?>
                     <span class="glyphicon glyphicon-arrow-down"
-                          data-essence-id="<?= $oneFeedback->id ?>"></span>
+                          data-url="<?= Url::toRoute(['/feedback/dev/feedback-down-order', 'id' => $oneFeedback->id]) ?>"></span>
                 <?php endif; ?>
             </div>
         </div>
