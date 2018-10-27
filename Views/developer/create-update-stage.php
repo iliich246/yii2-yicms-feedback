@@ -110,8 +110,24 @@ $this->registerJs($js, $this::POS_READY);
     </div>
 
     <div class="row content-block breadcrumbs">
-        <a href="<?= Url::toRoute(['list']) ?>"><span>Feedback list</span></a> <span> / </span>
-        <a href="<?= Url::toRoute(['update-feedback', 'id' => $feedbackStage->getFeedback()->id]) ?>"><span>Feedback update</span></a> <span> / </span>
+        <a href="<?= Url::toRoute(['list']) ?>">
+            <span>Feedback list</span>
+        </a>
+
+        <span> / </span>
+
+        <a href="<?= Url::toRoute(['update-feedback', 'id' => $feedbackStage->getFeedback()->id]) ?>">
+            <span>Feedback update</span>
+        </a>
+
+        <span> / </span>
+
+        <a href="<?= Url::toRoute(['stages-list', 'id' => $feedbackStage->getFeedback()->id]) ?>">
+            <span>Stages list</span>
+        </a>
+
+        <span> / </span>
+
         <?php if ($feedbackStage->scenario == FeedbackStages::SCENARIO_CREATE): ?>
             <span>Create feedback stage</span>
         <?php else: ?>

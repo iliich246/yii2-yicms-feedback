@@ -144,7 +144,7 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
         if (!$this->hasErrors()) {
 
             $stagesQuery = self::find()->where([
-                'feedback_id'  => $this->feedback_id,
+                'feedback_id'  => $this->getFeedback()->id,
                 'program_name' => $this->program_name
             ]);
 
@@ -165,6 +165,7 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
     {
         if ($this->scenario == self::SCENARIO_CREATE) {
             $this->stage_order = $this->maxOrder();
+            $this->feedback_id = $this->getFeedback()->id;
         }
 
         if (!$this->save(false))
@@ -210,11 +211,12 @@ class FeedbackStages extends ActiveRecord implements SortOrderInterface
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
      */
     public function getOrderQuery()
     {
         return self::find()->where([
-            'feedback_id'  => $this->feedback_id
+            'feedback_id'  => $this->getFeedback()->id
         ]);
     }
 

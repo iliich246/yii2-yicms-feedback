@@ -61,6 +61,7 @@ class DeveloperController extends Controller
     /**
      * Creates new feedback
      * @return string|\yii\web\Response
+     * @throws FeedbackException
      */
     public function actionCreateFeedback()
     {
@@ -166,11 +167,13 @@ class DeveloperController extends Controller
     /**
      * Action for delete feedback
      * @param $id
-     * @param bool|false $deletePass
+     * @param bool $deletePass
      * @return \yii\web\Response
      * @throws BadRequestHttpException
      * @throws FeedbackException
      * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionDeleteFeedback($id, $deletePass = false)
     {
@@ -302,10 +305,37 @@ class DeveloperController extends Controller
         ]);
     }
 
-
+    /**
+     * Update feedback stage
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     */
     public function actionUpdateStage($id)
     {
+        $feedbackStage = FeedbackStages::findOne($id);
 
+        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+
+        $feedbackStage->scenario = FeedbackStages::SCENARIO_UPDATE;
+
+        if ($feedbackStage->load(Yii::$app->request->post()) && $feedbackStage->validate()) {
+
+            if ($feedbackStage->save()) {
+                $success = true;
+            } else {
+                $success = false;
+            }
+
+            return $this->render('/developer/create-update-stage', [
+                'feedbackStage' => $feedbackStage,
+                'success'  => $success
+            ]);
+        }
+
+        return $this->render('/developer/create-update-stage', [
+            'feedbackStage' => $feedbackStage,
+        ]);
     }
 
     /**

@@ -20,6 +20,13 @@ $this->registerJs($js, $this::POS_READY);
     <div class="row content-block content-header">
         <h1>List of feedback stages</h1>
     </div>
+    <div class="row content-block breadcrumbs">
+        <a href="<?= Url::toRoute(['list']) ?>"><span>Feedback list</span></a> <span> / </span>
+        <a href="<?= Url::toRoute(['update-feedback', 'id' => $feedback->id]) ?>"><span>Feedback update</span></a> <span> / </span>
+
+        <span>Stages list</span>
+
+    </div>
     <div class="row content-block">
         <div class="col-xs-12">
             <div class="row control-buttons">
