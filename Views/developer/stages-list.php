@@ -8,7 +8,38 @@ use yii\helpers\Url;
 
 $js = <<<JS
 ;(function() {
-    
+        var pjaxContainer = $('#update-feedback-stage-list-container');
+
+    $(document).on('click', '.glyphicon-arrow-up', function() {
+        $.pjax({
+            url: $(this).data('url'),
+            container: '#update-feedback-stage-list-container',
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500
+        });
+    });
+
+    $(document).on('click', '.glyphicon-arrow-down', function() {
+        $.pjax({
+            url: $(this).data('url'),
+            container: '#update-feedback-stage-list-container',
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500
+        });
+    });
+
+    $(pjaxContainer).on('pjax:error', function(xhr, textStatus) {
+        bootbox.alert({
+            size: 'large',
+            title: "There are some error on ajax request!",
+            message: textStatus.responseText,
+            className: 'bootbox-error'
+        });
+    });
 })();
 JS;
 

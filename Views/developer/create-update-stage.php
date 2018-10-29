@@ -151,6 +151,19 @@ $this->registerJs($js, $this::POS_READY);
                            class="btn btn-primary">
                             Feedback name translates
                         </a>
+
+                        <a href="<?= Url::toRoute([
+                            '/feedback/dev/stage-page-templates', 'id' => $feedbackStage->id
+                        ]) ?>"
+                           class="btn btn-primary">
+                            Stage page templates
+                        </a>
+                        <a href="<?= Url::toRoute([
+                            '/feedback/dev/stage-input-templates', 'id' => $feedbackStage->id
+                        ]) ?>"
+                           class="btn btn-primary">
+                            Stage input templates
+                        </a>
                     </div>
                 </div>
             <?php endif; ?>

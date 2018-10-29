@@ -49,12 +49,30 @@ $this->registerJs($js, $this::POS_READY);
     </div>
 
     <div class="row content-block breadcrumbs">
-        <a href="<?= Url::toRoute(['stages-list', 'id' => $feedbackStage->getFeedback()->id]) ?>"><span>Feedback stages list</span></a>
-        <span> / </span>
-        <a href="<?= Url::toRoute(['update-feedback-stage', 'id' => $feedbackStage->id]) ?>">
-            <span>Update feedback (<?= $feedbackStage->program_name ?>)</span>
+        <a href="<?= Url::toRoute(['list']) ?>">
+            <span>Feedback list</span>
         </a>
+
         <span> / </span>
+
+        <a href="<?= Url::toRoute(['update-feedback', 'id' => $feedbackStage->getFeedback()->id]) ?>">
+            <span>Feedback update (<?= $feedbackStage->getFeedback()->program_name ?>)</span>
+        </a>
+
+        <span> / </span>
+
+        <a href="<?= Url::toRoute(['stages-list', 'id' => $feedbackStage->getFeedback()->id]) ?>">
+            <span>Feedback stages list</span>
+        </a>
+
+        <span> / </span>
+
+        <a href="<?= Url::toRoute(['update-stage', 'id' => $feedbackStage->id]) ?>">
+            <span>Update stage (<?= $feedbackStage->program_name ?>)</span>
+        </a>
+
+        <span> / </span>
+
         <span>Translations of feedback stages names</span>
     </div>
 

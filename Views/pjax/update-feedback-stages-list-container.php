@@ -35,11 +35,17 @@ use yii\helpers\Url;
                 <?php endif; ?>
                 <?php if ($stage->canUpOrder()): ?>
                     <span class="glyphicon glyphicon-arrow-up"
-                          data-essence-id="<?= $stage->id ?>"></span>
+                          data-url="<?= Url::toRoute([
+                              '/feedback/dev/stage-up-order', 'id' => $stage->id
+                          ]) ?>">
+                    </span>
                 <?php endif; ?>
                 <?php if ($stage->canDownOrder()): ?>
                     <span class="glyphicon glyphicon-arrow-down"
-                          data-essence-id="<?= $stage->id ?>"></span>
+                          data-url="<?= Url::toRoute([
+                              '/feedback/dev/stage-down-order', 'id' => $stage->id
+                          ]) ?>">
+                    </span>
                 <?php endif; ?>
             </div>
         </div>

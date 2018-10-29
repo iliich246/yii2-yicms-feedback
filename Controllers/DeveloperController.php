@@ -3,6 +3,18 @@
 namespace Iliich246\YicmsFeedback\Controllers;
 
 use Iliich246\YicmsCommon\Base\CommonHashForm;
+use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
+use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
+use Iliich246\YicmsCommon\Conditions\DevConditionsGroup;
+use Iliich246\YicmsCommon\Fields\DevFieldsGroup;
+use Iliich246\YicmsCommon\Fields\FieldsDevModalWidget;
+use Iliich246\YicmsCommon\Fields\FieldTemplate;
+use Iliich246\YicmsCommon\Files\DevFilesGroup;
+use Iliich246\YicmsCommon\Files\FilesBlock;
+use Iliich246\YicmsCommon\Files\FilesDevModalWidget;
+use Iliich246\YicmsCommon\Images\DevImagesGroup;
+use Iliich246\YicmsCommon\Images\ImagesBlock;
+use Iliich246\YicmsCommon\Images\ImagesDevModalWidget;
 use Iliich246\YicmsFeedback\Base\FeedbackDevTranslateForm;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Iliich246\YicmsFeedback\Base\FeedbackStages;
@@ -263,9 +275,12 @@ class DeveloperController extends Controller
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
-        $feedbackStages = FeedbackStages::find()->orderBy([
-            'feedback_id' => $feedback->id,
-            'stage_order' => SORT_ASC
+        $feedbackStages = FeedbackStages::find()
+            ->where([
+                'feedback_id' => $feedback->id,
+            ])
+            ->orderBy([
+                'stage_order' => SORT_ASC
         ])->all();
 
         return $this->render('/developer/stages-list', [
@@ -313,6 +328,7 @@ class DeveloperController extends Controller
      */
     public function actionUpdateStage($id)
     {
+        /** @var FeedbackStages $feedbackStage */
         $feedbackStage = FeedbackStages::findOne($id);
 
         if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
@@ -391,13 +407,199 @@ class DeveloperController extends Controller
 
     }
 
-
+    /**
+     * Action for up feedback stage order
+     * @param $id
+     * @return string
+     * @throws BadRequestHttpException
+     * @throws NotFoundHttpException
+     */
     public function actionStageUpOrder($id)
     {
+        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
 
+        /** @var FeedbackStages $feedbackStage */
+        $feedbackStage = FeedbackStages::findOne($id);
+
+        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+
+        $feedbackStage->configToChangeOfOrder();
+        $feedbackStage->upOrder();
+
+        $feedback = Feedback::getInstance($feedbackStage->feedback_id);
+
+        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
+
+        $feedbackStages = FeedbackStages::find()
+            ->where([
+                'feedback_id' => $feedback->id,
+            ])
+            ->orderBy([
+                'stage_order' => SORT_ASC
+            ])->all();
+
+        return $this->render('/pjax/update-feedback-stages-list-container', [
+            'feedbackStages' => $feedbackStages,
+        ]);
     }
 
+    /**
+     * Action for down feedback stage order
+     * @param $id
+     * @return string
+     * @throws BadRequestHttpException
+     * @throws NotFoundHttpException
+     */
     public function actionStageDownOrder($id)
+    {
+        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
+
+        /** @var FeedbackStages $feedbackStage */
+        $feedbackStage = FeedbackStages::findOne($id);
+
+        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+
+        $feedbackStage->configToChangeOfOrder();
+        $feedbackStage->downOrder();
+
+        $feedback = Feedback::getInstance($feedbackStage->feedback_id);
+
+        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
+
+        $feedbackStages = FeedbackStages::find()
+            ->where([
+                'feedback_id' => $feedback->id,
+            ])
+            ->orderBy([
+                'stage_order' => SORT_ASC
+            ])->all();
+
+        return $this->render('/pjax/update-feedback-stages-list-container', [
+            'feedbackStages' => $feedbackStages,
+        ]);
+    }
+
+    /**
+     * Renders feedback stage templates page
+     * @param $id
+     * @return string
+     * @throws NotFoundHttpException
+     * @throws \Exception
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function actionStagePageTemplates($id)
+    {
+        /** @var FeedbackStages $feedbackStage */
+        $feedbackStage = FeedbackStages::findOne($id);
+
+        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+
+        //initialize fields group
+        $devFieldGroup = new DevFieldsGroup();
+        $devFieldGroup->setFieldTemplateReference($feedbackStage->getFieldTemplateReference());
+        $devFieldGroup->initialize(Yii::$app->request->post('_fieldTemplateId'));
+
+        //try to load validate and save field via pjax
+        if ($devFieldGroup->load(Yii::$app->request->post()) && $devFieldGroup->validate()) {
+
+            if (!$devFieldGroup->save()) {
+                //TODO: bootbox error
+            }
+
+            return FieldsDevModalWidget::widget([
+                'devFieldGroup' => $devFieldGroup,
+                'dataSaved'     => true,
+            ]);
+        }
+
+        $devFilesGroup = new DevFilesGroup();
+        $devFilesGroup->setFilesTemplateReference($feedbackStage->getFileTemplateReference());
+        $devFilesGroup->initialize(Yii::$app->request->post('_fileTemplateId'));
+
+        //try to load validate and save field via pjax
+        if ($devFilesGroup->load(Yii::$app->request->post()) && $devFilesGroup->validate()) {
+
+            if (!$devFilesGroup->save()) {
+                //TODO: bootbox error
+            }
+
+            return FilesDevModalWidget::widget([
+                'devFilesGroup' => $devFilesGroup,
+                'dataSaved'     => true,
+            ]);
+        }
+
+        $devImagesGroup = new DevImagesGroup();
+        $devImagesGroup->setImagesTemplateReference($feedbackStage->getImageTemplateReference());
+        $devImagesGroup->initialize(Yii::$app->request->post('_imageTemplateId'));
+
+        //try to load validate and save image block via pjax
+        if ($devImagesGroup->load(Yii::$app->request->post()) && $devImagesGroup->validate()) {
+
+            if (!$devImagesGroup->save()) {
+                //TODO: bootbox error
+            }
+
+            return ImagesDevModalWidget::widget([
+                'devImagesGroup' => $devImagesGroup,
+                'dataSaved'      => true,
+            ]);
+        }
+
+        $devConditionsGroup = new DevConditionsGroup();
+        $devConditionsGroup->setConditionsTemplateReference($feedbackStage->getConditionTemplateReference());
+        $devConditionsGroup->initialize(Yii::$app->request->post('_conditionTemplateId'));
+
+        //try to load validate and save image block via pjax
+        if ($devConditionsGroup->load(Yii::$app->request->post()) && $devConditionsGroup->validate()) {
+
+            if (!$devConditionsGroup->save()) {
+                //TODO: bootbox error
+            }
+
+            return ConditionsDevModalWidget::widget([
+                'devConditionsGroup' => $devConditionsGroup,
+                'dataSaved'          => true,
+            ]);
+        }
+
+        $fieldTemplatesTranslatable = FieldTemplate::getListQuery($feedbackStage->getFieldTemplateReference())
+            ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_TRANSLATABLE])
+            ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        $fieldTemplatesSingle = FieldTemplate::getListQuery($feedbackStage->getFieldTemplateReference())
+            ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_SINGLE])
+            ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        $filesBlocks = FilesBlock::getListQuery($feedbackStage->getFileTemplateReference())
+            ->orderBy([FilesBlock::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        $imagesBlocks = ImagesBlock::getListQuery($feedbackStage->getImageTemplateReference())
+            ->orderBy([ImagesBlock::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        $conditionTemplates = ConditionTemplate::getListQuery($feedbackStage->getConditionTemplateReference())
+            ->orderBy([ConditionTemplate::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        return $this->render('/developer/stage_page_templates', [
+            'feedbackStage'             => $feedbackStage,
+            'devFieldGroup'              => $devFieldGroup,
+            'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
+            'fieldTemplatesSingle'       => $fieldTemplatesSingle,
+            'devFilesGroup'              => $devFilesGroup,
+            'filesBlocks'                => $filesBlocks,
+            'devImagesGroup'             => $devImagesGroup,
+            'imagesBlocks'               => $imagesBlocks,
+            'devConditionsGroup'         => $devConditionsGroup,
+            'conditionTemplates'         => $conditionTemplates
+        ]);
+    }
+
+    public function actionStageInputTemplates($id)
     {
 
     }
