@@ -47,7 +47,7 @@ class FeedbackStagesDevTranslateForm extends AbstractTranslateForm
      */
     public static function getViewName()
     {
-        return '@yicms-essences/Views/translates/feedback-stage-name-translate';
+        return '@yicms-feedback/Views/translates/feedback-stage-name-translate';
     }
 
     /**

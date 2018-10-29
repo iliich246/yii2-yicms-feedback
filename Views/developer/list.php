@@ -7,9 +7,6 @@ use yii\helpers\Url;
 
 $js = <<<JS
 ;(function() {
-    var createFeedbackButton = $('.create-feedback-button');
-    var homeUrl              = $(createFeedbackButton).data('homeUrl');
-
     var pjaxContainer = $('#update-feedback-list-container');
 
     $(document).on('click', '.glyphicon-arrow-up', function() {
