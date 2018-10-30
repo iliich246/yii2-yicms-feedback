@@ -15,11 +15,11 @@ interface ConditionsInputReferenceInterface
      * Returns input conditionTemplateReference
      * @return string
      */
-    public function getConditionTemplateReference();
+    public function getInputConditionTemplateReference();
 
     /**
      * Returns input conditionReference
      * @return string
      */
-    public function getConditionReference();
+    public function getInputConditionReference();
 }

@@ -77,7 +77,7 @@ use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
     ?>
 
     <?= $this->render('@yicms-common/Views/pjax/update-files-list-container', [
-        'fileTemplateReference' => $feedbackStage->getFieldTemplateReference(),
+        'fileTemplateReference' => $feedbackStage->getFileTemplateReference(),
         'filesBlocks'           => $filesBlocks,
     ]) ?>
 

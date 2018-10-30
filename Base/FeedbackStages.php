@@ -63,6 +63,15 @@ class FeedbackStages extends ActiveRecord implements
     FieldInputReferenceInterface,
     FieldInputInterface,
     FieldInputModelInterface,
+    FileInputReferenceInterface,
+    FileInputInterface,
+    FileInputModelInterface,
+    ImageInputReferenceInterface,
+    ImageInputInterface,
+    ImageInputModelInterface,
+    ConditionsInputReferenceInterface,
+    ConditionsInputInterface,
+    ConditionModelInterface,
     FictiveInterface,
     SortOrderInterface
 {
@@ -482,6 +491,7 @@ class FeedbackStages extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function getInputFieldTemplateReference()
     {
@@ -506,7 +516,149 @@ class FeedbackStages extends ActiveRecord implements
      */
     public function getFieldInputModel()
     {
+        //TODO:
+    }
 
+    ////file
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileHandler()
+    {
+        if (!$this->fileInputHandler)
+            //$this->fileInputHandler = new FileIn($this);
+
+        return $this->fileInputHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileBlock($name)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputFileTemplateReference()
+    {
+        if (!$this->input_file_template_reference) {
+            $this->input_file_template_reference = FilesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_file_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileReference()
+    {
+        //TODO:
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFileInputModel()
+    {
+        // TODO: Implement getFileInputModel() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImagesHandler()
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImageBlock($name)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputImageTemplateReference()
+    {
+        if (!$this->input_image_template_reference) {
+            $this->input_image_template_reference = ImagesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_image_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImageReference()
+    {
+        // TODO: Implement getInputImageReference() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getImageInputModel()
+    {
+        // TODO: Implement getImageInputModel() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputConditionsHandler()
+    {
+        // TODO: Implement getInputConditionsHandler() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputCondition($name)
+    {
+        // TODO: Implement getInputCondition() method.
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputConditionTemplateReference()
+    {
+        if (!$this->input_condition_template_reference) {
+            $this->input_condition_template_reference = ConditionTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_condition_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputConditionReference()
+    {
+        // TODO: Implement getInputConditionReference() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConditionInputModel()
+    {
+        // TODO: Implement getConditionInputModel() method.
     }
 
     /**
