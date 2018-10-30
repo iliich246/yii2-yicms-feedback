@@ -4,6 +4,7 @@ namespace Iliich246\YicmsFeedback\Base;
 
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
 use Iliich246\YicmsCommon\Fields\Field;
 use Iliich246\YicmsCommon\Fields\FieldsHandler;
@@ -59,6 +60,10 @@ class FeedbackStages extends ActiveRecord implements
     ImagesReferenceInterface,
     ConditionsReferenceInterface,
     ConditionsInterface,
+    FieldInputReferenceInterface,
+    FieldInputInterface,
+    FieldInputModelInterface,
+    FictiveInterface,
     SortOrderInterface
 {
     use SortOrderTrait;
@@ -74,8 +79,20 @@ class FeedbackStages extends ActiveRecord implements
     private $imageHandler;
     /** @var ConditionsHandler instance of condition handler object */
     private $conditionHandler;
+    /** @var FieldsHandler instance of input field handler object */
+    private $fieldInputHandler;
+    /** @var FilesHandler instance of input file handler object */
+    private $fileInputHandler;
+    /** @var ImagesHandler instance of input image handler object */
+    private $imageInputHandler;
+    /** @var ConditionsHandler instance of input condition handler object */
+    private $conditionInputHandler;
     /** @var Feedback instance */
     private $feedback = null;
+
+    //experimental features
+    /** @var null|FeedbackState active state of this stage */
+    private $activeState = null;
 
     /**
      * @inheritdoc
@@ -437,6 +454,63 @@ class FeedbackStages extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     */
+    public function getInputFieldHandler()
+    {
+        if (!$this->fieldInputHandler)
+            $this->fieldInputHandler = new FieldsInputHandler($this);
+
+        return $this->fieldInputHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputField($name)
+    {
+        if ($this->isFictive()) {
+            $fictiveField = new Field();
+            $fictiveField->setFictive();
+
+            /** @var FieldTemplate $template */
+            $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
+            $fictiveField->setTemplate($template);
+        }
+
+        return $this->getInputFieldHandler()->getInputField($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFieldTemplateReference()
+    {
+        if (!$this->input_field_template_reference) {
+            $this->input_field_template_reference = FieldTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_field_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFieldReference()
+    {
+        //if active stage return stage reference else generate new
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFieldInputModel()
+    {
+
+    }
+
+    /**
+     * @inheritdoc
      * @throws FeedbackException
      */
     public function getOrderQuery()
@@ -484,5 +558,29 @@ class FeedbackStages extends ActiveRecord implements
     public function getOrderAble()
     {
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+
     }
 }

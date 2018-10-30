@@ -6,13 +6,13 @@ use Iliich246\YicmsCommon\Fields\Field;
 use Iliich246\YicmsCommon\Fields\FieldsHandler;
 
 /**
- * Interface FieldsInputInterface
+ * Interface FieldInputInterface
  *
  * This interface must implement any class, that must has input fields functionality.
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-interface FieldsInputInterface
+interface FieldInputInterface
 {
     /**
      * Return FieldHandler object, that aggregated in object with input field functionality.
