@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputImages;
 
 use Iliich246\YicmsCommon\Images\ImagesBlock;
 use Iliich246\YicmsCommon\Images\ImagesHandler;

@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-use Iliich246\YicmsCommon\CommonModule;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -27,6 +26,19 @@ use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
 use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
+use Iliich246\YicmsFeedback\InputFields\InputField;
+use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
+use Iliich246\YicmsFeedback\InputFields\FieldInputModelInterface;
+use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
+use Iliich246\YicmsFeedback\InputFiles\FileInputModelInterface;
+use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
+use Iliich246\YicmsFeedback\InputImages\ImageInputModelInterface;
+use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputConditions\ConditionModelInterface;
+use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
+use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
 
 /**
  * Class FeedbackStages

@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputFields;
 
 use Iliich246\YicmsCommon\Fields\Field;
 use Iliich246\YicmsCommon\Fields\FieldsHandler;

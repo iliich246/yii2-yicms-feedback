@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputFields;
 
 /**
  * Interface FieldInputModelInterface
@@ -10,7 +10,7 @@ namespace Iliich246\YicmsFeedback\Base;
 interface FieldInputModelInterface
 {
     /**
-     * 
+     *
      * @return mixed
      */
     public function getFieldInputModel();

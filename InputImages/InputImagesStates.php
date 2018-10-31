@@ -1,25 +1,25 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputImages;
 
 use yii\db\ActiveRecord;
 
 /**
- * Class InputConditionsStates
+ * Class InputImagesStates
  *
  * @property integer $id
  * @property integer $state_id
- * @property string $input_condition_reference
+ * @property string $input_image_reference
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputConditionsStates extends ActiveRecord
+class InputImagesStates extends ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%feedback_input_conditions_states}}';
+        return '{{%feedback_input_images_states}}';
     }
 }

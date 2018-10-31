@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputConditions;
 
 use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionTemplate;

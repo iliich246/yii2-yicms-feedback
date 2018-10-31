@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputFiles;
 
 use Iliich246\YicmsCommon\Files\FilesBlock;
 use Iliich246\YicmsCommon\Files\FilesHandler;

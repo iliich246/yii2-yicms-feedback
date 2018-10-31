@@ -1,6 +1,6 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\Base;
+namespace Iliich246\YicmsFeedback\InputFiles;
 
 use Iliich246\YicmsCommon\Base\AbstractHandler;
 use Iliich246\YicmsCommon\Files\FilesBlock;
@@ -18,9 +18,9 @@ class FilesInputHandler extends AbstractHandler
 {
     /**
      * FilesInputHandler constructor.
-     * @param FieldInputReferenceInterface $aggregator
+     * @param FileInputReferenceInterface $aggregator
      */
-    public function __construct(FieldInputReferenceInterface $aggregator)
+    public function __construct(FileInputReferenceInterface $aggregator)
     {
         $this->aggregator = $aggregator;
     }
