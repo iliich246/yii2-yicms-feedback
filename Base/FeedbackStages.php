@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsCommon\CommonModule;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -98,6 +99,11 @@ class FeedbackStages extends ActiveRecord implements
     private $conditionInputHandler;
     /** @var Feedback instance */
     private $feedback = null;
+
+    /** @var FieldTemplate[] instances of input fields templates  */
+    private $inputFieldTemplates;
+    /** @var  InputField[] array of input fields */
+    private $inputFields;
 
     //experimental features
     /** @var null|FeedbackState active state of this stage */
@@ -248,6 +254,55 @@ class FeedbackStages extends ActiveRecord implements
     public function delete()
     {
         return true;
+    }
+
+    /**
+     *
+     */
+    public function initialize()
+    {
+        $fieldTemplatesQuery = FieldTemplate::getListQuery($this->getInputFieldTemplateReference());
+
+        $fieldTemplatesQuery->andWhere([
+            'visible' => true,
+            'language_type' => FieldTemplate::LANGUAGE_TYPE_SINGLE
+        ])->orderBy([
+            FieldTemplate::getOrderFieldName() => SORT_ASC
+        ])->orderBy('id');
+
+        $this->inputFieldTemplates = $fieldTemplatesQuery->all();
+
+        foreach($this->inputFieldTemplates as $inputFieldTemplate) {
+            if ($this->isFictive()) {
+                $inputField                            = new InputField();
+                $inputField->setFictive();
+                $inputField->setTemplate($inputFieldTemplate);
+
+
+            } else {
+                //TODO:
+                $inputField = null;
+            }
+
+            $this->inputFields["$inputFieldTemplate->id"] = $inputField;
+        }
+
+        return true;
+    }
+
+    public function load($data, $formName = null)
+    {
+
+    }
+
+    public function validate($attributeNames = null, $clearErrors = true)
+    {
+
+    }
+
+    public function handle()
+    {
+
     }
 
     /**

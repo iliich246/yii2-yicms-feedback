@@ -29,6 +29,9 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     /** @var self[] buffer array */
     private static $feedbackBuffer = [];
 
+    /** @var FeedbackStages active stage for feedback*/
+    private $activeStage;
+
     /**
      * @inheritdoc
      */
@@ -44,6 +47,14 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     {
         $this->visible  = true;
         $this->editable = true;
+
+        $this->on(self::EVENT_AFTER_FIND, function() {
+            $this->activeStage = FeedbackStages::find()->where([
+                'feedback_id' => $this->id
+            ])->one();
+        });
+
+        //$this->activeStage = 'penis';
 
         parent::init();
     }
@@ -201,7 +212,66 @@ class Feedback extends ActiveRecord implements SortOrderInterface
         //return parent::delete();
     }
 
+    /**
+     * Reorder method load method for give user clear api
+     * @param $data
+     * @param null $formName
+     * @return bool
+     */
+    public function loadDev($data, $formName = null)
+    {
+        return parent::load($data, $formName);
+    }
 
+    /**
+     * Reorder method validate method for give user clear api
+     * @return bool
+     */
+    public function validateDev()
+    {
+        return parent::validate();
+    }
+
+    /**
+     * Proxy initialize method to active stage
+     */
+    public function initialize()
+    {
+        return $this->activeStage->initialize();
+    }
+
+    /**
+     * Proxy load method to active stage
+     * @param array $data
+     * @param null $formName
+     * @return bool|void
+     */
+    public function load($data, $formName = null)
+    {
+        return $this->activeStage->load($data, $formName);
+    }
+
+    /**
+     * Proxy validate method to active stage
+     * @param null $attributeNames
+     * @param bool|true $clearErrors
+     * @return bool|void
+     */
+    public function validate($attributeNames = null, $clearErrors = true)
+    {
+        return $this->activeStage->validate($attributeNames, $clearErrors);
+    }
+
+    /**
+     * Proxy save method to active stage
+     * @param bool|true $runValidation
+     * @param null $attributeNames
+     * @return bool|void
+     */
+    public function handle($runValidation = true, $attributeNames = null)
+    {
+        return $this->activeStage->save($runValidation, $attributeNames);
+    }
 
     /**
      * @inheritdoc
