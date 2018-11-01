@@ -2,6 +2,8 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputFields\InputFieldsStates;
+use yii\base\Model;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -29,15 +31,11 @@ use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
 use Iliich246\YicmsFeedback\InputFields\InputField;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
-use Iliich246\YicmsFeedback\InputFields\FieldInputModelInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
-use Iliich246\YicmsFeedback\InputFiles\FileInputModelInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
-use Iliich246\YicmsFeedback\InputImages\ImageInputModelInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
-use Iliich246\YicmsFeedback\InputConditions\ConditionModelInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
 
@@ -76,16 +74,12 @@ class FeedbackStages extends ActiveRecord implements
     ConditionsInterface,
     FieldInputReferenceInterface,
     FieldInputInterface,
-    FieldInputModelInterface,
     FileInputReferenceInterface,
     FileInputInterface,
-    FileInputModelInterface,
     ImageInputReferenceInterface,
     ImageInputInterface,
-    ImageInputModelInterface,
     ConditionsInputReferenceInterface,
     ConditionsInputInterface,
-    ConditionModelInterface,
     FictiveInterface,
     SortOrderInterface
 {
@@ -116,7 +110,7 @@ class FeedbackStages extends ActiveRecord implements
     /** @var FieldTemplate[] instances of input fields templates  */
     private $inputFieldTemplates;
     /** @var  InputField[] array of input fields */
-    private $inputFields;
+    public $inputFields;
 
     //experimental features
     /** @var null|FeedbackState active state of this stage */
@@ -270,7 +264,8 @@ class FeedbackStages extends ActiveRecord implements
     }
 
     /**
-     *
+     * @return bool
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function initialize()
     {
@@ -286,7 +281,7 @@ class FeedbackStages extends ActiveRecord implements
         $this->inputFieldTemplates = $fieldTemplatesQuery->all();
 
         foreach($this->inputFieldTemplates as $inputFieldTemplate) {
-            if ($this->isFictive()) {
+            if (!$this->isActiveState()) {
                 $inputField                            = new InputField();
                 $inputField->setFictive();
                 $inputField->setTemplate($inputFieldTemplate);
@@ -329,15 +324,36 @@ class FeedbackStages extends ActiveRecord implements
 
     public function load($data, $formName = null)
     {
-
+        return Model::loadMultiple($this->inputFields, $data);
     }
 
     public function validate($attributeNames = null, $clearErrors = true)
     {
-
+        return Model::validateMultiple($this->inputFields);
     }
 
     public function handle()
+    {
+        if (!$this->isActiveState()) {
+
+            $state = new FeedbackState();
+            $state->stage_id = $this->id;
+
+            $state->save(false);
+
+            foreach ($this->inputFields as $templateId => $field) {
+                $fieldState = new InputFieldsStates();
+                //$fieldState->common_fields_template_id = $templateId;
+                //$fieldState->input_field_reference
+
+            }
+
+        }
+
+        return true;
+    }
+
+    public function createState()
     {
 
     }
@@ -362,6 +378,37 @@ class FeedbackStages extends ActiveRecord implements
     public function setFeedback(Feedback $feedback)
     {
         $this->feedback = $feedback;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActiveState()
+    {
+        if (is_null($this->activeState)) return false;
+
+        return true;
+    }
+
+    /**
+     * @param $id
+     * @return bool|FeedbackState|null
+     */
+    public function setActiveState($id)
+    {
+        $activeState = FeedbackState::findOne($id);
+
+        if (!$activeState) return false;
+
+        return $this->activeState = $activeState;
+    }
+
+    /**
+     *
+     */
+    public function dropActiveState()
+    {
+        $this->activeState = null;
     }
 
     /**
@@ -606,14 +653,6 @@ class FeedbackStages extends ActiveRecord implements
         return 'test_reference';
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function getFieldInputModel()
-    {
-        //TODO:
-    }
-
     ////file
     /**
      * @inheritdoc
@@ -659,14 +698,6 @@ class FeedbackStages extends ActiveRecord implements
     /**
      * @inheritdoc
      */
-    public function getFileInputModel()
-    {
-        // TODO: Implement getFileInputModel() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getInputImagesHandler()
     {
 
@@ -700,14 +731,6 @@ class FeedbackStages extends ActiveRecord implements
     public function getInputImageReference()
     {
         // TODO: Implement getInputImageReference() method.
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getImageInputModel()
-    {
-        // TODO: Implement getImageInputModel() method.
     }
 
     /**

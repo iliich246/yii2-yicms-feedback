@@ -11,6 +11,8 @@ use Iliich246\YicmsCommon\Fields\Field;
  */
 class InputField extends Field
 {
+    public $name;
+
     public function getAttributeString()
     {
         return 'value[' . $this->getTemplate()->id . ']';

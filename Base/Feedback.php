@@ -278,7 +278,7 @@ class Feedback extends ActiveRecord implements SortOrderInterface
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
-        return $this->activeStage->save($runValidation, $attributeNames);
+        return $this->activeStage->handle();
     }
 
     /**

@@ -123,10 +123,14 @@ class m181025_181406_feedback_init extends Migration
          * feedback_stages_names_translates table
          */
         $this->createTable('{{%feedback_states}}', [
-            'id'                 => $this->primaryKey(),
-            'stage_id'           => $this->integer(),
-            'created_at'         => $this->integer(),
-            'updated_at'         => $this->integer(),
+            'id'                         => $this->primaryKey(),
+            'stage_id'                   => $this->integer(),
+            'input_fields_reference'     => $this->string(),
+            'input_files_reference'      => $this->string(),
+            'input_images_reference'     => $this->string(),
+            'input_conditions_reference' => $this->string(),
+            'created_at'                 => $this->integer(),
+            'updated_at'                 => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_states-to-feedback_stages',
@@ -140,9 +144,9 @@ class m181025_181406_feedback_init extends Migration
          * feedback_input_fields_states table
          */
         $this->createTable('{{%feedback_input_fields_states}}', [
-            'id'                    => $this->primaryKey(),
-            'state_id'              => $this->integer(),
-            'input_field_reference' => $this->string(),
+            'id'                        => $this->primaryKey(),
+            'state_id'                  => $this->integer(),
+            'common_fields_template_id' => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_input_fields_states-to-feedback_states',
@@ -156,9 +160,9 @@ class m181025_181406_feedback_init extends Migration
          * feedback_input_files_states table
          */
         $this->createTable('{{%feedback_input_files_states}}', [
-            'id'                   => $this->primaryKey(),
-            'state_id'             => $this->integer(),
-            'input_file_reference' => $this->string(),
+            'id'                       => $this->primaryKey(),
+            'state_id'                 => $this->integer(),
+            'common_files_template_id' => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_input_files_states-to-feedback_states',
@@ -172,9 +176,9 @@ class m181025_181406_feedback_init extends Migration
          * feedback_input_images_states table
          */
         $this->createTable('{{%feedback_input_images_states}}', [
-            'id'                    => $this->primaryKey(),
-            'state_id'              => $this->integer(),
-            'input_image_reference' => $this->string(),
+            'id'                         => $this->primaryKey(),
+            'state_id'                   => $this->integer(),
+            'common_images_templates_id' => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_input_images_states-to-feedback_states',
@@ -188,9 +192,9 @@ class m181025_181406_feedback_init extends Migration
          * feedback_input_conditions_states table
          */
         $this->createTable('{{%feedback_input_conditions_states}}', [
-            'id'                    => $this->primaryKey(),
-            'state_id'              => $this->integer(),
-            'input_image_reference' => $this->string(),
+            'id'                           => $this->primaryKey(),
+            'state_id'                     => $this->integer(),
+            'common_condition_template_id' => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_input_conditions_states-to-feedback_states',

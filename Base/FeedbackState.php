@@ -7,6 +7,15 @@ use yii\db\ActiveRecord;
 /**
  * Class FeedbackState
  *
+ * @property integer $id
+ * @property integer $stage_id
+ * @property string $input_fields_reference
+ * @property string $input_files_reference
+ * @property string $input_images_reference
+ * @property string $input_conditions_reference
+ * @property integer $created_at
+ * @property integer $updated_at
+ *
  * @author iliich246 <iliich246@gmail.com>
  */
 class FeedbackState extends ActiveRecord
@@ -18,5 +27,4 @@ class FeedbackState extends ActiveRecord
     {
         return '{{%feedback_states}}';
     }
-//
 }

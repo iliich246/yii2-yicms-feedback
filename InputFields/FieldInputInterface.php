@@ -2,9 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
-use Iliich246\YicmsCommon\Fields\Field;
-use Iliich246\YicmsCommon\Fields\FieldsHandler;
-
 /**
  * Interface FieldInputInterface
  *
@@ -15,15 +12,15 @@ use Iliich246\YicmsCommon\Fields\FieldsHandler;
 interface FieldInputInterface
 {
     /**
-     * Return FieldHandler object, that aggregated in object with input field functionality.
-     * @return FieldsHandler
+     * Return FieldsInputHandler object, that aggregated in object with input field functionality.
+     * @return FieldsInputHandler
      */
     public function getInputFieldHandler();
 
     /**
      * This method must proxy FieldHandler method for work with him directly from aggregator.
      * @param string $name
-     * @return Field
+     * @return InputField
      */
     public function getInputField($name);
 }

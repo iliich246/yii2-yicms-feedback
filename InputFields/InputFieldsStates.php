@@ -9,7 +9,8 @@ use yii\db\ActiveRecord;
  *
  * @property integer $id
  * @property integer $state_id
- * @property string $input_field_reference
+ * @property integer $common_fields_template_id
+ * @property string  $input_field_reference
  *
  * @author iliich246 <iliich246@gmail.com>
  */
