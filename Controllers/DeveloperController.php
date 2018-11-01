@@ -306,7 +306,7 @@ class DeveloperController extends Controller
         $feedbackStage->setFeedback($feedback);
         $feedbackStage->scenario = FeedbackStages::SCENARIO_CREATE;
 
-        if ($feedbackStage->load(Yii::$app->request->post()) && $feedbackStage->validate()) {
+        if ($feedbackStage->loadDev(Yii::$app->request->post()) && $feedbackStage->validateDev()) {
 
             if ($feedbackStage->create()) {
                 return $this->redirect(Url::toRoute(['update-stage', 'id' => $feedback->id]));
@@ -335,7 +335,7 @@ class DeveloperController extends Controller
 
         $feedbackStage->scenario = FeedbackStages::SCENARIO_UPDATE;
 
-        if ($feedbackStage->load(Yii::$app->request->post()) && $feedbackStage->validate()) {
+        if ($feedbackStage->loadDev(Yii::$app->request->post()) && $feedbackStage->validateDev()) {
 
             if ($feedbackStage->save()) {
                 $success = true;

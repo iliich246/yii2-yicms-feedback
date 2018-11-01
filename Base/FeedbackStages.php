@@ -27,6 +27,7 @@ use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
 use Iliich246\YicmsFeedback\InputFields\InputField;
+use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputModelInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
@@ -302,6 +303,30 @@ class FeedbackStages extends ActiveRecord implements
         return true;
     }
 
+    /**
+     * Reorder method load method for give user clear api
+     * @param $data
+     * @param null $formName
+     * @return bool
+     */
+    public function loadDev($data, $formName = null)
+    {
+        return parent::load($data, $formName);
+    }
+
+    /**
+     * Reorder method validate method for give user clear api
+     * @param null $attributeNames
+     * @param bool|true $clearErrors
+     * @return bool
+     */
+    public function validateDev($attributeNames = null, $clearErrors = true)
+    {
+        return parent::validate($attributeNames, $clearErrors);
+    }
+
+
+
     public function load($data, $formName = null)
     {
 
@@ -545,12 +570,14 @@ class FeedbackStages extends ActiveRecord implements
     public function getInputField($name)
     {
         if ($this->isFictive()) {
-            $fictiveField = new Field();
+            $fictiveField = new InputField();
             $fictiveField->setFictive();
 
             /** @var FieldTemplate $template */
             $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
             $fictiveField->setTemplate($template);
+
+            return $fictiveField;
         }
 
         return $this->getInputFieldHandler()->getInputField($name);
@@ -576,6 +603,7 @@ class FeedbackStages extends ActiveRecord implements
     public function getInputFieldReference()
     {
         //if active stage return stage reference else generate new
+        return 'test_reference';
     }
 
     /**

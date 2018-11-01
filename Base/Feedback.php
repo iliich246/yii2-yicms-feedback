@@ -263,6 +263,14 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     }
 
     /**
+     * TEMP METHOD!!!
+     */
+    public function getActiveStage()
+    {
+        return $this->activeStage;
+    }
+
+    /**
      * Proxy save method to active stage
      * @param bool|true $runValidation
      * @param null $attributeNames

@@ -33,7 +33,7 @@ class FieldsInputHandler extends AbstractHandler
     public function getInputField($name)
     {
         return $this->getOrSet($name, function() use($name) {
-            return Field::getInstance(
+            return InputField::getInstance(
                 $this->aggregator->getInputFieldTemplateReference(),
                 $this->aggregator->getInputFieldReference(),
                 $name
