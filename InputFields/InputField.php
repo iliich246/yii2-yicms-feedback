@@ -11,10 +11,15 @@ use Iliich246\YicmsCommon\Fields\Field;
  */
 class InputField extends Field
 {
-    public $name;
-
-    public function getAttributeString()
+    /**
+    * @inheritdoc
+    */
+    public function scenarios()
     {
-        return 'value[' . $this->getTemplate()->id . ']';
+        return [
+            self::SCENARIO_DEFAULT => [
+                'value'
+            ],
+        ];
     }
 }

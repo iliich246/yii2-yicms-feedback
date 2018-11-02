@@ -282,11 +282,7 @@ class FeedbackStages extends ActiveRecord implements
 
         foreach($this->inputFieldTemplates as $inputFieldTemplate) {
             if (!$this->isActiveState()) {
-                $inputField                            = new InputField();
-                $inputField->setFictive();
-                $inputField->setTemplate($inputFieldTemplate);
-
-
+                $inputField = $this->getInputField($inputFieldTemplate->program_name);
             } else {
                 //TODO:
                 $inputField = null;
@@ -320,34 +316,52 @@ class FeedbackStages extends ActiveRecord implements
         return parent::validate($attributeNames, $clearErrors);
     }
 
-
-
+    /**
+     * @param array $data
+     * @param null $formName
+     * @return bool
+     */
     public function load($data, $formName = null)
     {
         return Model::loadMultiple($this->inputFields, $data);
     }
 
+    /**
+     * @param null $attributeNames
+     * @param bool|true $clearErrors
+     * @return bool
+     */
     public function validate($attributeNames = null, $clearErrors = true)
     {
         return Model::validateMultiple($this->inputFields);
     }
 
+    /**
+     * @return bool
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
     public function handle()
     {
         if (!$this->isActiveState()) {
 
             $state = new FeedbackState();
             $state->stage_id = $this->id;
+            $state->input_fields_reference = Field::generateReference();
 
             $state->save(false);
 
-            foreach ($this->inputFields as $templateId => $field) {
+            foreach ($this->inputFields as $templateId => $inputField) {
                 $fieldState = new InputFieldsStates();
-                //$fieldState->common_fields_template_id = $templateId;
-                //$fieldState->input_field_reference
+                $fieldState->state_id = $state->id;
+                $fieldState->common_fields_template_id = $templateId;
 
+                $fieldState->save();
+
+                $inputField->common_fields_template_id = $templateId;
+                $inputField->field_reference = $state->input_fields_reference;
+
+                $inputField->save();
             }
-
         }
 
         return true;
@@ -616,16 +630,16 @@ class FeedbackStages extends ActiveRecord implements
      */
     public function getInputField($name)
     {
-        if ($this->isFictive()) {
-            $fictiveField = new InputField();
-            $fictiveField->setFictive();
-
-            /** @var FieldTemplate $template */
-            $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
-            $fictiveField->setTemplate($template);
-
-            return $fictiveField;
-        }
+//        if ($this->isFictive()) {
+//            $fictiveField = new InputField();
+//            $fictiveField->setFictive();
+//
+//            /** @var FieldTemplate $template */
+//            $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
+//            $fictiveField->setTemplate($template);
+//
+//            return $fictiveField;
+//        }
 
         return $this->getInputFieldHandler()->getInputField($name);
     }

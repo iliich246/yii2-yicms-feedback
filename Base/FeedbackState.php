@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\Base;
 
 use yii\db\ActiveRecord;
+use yii\behaviors\TimestampBehavior;
 
 /**
  * Class FeedbackState
@@ -26,5 +27,12 @@ class FeedbackState extends ActiveRecord
     public static function tableName()
     {
         return '{{%feedback_states}}';
+    }
+
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
     }
 }
