@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-use Iliich246\YicmsFeedback\InputFields\InputFieldsStates;
 use yii\base\Model;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -29,6 +28,7 @@ use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
 use Iliich246\YicmsFeedback\InputFields\InputField;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsStates;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
@@ -362,14 +362,13 @@ class FeedbackStages extends ActiveRecord implements
 
                 $inputField->save();
             }
+
+            //TODO: for files, images, conditions do the same
+        } else {
+
         }
 
         return true;
-    }
-
-    public function createState()
-    {
-
     }
 
     /**

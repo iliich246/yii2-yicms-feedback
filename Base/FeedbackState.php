@@ -29,6 +29,9 @@ class FeedbackState extends ActiveRecord
         return '{{%feedback_states}}';
     }
 
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
