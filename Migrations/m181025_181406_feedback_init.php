@@ -140,13 +140,85 @@ class m181025_181406_feedback_init extends Migration
             'id'
         );
 
+        //////////////////////////////////////////////////////////////////
+        // Input fields functionality
+        //////////////////////////////////////////////////////////////////
+        /**
+         * feedback_input_fields_templates table
+         */
+        $this->createTable('{{%feedback_input_fields_templates}}', [
+            'id'                             => $this->primaryKey(),
+            'input_field_template_reference' => $this->string(),
+            'validator_reference'            => $this->string(),
+            'program_name'                   => $this->string(50),
+            'type'                           => $this->smallInteger(),
+            'input_field_order'              => $this->integer(),
+            'editable'                       => $this->boolean(),
+            'visible'                        => $this->boolean(),
+        ]);
+
+        $this->createIndex(
+            'input_field_template_reference-index',
+            '{{%feedback_input_fields_templates}}',
+            'input_field_template_reference'
+        );
+
+        /**
+         * common_field_names table
+         */
+        $this->createTable('{{%feedback_input_field_templates_names}}', [
+            'id'                                => $this->primaryKey(),
+            'feedback_input_fields_template_id' => $this->integer(),
+            'common_language_id'                => $this->integer(),
+            'name'                              => $this->string(),
+            'description'                       => $this->string(),
+        ]);
+
+        $this->addForeignKey('input_field_templates_names-to-input_fields_templates',
+            '{{%feedback_input_field_templates_names}}',
+            'feedback_input_fields_template_id',
+            '{{%feedback_input_fields_templates}}',
+            'id'
+        );
+
+        $this->addForeignKey('feedback_input_field_templates_names-to-common_languages',
+            '{{%feedback_input_field_templates_names}}',
+            'common_language_id',
+            '{{%common_languages}}',
+            'id'
+        );
+
+        /**
+         * feedback_input_fields_represents table
+         */
+        $this->createTable('{{%feedback_input_fields_represents}}', [
+            'id'                                => $this->primaryKey(),
+            'feedback_input_fields_template_id' => $this->integer(),
+            'input_field_reference'             => $this->string(),
+            'value'                             => $this->text()->defaultValue(null),
+            'editable'                          => $this->boolean(),
+        ]);
+
+        $this->createIndex(
+            'input_field_reference-index',
+            '{{%feedback_input_fields_represents}}',
+            'input_field_reference'
+        );
+
+        $this->addForeignKey('input_fields_represents-to-input_fields_templates',
+            '{{%feedback_input_fields_represents}}',
+            'feedback_input_fields_template_id',
+            '{{%feedback_input_fields_templates}}',
+            'id'
+        );
+
         /**
          * feedback_input_fields_states table
          */
         $this->createTable('{{%feedback_input_fields_states}}', [
-            'id'                        => $this->primaryKey(),
-            'state_id'                  => $this->integer(),
-            'common_fields_template_id' => $this->integer(),
+            'id'                              => $this->primaryKey(),
+            'state_id'                        => $this->integer(),
+            'feedback_input_fields_templates' => $this->integer(),
         ]);
 
         $this->addForeignKey('feedback_input_fields_states-to-feedback_states',
@@ -222,12 +294,26 @@ class m181025_181406_feedback_init extends Migration
             '{{%feedback_input_files_states}}');
         $this->dropTable('{{%feedback_input_files_states}}');
 
+        //fields functionality
         $this->dropForeignKey('feedback_input_fields_states-to-feedback_states',
             '{{%feedback_input_fields_states}}');
         $this->dropTable('{{%feedback_input_fields_states}}');
 
-        $this->dropForeignKey('feedback_states-to-feedback_stages',
-            '{{%feedback_states}}');
+        $this->dropForeignKey('input_fields_represents-to-input_fields_templates',
+            '{{%feedback_input_fields_represents}}');
+        $this->dropIndex('input_field_reference-index', '{{%feedback_input_fields_represents}}');
+        $this->dropTable('{{%feedback_input_fields_represents}}');
+
+        $this->dropForeignKey('feedback_input_field_templates_names-to-common_languages',
+            '{{%feedback_input_field_templates_names}}');
+        $this->dropForeignKey('input_field_templates_names-to-input_fields_templates',
+            '{{%feedback_input_field_templates_names}}');
+        $this->dropTable('{{%feedback_input_field_templates_names}}');
+
+        $this->dropIndex('input_field_template_reference-index', '{{%feedback_input_fields_templates}}');
+        $this->dropTable('{{%feedback_input_fields_templates}}');
+
+        //feedback functionality
         $this->dropTable('{{%feedback_states}}');
 
         $this->dropForeignKey('feedback_stages_names_translates-to-common_languages',

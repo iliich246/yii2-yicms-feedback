@@ -272,7 +272,7 @@ class FeedbackStages extends ActiveRecord implements
         $fieldTemplatesQuery = FieldTemplate::getListQuery($this->getInputFieldTemplateReference());
 
         $fieldTemplatesQuery->andWhere([
-            'visible' => true,
+            'visible'       => true,
             'language_type' => FieldTemplate::LANGUAGE_TYPE_SINGLE
         ])->orderBy([
             FieldTemplate::getOrderFieldName() => SORT_ASC
