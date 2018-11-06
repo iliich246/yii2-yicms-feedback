@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -412,6 +413,7 @@ class DeveloperController extends Controller
      * @param $id
      * @return string
      * @throws BadRequestHttpException
+     * @throws FeedbackException
      * @throws NotFoundHttpException
      */
     public function actionStageUpOrder($id)
@@ -448,6 +450,7 @@ class DeveloperController extends Controller
      * @param $id
      * @return string
      * @throws BadRequestHttpException
+     * @throws FeedbackException
      * @throws NotFoundHttpException
      */
     public function actionStageDownOrder($id)
@@ -614,8 +617,8 @@ class DeveloperController extends Controller
         if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
 
         //initialize fields group
-        $devFieldGroup = new DevFieldsGroup();
-        $devFieldGroup->setFieldTemplateReference($feedbackStage->getInputFieldTemplateReference());
+        $devFieldGroup = new DevInputFieldsGroup();
+        $devFieldGroup->setInputFieldTemplateReference($feedbackStage->getInputFieldTemplateReference());
         $devFieldGroup->initialize(Yii::$app->request->post('_fieldTemplateId'));
 
         //try to load validate and save field via pjax
@@ -706,7 +709,7 @@ class DeveloperController extends Controller
 
         return $this->render('/developer/stage_input_templates', [
             'feedbackStage'             => $feedbackStage,
-            'devFieldGroup'              => $devFieldGroup,
+            'devInputFieldGroup'              => $devFieldGroup,
             'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
             'fieldTemplatesSingle'       => $fieldTemplatesSingle,
             'devFilesGroup'              => $devFilesGroup,

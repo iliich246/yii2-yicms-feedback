@@ -25,7 +25,6 @@ FieldsDevAsset::register($this);
                         data-home-url="<?= \yii\helpers\Url::base() ?>"
                         data-pjax-container-name="<?= FieldsDevModalWidget::getPjaxContainerId() ?>"
                         data-fields-modal-name="<?= FieldsDevModalWidget::getModalWindowName() ?>"
-                        data-loader-image-src="<?= $src ?>"
                         data-current-selected-field-template="null"
                     >
                     <span class="glyphicon glyphicon-plus-sign"></span> Add new field
@@ -39,43 +38,9 @@ FieldsDevAsset::register($this);
                 ]
             ]) ?>
             <div class="list-block">
-                <?php if (isset($fieldTemplatesTranslatable)): ?>
-                    <div class="row content-block-title">
-                        <h4>Translatable fields:</h4>
-                    </div>
-
-                    <?php foreach ($fieldTemplatesTranslatable as $fieldTemplate): ?>
-                        <div class="row list-items field-item">
-                            <div class="col-xs-10 list-title">
-                                <p data-field-template-id="<?= $fieldTemplate->id ?>">
-                                    <?= $fieldTemplate->program_name ?> (<?= $fieldTemplate->getTypeName() ?>)
-                                </p>
-                            </div>
-                            <div class="col-xs-2 list-controls">
-                                <?php if ($fieldTemplate->visible): ?>
-                                    <span class="glyphicon glyphicon-eye-open"></span>
-                                <?php else: ?>
-                                    <span class="glyphicon glyphicon-eye-close"></span>
-                                <?php endif; ?>
-                                <?php if ($fieldTemplate->editable): ?>
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                <?php endif; ?>
-                                <?php if ($fieldTemplate->canUpOrder()): ?>
-                                    <span class="glyphicon field-arrow-up glyphicon-arrow-up"
-                                          data-field-template-id="<?= $fieldTemplate->id ?>"></span>
-                                <?php endif; ?>
-                                <?php if ($fieldTemplate->canDownOrder()): ?>
-                                    <span class="glyphicon field-arrow-down glyphicon-arrow-down"
-                                          data-field-template-id="<?= $fieldTemplate->id ?>"></span>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif ?>
                 <?php if (isset($fieldTemplatesSingle)): ?>
                     <div class="row content-block-title">
-                        <br>
-                        <h4>Single fields:</h4>
+
                     </div>
                     <?php foreach ($fieldTemplatesSingle as $fieldTemplate): ?>
                         <div class="row list-items field-item">

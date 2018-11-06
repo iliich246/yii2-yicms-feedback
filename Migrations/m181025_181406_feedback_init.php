@@ -170,8 +170,10 @@ class m181025_181406_feedback_init extends Migration
             'id'                                => $this->primaryKey(),
             'feedback_input_fields_template_id' => $this->integer(),
             'common_language_id'                => $this->integer(),
-            'name'                              => $this->string(),
-            'description'                       => $this->string(),
+            'dev_name'                          => $this->string(),
+            'dev_description'                   => $this->string(),
+            'admin_name'                        => $this->string(),
+            'admin_description'                 => $this->string(),
         ]);
 
         $this->addForeignKey('input_field_templates_names-to-input_fields_templates',

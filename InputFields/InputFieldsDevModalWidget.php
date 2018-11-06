@@ -13,12 +13,26 @@ use yii\bootstrap\Widget;
  */
 class InputFieldsDevModalWidget extends Widget
 {
+    /** @var DevInputFieldsGroup instance  */
+    public $devInputFieldGroup;
+    /** @var bool true means that widget initialized after success data save in devFieldGroup */
+    public $dataSaved = false;
+    /** @var string part of link for delete field template  */
+    public $deleteLink;
+    /** @var string keeps current form action  */
+    public $action;
+    /** @var string if true widget must close modal window after save data */
+    public $saveAndExit = 'false';
+
     /**
      * @inheritdoc
      */
     public function init()
     {
+        $this->deleteLink = Url::toRoute(['/feedback/dev-fields/delete-field-template']);
 
+        if (Yii::$app->request->post('_saveAndExit'))
+            $this->saveAndExit = 'true';
     }
 
     /**

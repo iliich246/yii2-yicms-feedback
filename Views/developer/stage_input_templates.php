@@ -2,14 +2,15 @@
 
 use yii\helpers\Url;
 use Iliich246\YicmsCommon\Fields\FieldTemplate;
-use Iliich246\YicmsCommon\Fields\FieldsDevModalWidget;
+
 use Iliich246\YicmsCommon\Files\FilesDevModalWidget;
 use Iliich246\YicmsCommon\Images\ImagesDevModalWidget;
 use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 
 /** @var $this \yii\web\View */
 /** @var $feedbackStage \Iliich246\YicmsFeedback\Base\FeedbackStages */
-/** @var $devFieldGroup \Iliich246\YicmsCommon\Fields\DevFieldsGroup */
+/** @var $devInputFieldGroup \Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup */
 /** @var $fieldTemplatesTranslatable FieldTemplate[] */
 /** @var $fieldTemplatesSingle FieldTemplate[] */
 /** @var $filesBlocks \Iliich246\YicmsCommon\Files\FilesBlock[] */
@@ -24,7 +25,7 @@ use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
 
 <div class="col-sm-9 content">
     <div class="row content-block content-header">
-        <h1>Edit feedback stage (<?= $feedbackStage->program_name ?>) page templates</h1>
+        <h1>Edit feedback stage (<?= $feedbackStage->program_name ?>) input templates</h1>
     </div>
 
     <div class="row content-block breadcrumbs">
@@ -65,17 +66,17 @@ use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
         </div>
     </div>
 
-    <?= $this->render('@yicms-common/views/pjax/update-fields-list-container', [
+    <?= $this->render('@yicms-feedback/views/pjax/update-input-fields-list-container', [
         'fieldTemplateReference'     => $feedbackStage->getInputFieldTemplateReference(),
         'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
         'fieldTemplatesSingle'       => $fieldTemplatesSingle
     ]) ?>
 
-    <?= FieldsDevModalWidget::widget([
-        'devFieldGroup' => $devFieldGroup,
+    <?= InputFieldsDevModalWidget::widget([
+        'devInputFieldGroup' => $devInputFieldGroup,
     ])
     ?>
-
+<?php /* ?>
     <?= $this->render('@yicms-common/Views/pjax/update-files-list-container', [
         'fileTemplateReference' => $feedbackStage->getInputFieldTemplateReference(),
         'filesBlocks'           => $filesBlocks,
@@ -108,4 +109,5 @@ use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
         'action' => Url::toRoute(['/feedback/dev/stage-page-templates',
             'id' => $feedbackStage->id])
     ]) ?>
+ */ ?>
 </div>
