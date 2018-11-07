@@ -35,22 +35,22 @@ $js = <<<JS
             .empty()
             .append('<img src="' + imageLoaderScr + '" style="text-align:center">');
     });
-/*
+
     $(pjaxContainerName).on('pjax:success', function(event) {
 
-        var fieldTemplateHidden = $('#field-template-id-hidden');
+        var inputFieldTemplateHidden = $('#input-field-template-id-hidden');
 
-        if ($(fieldTemplateHidden).val())
-            $(addField).data('currentSelectedFieldTemplate', $(fieldTemplateHidden).val());
+        if ($(inputFieldTemplateHidden).val())
+            $(addField).data('currentSelectedInputFieldTemplate', $(inputFieldTemplateHidden).val());
 
-        var fieldForm = $('#create-update-fields');
+        var fieldForm = $('#create-update-input-fields');
 
         if ($(fieldForm).data('saveAndExit')) {
             $(pjaxFieldsModalName).modal('hide');
 
             $.pjax({
-                url: updateFieldsListUrl + '?fieldTemplateReference=' + fieldTemplateReference,
-                container: '#update-fields-list-container',
+                url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
+                container: '#update-input-fields-list-container',
                 scrollTo: false,
                 push: false,
                 type: "POST",
@@ -60,13 +60,13 @@ $js = <<<JS
             return;
         }
 
-        var redirectToUpdate           = $(fieldForm).data('redirectToUpdateField');
-        var fieldTemplateIdForRedirect = $(fieldForm).data('fieldTemplateIdRedirect');
+        var redirectToUpdate           = $(fieldForm).data('redirectToUpdateInputField');
+        var fieldTemplateIdForRedirect = $(fieldForm).data('inputFieldTemplateIdRedirect');
 
         if (redirectToUpdate) {
             $.pjax({
-                url: updateFieldsListUrl + '?fieldTemplateReference=' + fieldTemplateReference,
-                container: '#update-fields-list-container',
+                url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
+                container: '#update-input-fields-list-container',
                 scrollTo: false,
                 push: false,
                 type: "POST",
@@ -85,15 +85,15 @@ $js = <<<JS
         if (!$(event.target).find('form').is('[data-yicms-saved]')) return false;
 
         $.pjax({
-            url: updateFieldsListUrl + '?fieldTemplateReference=' + fieldTemplateReference,
-            container: '#update-fields-list-container',
+            url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
+            container: '#update-input-fields-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
             timeout: 2500
         });
     });
-*/
+
     $('#update-input-fields-list-container').on('pjax:success', function(event) {
         if (redirectToUpdateNeedSecondPjaxRequest) {
             loadModal(redirectToUpdateNeedSecondPjaxRequest);

@@ -47,15 +47,15 @@ else
                 'data-pjax'                       => true,
                 'data-yicms-saved'                => $widget->dataSaved,
                 'data-save-and-exit'              => $widget->saveAndExit,
-                'data-redirect-to-update-field'   => $redirectToUpdate,
-                'data-field-template-id-redirect' => $inputFieldTemplateIdForRedirect
+                'data-redirect-to-update-input-field'   => $redirectToUpdate,
+                'data-input-field-template-id-redirect' => $inputFieldTemplateIdForRedirect
             ],
         ]);
         ?>
 
         <?php if ($widget->devInputFieldGroup->scenario == DevInputFieldsGroup::SCENARIO_UPDATE): ?>
             <?= Html::hiddenInput('_inputFieldTemplateId', $widget->devInputFieldGroup->inputFieldTemplate->id, [
-                'id' => 'field-template-id-hidden'
+                'id' => 'input-field-template-id-hidden'
             ]) ?>
         <?php endif; ?>
 
