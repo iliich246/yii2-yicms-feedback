@@ -6,13 +6,13 @@ use Iliich246\YicmsCommon\Fields\FieldTemplate;
 use Iliich246\YicmsCommon\Files\FilesDevModalWidget;
 use Iliich246\YicmsCommon\Images\ImagesDevModalWidget;
 use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 
 /** @var $this \yii\web\View */
 /** @var $feedbackStage \Iliich246\YicmsFeedback\Base\FeedbackStages */
 /** @var $devInputFieldGroup \Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup */
-/** @var $fieldTemplatesTranslatable FieldTemplate[] */
-/** @var $fieldTemplatesSingle FieldTemplate[] */
+/** @var $inputFieldTemplates InputFieldTemplate[] */
 /** @var $filesBlocks \Iliich246\YicmsCommon\Files\FilesBlock[] */
 /** @var $devFilesGroup \Iliich246\YicmsCommon\Files\DevFilesGroup */
 /** @var $imagesBlocks \Iliich246\YicmsCommon\Images\ImagesBlock[] */
@@ -53,28 +53,28 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 
         <span> / </span>
 
-        <span>Edit feedback stage (<?= $feedbackStage->program_name ?>) page templates</span>
+        <span>Edit feedback stage (<?= $feedbackStage->program_name ?>) input templates</span>
     </div>
 
     <div class="row content-block form-block">
         <div class="col-xs-12">
 
             <div class="content-block-title">
-                <h3>Edit feedback stage templates</h3>
+                <h3>Edit feedback stage input templates</h3>
             </div>
 
         </div>
     </div>
 
     <?= $this->render('@yicms-feedback/views/pjax/update-input-fields-list-container', [
-        'fieldTemplateReference'     => $feedbackStage->getInputFieldTemplateReference(),
-        'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
-        'fieldTemplatesSingle'       => $fieldTemplatesSingle
+        'inputFieldTemplateReference' => $feedbackStage->getInputFieldTemplateReference(),
+        'fieldTemplates'              => $inputFieldTemplates
     ]) ?>
 
     <?= InputFieldsDevModalWidget::widget([
         'devInputFieldGroup' => $devInputFieldGroup,
     ])
+
     ?>
 <?php /* ?>
     <?= $this->render('@yicms-common/Views/pjax/update-files-list-container', [

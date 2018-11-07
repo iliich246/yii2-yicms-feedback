@@ -3,6 +3,8 @@
 namespace Iliich246\YicmsFeedback\Controllers;
 
 use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -617,20 +619,20 @@ class DeveloperController extends Controller
         if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
 
         //initialize fields group
-        $devFieldGroup = new DevInputFieldsGroup();
-        $devFieldGroup->setInputFieldTemplateReference($feedbackStage->getInputFieldTemplateReference());
-        $devFieldGroup->initialize(Yii::$app->request->post('_fieldTemplateId'));
+        $devInputFieldGroup = new DevInputFieldsGroup();
+        $devInputFieldGroup->setInputFieldTemplateReference($feedbackStage->getInputFieldTemplateReference());
+        $devInputFieldGroup->initialize(Yii::$app->request->post('_inputFieldTemplateId'));
 
         //try to load validate and save field via pjax
-        if ($devFieldGroup->load(Yii::$app->request->post()) && $devFieldGroup->validate()) {
+        if ($devInputFieldGroup->load(Yii::$app->request->post()) && $devInputFieldGroup->validate()) {
 
-            if (!$devFieldGroup->save()) {
+            if (!$devInputFieldGroup->save()) {
                 //TODO: bootbox error
             }
 
-            return FieldsDevModalWidget::widget([
-                'devFieldGroup' => $devFieldGroup,
-                'dataSaved'     => true,
+            return InputFieldsDevModalWidget::widget([
+                'devInputFieldGroup' => $devInputFieldGroup,
+                'dataSaved'          => true,
             ]);
         }
 
@@ -685,14 +687,8 @@ class DeveloperController extends Controller
             ]);
         }
 
-        $fieldTemplatesTranslatable = FieldTemplate::getListQuery($feedbackStage->getInputFieldTemplateReference())
-            ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_TRANSLATABLE])
-            ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
-            ->all();
-
-        $fieldTemplatesSingle = FieldTemplate::getListQuery($feedbackStage->getInputFieldTemplateReference())
-            ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_SINGLE])
-            ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
+        $inputFieldTemplates = InputFieldTemplate::getListQuery($feedbackStage->getInputFieldTemplateReference())
+            ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
         $filesBlocks = FilesBlock::getListQuery($feedbackStage->getInputFileTemplateReference())
@@ -709,9 +705,9 @@ class DeveloperController extends Controller
 
         return $this->render('/developer/stage_input_templates', [
             'feedbackStage'             => $feedbackStage,
-            'devInputFieldGroup'              => $devFieldGroup,
-            'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
-            'fieldTemplatesSingle'       => $fieldTemplatesSingle,
+            'devInputFieldGroup'        => $devInputFieldGroup,
+
+            'inputFieldTemplates'       => $inputFieldTemplates,
             'devFilesGroup'              => $devFilesGroup,
             'filesBlocks'                => $filesBlocks,
             'devImagesGroup'             => $devImagesGroup,

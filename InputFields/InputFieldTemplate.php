@@ -12,7 +12,6 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @property string $input_field_template_reference
  * @property string $validator_reference
- * @property integer $type
  * @property integer $input_field_order
  * @property bool $visible
  * @property bool $editable
@@ -21,14 +20,6 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  */
 class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceInterface
 {
-    /**
-     * Types of fields
-     * Type define style of render of field
-     */
-    const TYPE_INPUT    = 0;
-    const TYPE_TEXT     = 1;
-    const TYPE_REDACTOR = 2;
-
     /**
      * @inheritdoc
      */
@@ -78,25 +69,6 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     }
 
     /**
-     * Return array of field types
-     * @return array|bool
-     */
-    public static function getTypes()
-    {
-        static $array = false;
-
-        if ($array) return $array;
-
-        $array = [
-            self::TYPE_INPUT    => 'Input type',
-            self::TYPE_TEXT     => 'Text area type',
-            self::TYPE_REDACTOR => 'Redactor type',
-        ];
-
-        return $array;
-    }
-
-    /**
      * @inheritdoc
      */
     public function save($runValidation = true, $attributes = null)
@@ -127,15 +99,6 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     public function delete()
     {
 
-    }
-
-    /**
-     * Return name of type of concrete field
-     * @return mixed
-     */
-    public function getTypeName()
-    {
-        return self::getTypes()[$this->type];
     }
 
     /**

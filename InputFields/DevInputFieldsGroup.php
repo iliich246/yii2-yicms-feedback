@@ -2,12 +2,12 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsCommon\Base\CommonException;
 use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
  * Class DevInputFieldsGroup
@@ -107,23 +107,15 @@ class DevInputFieldsGroup extends AbstractGroup
         $needSaveFieldTemplate = false;
 
         if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('program_name') != $this->fieldTemplate->program_name)
+            $this->inputFieldTemplate->getOldAttribute('program_name') != $this->inputFieldTemplate->program_name)
             $needSaveFieldTemplate = true;
 
         if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('type') != $this->fieldTemplate->type)
+            $this->inputFieldTemplate->getOldAttribute('visible') != $this->inputFieldTemplate->visible)
             $needSaveFieldTemplate = true;
 
         if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('language_type') != $this->fieldTemplate->language_type)
-            $needSaveFieldTemplate = true;
-
-        if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('visible') != $this->fieldTemplate->visible)
-            $needSaveFieldTemplate = true;
-
-        if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('editable') != $this->fieldTemplate->editable)
+            $this->inputFieldTemplate->getOldAttribute('editable') != $this->inputFieldTemplate->editable)
             $needSaveFieldTemplate = true;
 
         if ($needSaveFieldTemplate)

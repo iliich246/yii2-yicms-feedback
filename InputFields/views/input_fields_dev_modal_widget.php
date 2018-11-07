@@ -73,20 +73,15 @@ else
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-4 col-xs-12">
+                    <div class="col-sm-12 col-xs-12">
                         <?= $form->field($widget->devInputFieldGroup->inputFieldTemplate, 'program_name') ?>
-                    </div>
-                    <div class="col-sm-4 col-xs-12">
-                        <?= $form->field($widget->devInputFieldGroup->inputFieldTemplate, 'type')->dropDownList(
-                            \Iliich246\YicmsFeedback\InputFields\InputFieldTemplate::getTypes())
-                        ?>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4 col-xs-12 ">
+                    <div class="col-sm-6 col-xs-12 ">
                         <?= $form->field($widget->devInputFieldGroup->inputFieldTemplate, 'visible')->checkbox() ?>
                     </div>
-                    <div class="col-sm-4 col-xs-12 ">
+                    <div class="col-sm-6 col-xs-12 ">
                         <?= $form->field($widget->devInputFieldGroup->inputFieldTemplate, 'editable')->checkbox() ?>
                     </div>
                 </div>
@@ -102,15 +97,15 @@ else
                         <div class="col-xs-12">
                             <br>
 
-                            <p>IMPORTANT! Do not delete fields without serious reason!</p>
+                            <p>IMPORTANT! Do not delete input fields without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
                                     id="field-delete"
-                                    data-field-template-reference="<?= $widget->devInputFieldGroup->inputFieldTemplate->input_field_template_reference ?>"
-                                    data-field-template-id="<?= $widget->devInputFieldGroup->inputFieldTemplate->id ?>"
-                                    data-field-has-constraints="<?= (int)$widget->devInputFieldGroup->inputFieldTemplate->isConstraints() ?>"
+                                    data-input-field-template-reference="<?= $widget->devInputFieldGroup->inputFieldTemplate->input_field_template_reference ?>"
+                                    data-input-field-template-id="<?= $widget->devInputFieldGroup->inputFieldTemplate->id ?>"
+                                    data-input-field-has-constraints="<?= (int)$widget->devInputFieldGroup->inputFieldTemplate->isConstraints() ?>"
                             >
-                                Delete field
+                                Delete input field
                             </button>
                         </div>
                     </div>
@@ -118,7 +113,7 @@ else
                         <div class="col-xs-12">
                             <br>
                             <label for="field-delete-password-input">
-                                Field has constraints. Enter dev password for delete field template
+                                Input field has constraints. Enter dev password for delete input field template
                             </label>
                             <input type="password"
                                    id="field-delete-password-input"
@@ -138,18 +133,16 @@ else
 
                     <hr>
 
-                    <?php /* ?>
-
                     <?= ValidatorsListWidget::widget([
                         'validatorReference'     => $widget->devInputFieldGroup->inputFieldTemplate,
-                        'ownerPjaxContainerName' => FieldsDevModalWidget::getPjaxContainerId(),
-                        'ownerModalId'           => FieldsDevModalWidget::getModalWindowName(),
+                        'ownerPjaxContainerName' => InputFieldsDevModalWidget::getPjaxContainerId(),
+                        'ownerModalId'           => InputFieldsDevModalWidget::getModalWindowName(),
                         'returnUrl'              => \yii\helpers\Url::toRoute([
-                            '/common/dev-fields/load-modal',
+                            '/feedback/dev-input-fields/load-modal',
                             'inputFieldTemplateId' => $widget->devInputFieldGroup->inputFieldTemplate->id,
                         ])
                     ]) ?>
-                    */ ?>
+
                 <?php endif; ?>
             </div>
             <div class="modal-footer">

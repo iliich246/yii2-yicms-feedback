@@ -151,7 +151,6 @@ class m181025_181406_feedback_init extends Migration
             'input_field_template_reference' => $this->string(),
             'validator_reference'            => $this->string(),
             'program_name'                   => $this->string(50),
-            'type'                           => $this->smallInteger(),
             'input_field_order'              => $this->integer(),
             'editable'                       => $this->boolean(),
             'visible'                        => $this->boolean(),
