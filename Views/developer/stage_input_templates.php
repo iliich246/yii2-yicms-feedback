@@ -68,7 +68,7 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 
     <?= $this->render('@yicms-feedback/views/pjax/update-input-fields-list-container', [
         'inputFieldTemplateReference' => $feedbackStage->getInputFieldTemplateReference(),
-        'fieldTemplates'              => $inputFieldTemplates
+        'inputFieldTemplates'         => $inputFieldTemplates
     ]) ?>
 
     <?= InputFieldsDevModalWidget::widget([

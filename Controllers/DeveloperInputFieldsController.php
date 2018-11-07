@@ -358,7 +358,7 @@ class DeveloperInputFieldsController extends Controller
 
         if (!$inputFieldTemplate) throw new NotFoundHttpException('Wrong inputFieldTemplateId');
 
-        $inputFieldTemplate->upOrder();
+        $inputFieldTemplate->downOrder();
 
         $inputFieldTemplates = InputFieldTemplate::getListQuery($inputFieldTemplate->input_field_template_reference)
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])

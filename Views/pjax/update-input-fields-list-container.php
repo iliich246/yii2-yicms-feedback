@@ -190,6 +190,7 @@ $this->registerJs($js, $this::POS_READY);
                     'id' => 'update-input-fields-list-container'
                 ]
             ]) ?>
+
             <div class="list-block">
                 <div class="row content-block-title">
 
@@ -200,7 +201,7 @@ $this->registerJs($js, $this::POS_READY);
                             <p data-input-field-template="<?= $inputFieldTemplate->input_field_template_reference ?>"
                                data-input-field-template-id="<?= $inputFieldTemplate->id ?>"
                                 >
-                                <?= $inputFieldTemplate->program_name ?> (<?= $inputFieldTemplate->getTypeName() ?>)
+                                <?= $inputFieldTemplate->program_name ?>
                             </p>
                         </div>
                         <div class="col-xs-2 list-controls">
