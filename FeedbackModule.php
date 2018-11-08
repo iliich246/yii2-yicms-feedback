@@ -2,7 +2,9 @@
 
 namespace Iliich246\YicmsFeedback;
 
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Yii;
+use yii\base\BootstrapInterface;
 use Iliich246\YicmsCommon\Base\YicmsModuleInterface;
 use Iliich246\YicmsCommon\Base\AbstractConfigurableModule;
 
@@ -11,8 +13,28 @@ use Iliich246\YicmsCommon\Base\AbstractConfigurableModule;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class FeedbackModule extends AbstractConfigurableModule implements YicmsModuleInterface
+class FeedbackModule extends AbstractConfigurableModule implements
+    BootstrapInterface,
+    YicmsModuleInterface
 {
+
+
+    /**
+     * Block of fields with various paths
+     */
+    public $filesPatch           = DIRECTORY_SEPARATOR .
+                                'web' . DIRECTORY_SEPARATOR .
+                                'input_files' . DIRECTORY_SEPARATOR;
+
+    public $imagesOriginalsPath  = DIRECTORY_SEPARATOR .
+                                'web' . DIRECTORY_SEPARATOR .
+                                'input_images' . DIRECTORY_SEPARATOR;
+
+    /**
+     * Block of variables with images web paths
+     */
+    public $imagesOriginalsWebPath  = 'input_images/orig/';
+
     /** @inheritdoc */
     public $controllerMap = [
         'dev'                   => 'Iliich246\YicmsFeedback\Controllers\DeveloperController',
@@ -23,6 +45,7 @@ class FeedbackModule extends AbstractConfigurableModule implements YicmsModuleIn
         'dev-input-conditions'  => 'Iliich246\YicmsFeedback\Controllers\DeveloperConditionsController',
     ];
 
+
     /**
      * @inheritdoc
      */
@@ -31,6 +54,16 @@ class FeedbackModule extends AbstractConfigurableModule implements YicmsModuleIn
         //TODO: makes correct build of controller map via common->$yicmsLocation
         $this->controllerMap['admin'] = 'app\yicms\Feedback\Controllers\AdminController';
         parent::init();
+    }
+
+
+    /**
+     * @inheritdoc
+     * @throws FeedbackException
+     */
+    public function bootstrap($app)
+    {
+
     }
 
     /**
