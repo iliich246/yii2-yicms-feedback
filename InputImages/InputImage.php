@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputImages;
 
-use Iliich246\YicmsFeedback\FeedbackModule;
 use Yii;
 use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
@@ -14,6 +13,7 @@ use Iliich246\YicmsCommon\Base\SortOrderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
+use Iliich246\YicmsFeedback\FeedbackModule;
 
 /**
  * Class InputImage

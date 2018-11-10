@@ -2,9 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
-use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
-use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
-use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -18,6 +15,9 @@ use Iliich246\YicmsCommon\Fields\FieldsGroup;
 use Iliich246\YicmsCommon\Fields\FieldTemplate;
 use Iliich246\YicmsCommon\Fields\DevFieldsGroup;
 use Iliich246\YicmsCommon\Fields\FieldsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
+use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 
 /**
  * Class DeveloperInputFieldsController

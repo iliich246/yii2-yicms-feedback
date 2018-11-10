@@ -180,7 +180,7 @@ $this->registerJs($js, $this::POS_READY);
                         data-loader-image-src="<?= $src ?>"
                         data-current-selected-input-field-template="null"
                     >
-                    <span class="glyphicon glyphicon-plus-sign"></span> Add new field
+                    <span class="glyphicon glyphicon-plus-sign"></span> Add new input field
                 </button>
             </div>
         </div>
