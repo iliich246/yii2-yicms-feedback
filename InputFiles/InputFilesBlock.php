@@ -119,7 +119,7 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
 
     /**
      * Renames parent method on concrete name
-     * @return File
+     * @return InputFile
      */
     public function getInputFile()
     {
@@ -128,10 +128,124 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
 
     /**
      * Renames parent method on concrete name
-     * @return File[]
+     * @return InputFile[]
      */
     public function getInputFiles()
     {
         return $this->getEntities();
+    }
+
+    /**
+     * Sets current input file reference
+     * @param $inputFileReference
+     */
+    public function setInputFileReference($inputFileReference)
+    {
+        $this->currentInputFileReference = $inputFileReference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getEntityQuery()
+    {
+        if (CommonModule::isUnderDev() || $this->editable) {
+            $fileQuery = InputFile::find()
+                ->where([
+                    'feedback_input_files_template_id' => $this->id,
+                ])
+                ->indexBy('id')
+                ->orderBy(['input_file_order' => SORT_ASC]);
+
+            if ($this->currentInputFileReference)
+                $fileQuery->andWhere([
+                    'input_file_reference' => $this->currentInputFileReference]);
+
+            return $fileQuery;
+        }
+
+        return new ActiveQuery(InputFile::className());
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function deleteSequence()
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderQuery()
+    {
+        return self::find()->where([
+            'input_file_template_reference' => $this->input_file_template_reference,
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getOrderFieldName()
+    {
+        return 'input_file_order';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderValue()
+    {
+        return $this->input_file_order;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setOrderValue($value)
+    {
+        $this->input_file_order = $value;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function configToChangeOfOrder()
+    {
+        $this->scenario = self::SCENARIO_CHANGE_ORDER;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderAble()
+    {
+        return $this;
+    }
+
+
+    /**
+     * @inheritdoc
+     */
+    protected static function getTemplateReferenceName()
+    {
+        return 'input_file_template_reference';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getValidatorReference()
+    {
+        if (!$this->validator_reference) {
+            $this->validator_reference = ValidatorBuilder::generateValidatorReference();
+            $this->scenario = self::SCENARIO_UPDATE;
+            $this->save(false);
+        }
+
+        return $this->validator_reference;
     }
 }

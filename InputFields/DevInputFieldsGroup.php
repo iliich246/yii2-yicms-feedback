@@ -154,10 +154,10 @@ class DevInputFieldsGroup extends AbstractGroup
 
     /**
      * @inheritdoc
-     * @throws CommonException
+     * @throws FeedbackException
      */
     public function render(ActiveForm $form)
     {
-        throw new CommonException('Not implemented for developer fields group (not necessary)');
+        throw new FeedbackException('Not implemented for developer input fields group (not necessary)');
     }
 }

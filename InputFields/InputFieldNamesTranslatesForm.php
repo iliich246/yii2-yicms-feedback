@@ -121,7 +121,7 @@ class InputFieldNamesTranslatesForm extends AbstractTranslateForm
     protected function createTranslateDb()
     {
         $this->currentTranslateDb = new InputFieldsNamesTranslatesDb();
-        $this->currentTranslateDb->common_language_id        = $this->language->id;
+        $this->currentTranslateDb->common_language_id                = $this->language->id;
         $this->currentTranslateDb->feedback_input_fields_template_id = $this->inputFieldTemplate->id;
 
         return $this->currentTranslateDb->save();

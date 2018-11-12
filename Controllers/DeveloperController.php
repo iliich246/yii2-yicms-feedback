@@ -5,6 +5,8 @@ namespace Iliich246\YicmsFeedback\Controllers;
 use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
 use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
+use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -636,20 +638,20 @@ class DeveloperController extends Controller
             ]);
         }
 
-        $devFilesGroup = new DevFilesGroup();
-        $devFilesGroup->setFilesTemplateReference($feedbackStage->getInputFieldTemplateReference());
-        $devFilesGroup->initialize(Yii::$app->request->post('_fileTemplateId'));
+        $devInputFilesGroup = new DevInputFilesGroup();
+        $devInputFilesGroup->setInputFilesTemplateReference($feedbackStage->getInputFieldTemplateReference());
+        $devInputFilesGroup->initialize(Yii::$app->request->post('_inputFileTemplateId'));
 
         //try to load validate and save field via pjax
-        if ($devFilesGroup->load(Yii::$app->request->post()) && $devFilesGroup->validate()) {
+        if ($devInputFilesGroup->load(Yii::$app->request->post()) && $devInputFilesGroup->validate()) {
 
-            if (!$devFilesGroup->save()) {
+            if (!$devInputFilesGroup->save()) {
                 //TODO: bootbox error
             }
 
-            return FilesDevModalWidget::widget([
-                'devFilesGroup' => $devFilesGroup,
-                'dataSaved'     => true,
+            return FilesDevModalWidget::$devInputFilesGroup([
+                'devInputFilesGroup' => $devInputFilesGroup,
+                'dataSaved'          => true,
             ]);
         }
 
@@ -691,8 +693,8 @@ class DeveloperController extends Controller
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $filesBlocks = FilesBlock::getListQuery($feedbackStage->getInputFileTemplateReference())
-            ->orderBy([FilesBlock::getOrderFieldName() => SORT_ASC])
+        $inputFilesBlocks = InputFilesBlock::getListQuery($feedbackStage->getInputFileTemplateReference())
+            ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
         $imagesBlocks = ImagesBlock::getListQuery($feedbackStage->getInputImageTemplateReference())
@@ -706,10 +708,9 @@ class DeveloperController extends Controller
         return $this->render('/developer/stage_input_templates', [
             'feedbackStage'             => $feedbackStage,
             'devInputFieldGroup'        => $devInputFieldGroup,
-
             'inputFieldTemplates'       => $inputFieldTemplates,
-            'devFilesGroup'              => $devFilesGroup,
-            'filesBlocks'                => $filesBlocks,
+            'devInputFilesGroup'        => $inputFilesBlocks,
+            'inputFilesBlocks'          => $inputFilesBlocks,
             'devImagesGroup'             => $devImagesGroup,
             'imagesBlocks'               => $imagesBlocks,
             'devConditionsGroup'         => $devConditionsGroup,
