@@ -39,8 +39,7 @@ class FeedbackModule extends AbstractConfigurableModule implements
     public $controllerMap = [
         'dev'                   => 'Iliich246\YicmsFeedback\Controllers\DeveloperController',
         'dev-input-fields'      => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputFieldsController',
-        'dev-input-validators'  => 'Iliich246\YicmsFeedback\Controllers\DeveloperValidatorsController',
-        'dev-input-files'       => 'Iliich246\YicmsFeedback\Controllers\DeveloperFilesController',
+        'dev-input-files'       => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputFilesController',
         'dev-input-images'      => 'Iliich246\YicmsFeedback\Controllers\DeveloperImagesController',
         'dev-input-conditions'  => 'Iliich246\YicmsFeedback\Controllers\DeveloperConditionsController',
     ];

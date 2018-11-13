@@ -13,7 +13,7 @@ use yii\bootstrap\Widget;
  */
 class InputFilesDevModalWidget extends Widget
 {
-    /** @var InputDevFilesGroup */
+    /** @var DevInputFilesGroup */
     public $devInputFilesGroup;
     /** @var bool true means that widget initialized after success data save in DevFilesGroup */
     public $dataSaved = false;
