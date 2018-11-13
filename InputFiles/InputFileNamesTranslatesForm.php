@@ -120,8 +120,8 @@ class InputFileNamesTranslatesForm extends AbstractTranslateForm
      */
     protected function createTranslateDb()
     {
-        $this->currentTranslateDb = new InputFilesNamesTranslatesDb();
-        $this->currentTranslateDb->common_language_id        = $this->language->id;
+        $this->currentTranslateDb                                   = new InputFilesNamesTranslatesDb();
+        $this->currentTranslateDb->common_language_id               = $this->language->id;
         $this->currentTranslateDb->feedback_input_files_template_id = $this->inputFileBlock->id;
 
         return $this->currentTranslateDb->save();

@@ -1,15 +1,15 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\InputFiles;
+namespace Iliich246\YicmsFeedback\InputImages;
 
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
 
 /**
- * Class InputFilesNamesTranslatesDb
+ * Class InputImagesNamesTranslatesDb
  *
  * @property integer $id
- * @property integer $feedback_input_files_template_id
+ * @property integer $feedback_input_images_template_id
  * @property integer $common_language_id
  * @property string $dev_name
  * @property string $dev_description
@@ -18,14 +18,14 @@ use Iliich246\YicmsCommon\Languages\LanguagesDb;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputFilesNamesTranslatesDb extends ActiveRecord
+class InputImagesNamesTranslatesDb extends ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return '{{%feedback_input_file_names}}';
+        return '{{%feedback_input_image_names}}';
     }
 
     /**
@@ -40,9 +40,9 @@ class InputFilesNamesTranslatesDb extends ActiveRecord
                 'targetClass' => LanguagesDb::class, 'targetAttribute' => ['common_language_id' => 'id']
             ],
             [
-                ['feedback_input_files_template_id'], 'exist', 'skipOnError' => true,
-                'targetClass' => InputFilesBlock::class,
-                'targetAttribute' => ['feedback_input_files_template_id' => 'id']
+                ['feedback_input_images_template_id'], 'exist', 'skipOnError' => true,
+                'targetClass' => InputImagesBlock::class,
+                'targetAttribute' => ['feedback_input_images_template_id' => 'id']
             ],
         ];
     }

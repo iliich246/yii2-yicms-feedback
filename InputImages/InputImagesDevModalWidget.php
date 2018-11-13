@@ -1,23 +1,23 @@
 <?php
 
-namespace Iliich246\YicmsFeedback\InputFiles;
+namespace Iliich246\YicmsFeedback\InputImages;
 
 use Yii;
 use yii\helpers\Url;
 use yii\bootstrap\Widget;
 
 /**
- * Class InputFilesDevModalWidget
+ * Class InputImagesDevModalWidget
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputFilesDevModalWidget extends Widget
+class InputImagesDevModalWidget extends Widget
 {
-    /** @var DevInputFilesGroup */
-    public $devInputFilesGroup;
-    /** @var bool true means that widget initialized after success data save in DevInputFilesGroup */
+    /** @var DevInputImagesGroup */
+    public $devInputImagesGroup;
+    /** @var bool true means that widget initialized after success data save in DevInputImagesGroup */
     public $dataSaved = false;
-    /** @var string part of link for delete input file block template */
+    /** @var string part of link for delete input image block template */
     public $deleteLink;
     /** @var string keeps current form action */
     public $action;
@@ -29,7 +29,7 @@ class InputFilesDevModalWidget extends Widget
      */
     public function init()
     {
-        $this->deleteLink = Url::toRoute(['/feedback/dev-input-files/delete-input-file-block']);
+        $this->deleteLink = Url::toRoute(['/feedback/dev-input-images/delete-input-image-block']);
 
         if (Yii::$app->request->post('_saveAndExit'))
             $this->saveAndExit = 'true';
@@ -41,7 +41,7 @@ class InputFilesDevModalWidget extends Widget
      */
     public static function getFormName()
     {
-        return 'create-update-input-files';
+        return 'create-update-input-images';
     }
 
     /**
@@ -50,7 +50,7 @@ class InputFilesDevModalWidget extends Widget
      */
     public static function getModalWindowName()
     {
-        return 'inputFilesDevModal';
+        return 'inputImagesDevModal';
     }
 
     /**
@@ -59,7 +59,7 @@ class InputFilesDevModalWidget extends Widget
      */
     public static function getPjaxContainerId()
     {
-        return 'input-files-pjax-container';
+        return 'input-images-pjax-container';
     }
 
     /**
@@ -67,7 +67,7 @@ class InputFilesDevModalWidget extends Widget
      */
     public function run()
     {
-        return $this->render('input_files_dev_modal_widget', [
+        return $this->render('input_images_dev_modal_widget', [
             'widget' => $this
         ]);
     }
