@@ -2,12 +2,11 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsCommon\Files\FileNamesTranslatesForm;
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
-use Iliich246\YicmsCommon\Base\CommonException;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
  * Class DevInputFilesGroup
@@ -20,8 +19,8 @@ class DevInputFilesGroup extends AbstractGroup
     protected $inputFileTemplateReference;
     /** @var InputFilesBlock current input field template with group is working (create or update) */
     public $inputFilesBlock;
-    /** @var FileNamesTranslatesForm[] */
-    public $filesNameTranslates;
+    /** @var InputFileNamesTranslatesForm[] */
+    public $inputFilesNameTranslates;
     /** @var bool indicate that data in this group was saved in this action */
     public $justSaved = false;
 
@@ -39,7 +38,35 @@ class DevInputFilesGroup extends AbstractGroup
      */
     public function initialize($inputFilesBlockId = null)
     {
+        if (!$inputFilesBlockId) {
+            $this->inputFilesBlock                                = new InputFilesBlock();
+            $this->inputFilesBlock->input_file_template_reference = $this->inputFileTemplateReference;
+            $this->inputFilesBlock->scenario                      = InputFilesBlock::SCENARIO_CREATE;
+            $this->scenario                                       = self::SCENARIO_CREATE;
+        } else {
+            $this->inputFilesBlock = InputFilesBlock::getInstanceById($inputFilesBlockId);
 
+            if (!$this->inputFilesBlock)  throw new FeedbackException("Wrong inputFilesBlockId = $inputFilesBlockId");
+
+            $this->inputFilesBlock->scenario = InputFilesBlock::SCENARIO_UPDATE;
+            $this->scenario = self::SCENARIO_UPDATE;
+        }
+
+        $languages = Language::getInstance()->usedLanguages();
+        
+        $this->inputFilesNameTranslates = [];
+
+        foreach($languages as $key => $language) {
+
+            $inputFileNameTranslates = new InputFileNamesTranslatesForm();
+            $inputFileNameTranslates->setLanguage($language);
+            $inputFileNameTranslates->setInputFileTemplate($this->inputFilesBlock);
+
+            if (!$this->inputFilesBlock->isNewRecord)
+                $inputFileNameTranslates->loadFromDb();
+
+            $this->inputFilesNameTranslates[$key] = $inputFileNameTranslates;
+        }
     }
 
     /**
@@ -47,7 +74,7 @@ class DevInputFilesGroup extends AbstractGroup
      */
     public function validate()
     {
-
+        return ($this->inputFilesBlock->validate() && Model::validateMultiple($this->inputFilesNameTranslates));
     }
 
     /**
@@ -55,7 +82,7 @@ class DevInputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
-
+        return $this->inputFilesBlock->load($data) && Model::loadMultiple($this->inputFilesNameTranslates, $data);
     }
 
     /**
@@ -63,7 +90,51 @@ class DevInputFilesGroup extends AbstractGroup
      */
     public function save()
     {
+        $needSaveInputFileBlock = false;
 
+        if (!$needSaveInputFileBlock &&
+            $this->inputFilesBlock->getOldAttribute('program_name') != $this->inputFilesBlock->program_name)
+            $needSaveInputFileBlock = true;
+
+        if (!$needSaveInputFileBlock &&
+            $this->inputFilesBlock->getOldAttribute('visible') != $this->inputFilesBlock->visible)
+            $needSaveInputFileBlock = true;
+
+        if (!$needSaveInputFileBlock &&
+            $this->inputFilesBlock->getOldAttribute('editable') != $this->inputFilesBlock->editable)
+            $needSaveInputFileBlock = true;
+
+        if ($needSaveInputFileBlock)
+            $this->inputFilesBlock->save(false);
+
+        /** @var InputFileNamesTranslatesForm $fieldNameTranslate */
+        foreach($this->inputFilesNameTranslates as $inputFilesNameTranslate) {
+            $needSaveInputFileTemplateName = false;
+
+            if (!$needSaveInputFileTemplateName &&
+                $fieldNameTranslate->devName != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_name)
+                $needSaveInputFileTemplateName = true;
+
+            if (!$needSaveInputFileTemplateName &&
+                $fieldNameTranslate->devDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_description)
+                $needSaveInputFileTemplateName = true;
+
+            if (!$needSaveInputFileTemplateName &&
+                $fieldNameTranslate->adminName != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_name)
+                $needSaveInputFileTemplateName = true;
+
+            if (!$needSaveInputFileTemplateName &&
+                $fieldNameTranslate->adminDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_description)
+                $needSaveInputFileTemplateName = true;
+
+            if ($needSaveInputFileTemplateName)
+                $inputFilesNameTranslate->save();
+        }
+
+        $this->justSaved = true;
+
+        //TODO: makes error handling
+        return true;
     }
 
     /**

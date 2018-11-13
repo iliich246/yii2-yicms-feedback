@@ -655,6 +655,8 @@ class DeveloperController extends Controller
             ]);
         }
 
+
+
         $devImagesGroup = new DevImagesGroup();
         $devImagesGroup->setImagesTemplateReference($feedbackStage->getInputImageTemplateReference());
         $devImagesGroup->initialize(Yii::$app->request->post('_imageTemplateId'));
@@ -709,7 +711,7 @@ class DeveloperController extends Controller
             'feedbackStage'             => $feedbackStage,
             'devInputFieldGroup'        => $devInputFieldGroup,
             'inputFieldTemplates'       => $inputFieldTemplates,
-            'devInputFilesGroup'        => $inputFilesBlocks,
+            'devInputFilesGroup'        => $devInputFilesGroup,
             'inputFilesBlocks'          => $inputFilesBlocks,
             'devImagesGroup'             => $devImagesGroup,
             'imagesBlocks'               => $imagesBlocks,

@@ -53,10 +53,10 @@ class DevInputFieldsGroup extends AbstractGroup
     public function initialize($inputFieldTemplateId = null)
     {
         if (!$inputFieldTemplateId) {
-            $this->inputFieldTemplate = new InputFieldTemplate();
+            $this->inputFieldTemplate                                 = new InputFieldTemplate();
             $this->inputFieldTemplate->input_field_template_reference = $this->inputFieldTemplateReference;
-            $this->inputFieldTemplate->scenario = InputFieldTemplate::SCENARIO_CREATE;
-            $this->scenario = self::SCENARIO_CREATE;
+            $this->inputFieldTemplate->scenario                       = InputFieldTemplate::SCENARIO_CREATE;
+            $this->scenario                                           = self::SCENARIO_CREATE;
         } else {
             $this->inputFieldTemplate = InputFieldTemplate::getInstanceById($inputFieldTemplateId);
 

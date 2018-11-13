@@ -1,20 +1,16 @@
 <?php
 
 use yii\helpers\Url;
-use Iliich246\YicmsCommon\Fields\FieldTemplate;
-
-use Iliich246\YicmsCommon\Files\FilesDevModalWidget;
-use Iliich246\YicmsCommon\Images\ImagesDevModalWidget;
-use Iliich246\YicmsCommon\Conditions\ConditionsDevModalWidget;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
 
 /** @var $this \yii\web\View */
 /** @var $feedbackStage \Iliich246\YicmsFeedback\Base\FeedbackStages */
 /** @var $devInputFieldGroup \Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup */
 /** @var $inputFieldTemplates InputFieldTemplate[] */
-/** @var $filesBlocks \Iliich246\YicmsCommon\Files\FilesBlock[] */
-/** @var $devFilesGroup \Iliich246\YicmsCommon\Files\DevFilesGroup */
+/** @var $inputFilesBlocks \Iliich246\YicmsFeedback\InputFiles\InputFilesBlock[] */
+/** @var $devInputFilesGroup \Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup */
 /** @var $imagesBlocks \Iliich246\YicmsCommon\Images\ImagesBlock[] */
 /** @var $devImagesGroup \Iliich246\YicmsCommon\Images\DevImagesGroup */
 /** @var $devConditionsGroup Iliich246\YicmsCommon\Conditions\DevConditionsGroup */
@@ -76,18 +72,19 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
     ])
 
     ?>
-<?php /* ?>
-    <?= $this->render('@yicms-common/Views/pjax/update-files-list-container', [
-        'fileTemplateReference' => $feedbackStage->getInputFieldTemplateReference(),
-        'filesBlocks'           => $filesBlocks,
+
+    <?= $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
+        'inputFileTemplateReference' => $feedbackStage->getInputFieldTemplateReference(),
+        'inputFilesBlocks'           => $inputFilesBlocks,
     ]) ?>
 
-    <?= FilesDevModalWidget::widget([
-        'devFilesGroup' => $devFilesGroup,
-        'action' => Url::toRoute(['/feedback/dev/stage-page-templates',
+    <?= InputFilesDevModalWidget::widget([
+        'devInputFilesGroup' => $devInputFilesGroup,
+        'action'             => Url::toRoute(['/feedback/dev/stage-page-templates',
             'id' => $feedbackStage->id])
     ]) ?>
 
+    <?php /* ?>
     <?= $this->render('@yicms-common/Views/pjax/update-images-list-container', [
         'imageTemplateReference' => $feedbackStage->getInputImageTemplateReference(),
         'imagesBlocks'           => $imagesBlocks,
