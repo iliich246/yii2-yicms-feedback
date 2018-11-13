@@ -35,6 +35,8 @@ class DevInputFilesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function initialize($inputFilesBlockId = null)
     {
@@ -107,24 +109,24 @@ class DevInputFilesGroup extends AbstractGroup
         if ($needSaveInputFileBlock)
             $this->inputFilesBlock->save(false);
 
-        /** @var InputFileNamesTranslatesForm $fieldNameTranslate */
+        /** @var InputFileNamesTranslatesForm $filesNameTranslate */
         foreach($this->inputFilesNameTranslates as $inputFilesNameTranslate) {
             $needSaveInputFileTemplateName = false;
 
             if (!$needSaveInputFileTemplateName &&
-                $fieldNameTranslate->devName != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_name)
+                $inputFilesNameTranslate->devName != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_name)
                 $needSaveInputFileTemplateName = true;
 
             if (!$needSaveInputFileTemplateName &&
-                $fieldNameTranslate->devDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_description)
+                $inputFilesNameTranslate->devDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->dev_description)
                 $needSaveInputFileTemplateName = true;
 
             if (!$needSaveInputFileTemplateName &&
-                $fieldNameTranslate->adminName != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_name)
+                $inputFilesNameTranslate->adminName != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_name)
                 $needSaveInputFileTemplateName = true;
 
             if (!$needSaveInputFileTemplateName &&
-                $fieldNameTranslate->adminDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_description)
+                $inputFilesNameTranslate->adminDescription != $inputFilesNameTranslate->getCurrentTranslateDb()->admin_description)
                 $needSaveInputFileTemplateName = true;
 
             if ($needSaveInputFileTemplateName)

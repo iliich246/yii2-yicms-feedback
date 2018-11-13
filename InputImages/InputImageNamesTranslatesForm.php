@@ -59,7 +59,7 @@ class InputImageNamesTranslatesForm extends AbstractTranslateForm
      * Sets InputImagesBlock associated with this object
      * @param InputImagesBlock $inputImageBlock
      */
-    public function setInputFileTemplate(InputImagesBlock $inputImageBlock)
+    public function setInputImageBlock(InputImagesBlock $inputImageBlock)
     {
         $this->inputImageBlock = $inputImageBlock;
     }
