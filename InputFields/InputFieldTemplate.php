@@ -49,7 +49,6 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['type'], 'integer'],
             [['visible', 'editable'], 'boolean'],
         ]);
     }
@@ -61,9 +60,9 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     {
         $prevScenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['type', 'visible', 'editable']);
+            ['visible', 'editable']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['type', 'visible', 'editable']);
+            ['visible', 'editable']);
 
         return $scenarios;
     }

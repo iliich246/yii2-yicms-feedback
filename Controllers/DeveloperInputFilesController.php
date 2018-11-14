@@ -86,7 +86,6 @@ class DeveloperInputFilesController extends Controller
         if (Yii::$app->request->isPjax &&
             Yii::$app->request->post('_pjax') == '#update-input-files-list-container'
         ) {
-
             $inputFileBlocks = InputFilesBlock::getListQuery($inputFileTemplateReference)
                 ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
                 ->all();
@@ -97,7 +96,7 @@ class DeveloperInputFilesController extends Controller
             ]);
         }
 
-        throw new BadRequestHttpException();
+        throw new BadRequestHttpException('penis');
     }
 
     /**

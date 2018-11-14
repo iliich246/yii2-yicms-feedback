@@ -80,7 +80,7 @@ use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
 
     <?= InputFilesDevModalWidget::widget([
         'devInputFilesGroup' => $devInputFilesGroup,
-        'action'             => Url::toRoute(['/feedback/dev/stage-page-templates',
+        'action'             => Url::toRoute(['/feedback/dev/stage-input-templates',
             'id' => $feedbackStage->id])
     ]) ?>
 

@@ -32,22 +32,22 @@ $js = <<<JS
             .empty()
             .append('<img src="' + imageLoaderScr + '" style="text-align:center">');
     });
-    /*
+
     $(pjaxContainerName).on('pjax:success', function(event) {
 
-        var inputFieldTemplateHidden = $('#input-field-template-id-hidden');
+        var inputFileBlockHidden = $('#input-file-block-id-hidden');
 
-        if ($(inputFieldTemplateHidden).val())
-            $(addField).data('currentSelectedInputFieldTemplate', $(inputFieldTemplateHidden).val());
+        if ($(inputFileBlockHidden).val())
+            $(addInputFile).data('currentSelectedInputFileTemplate', $(inputFileBlockHidden).val());
 
-        var fieldForm = $('#create-update-input-fields');
+        var fileForm = $('#create-update-input-files');
 
-        if ($(fieldForm).data('saveAndExit')) {
-            $(pjaxFieldsModalName).modal('hide');
+        if ($(fileForm).data('saveAndExit')) {
+            $(pjaxFilesModalName).modal('hide');
 
             $.pjax({
-                url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
-                container: '#update-input-fields-list-container',
+                url: updateInputFilesListUrl + '?inputFileTemplateReference=' + inputFileTemplateReference,
+                container: '#update-input-files-list-container',
                 scrollTo: false,
                 push: false,
                 type: "POST",
@@ -57,40 +57,41 @@ $js = <<<JS
             return;
         }
 
-        var redirectToUpdate           = $(fieldForm).data('redirectToUpdateInputField');
-        var fieldTemplateIdForRedirect = $(fieldForm).data('inputFieldTemplateIdRedirect');
+        var redirectToUpdate          = $(fileForm).data('redirectToUpdateInputFile');
+        var fileTemplateIdForRedirect = $(fileForm).data('inputFileTemplateIdRedirect');
 
         if (redirectToUpdate) {
             $.pjax({
-                url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
-                container: '#update-input-fields-list-container',
+                url: updateInputFilesListUrl + '?inputFileTemplateReference=' + inputFileTemplateReference,
+                container: '#update-input-files-list-container',
                 scrollTo: false,
                 push: false,
                 type: "POST",
                 timeout: 2500
             });
 
-            redirectToUpdateNeedSecondPjaxRequest = fieldTemplateIdForRedirect;
+            console.log('there wrong');
+
+            redirectToUpdateNeedSecondPjaxRequest = fileTemplateIdForRedirect;
 
             return;
         }
 
         var isValidatorResponse = !!($('.validator-response').length);
 
-        if (isValidatorResponse) return loadModal($(addField).data('currentSelectedFieldTemplate'));
+        if (isValidatorResponse) return loadModal($(addInputFile).data('currentSelectedInputFileTemplate'));
 
         if (!$(event.target).find('form').is('[data-yicms-saved]')) return false;
 
         $.pjax({
-            url: updateInputFieldsListUrl + '?inputFieldTemplateReference=' + inputFieldTemplateReference,
-            container: '#update-input-fields-list-container',
+            url: updateInputFilesListUrl + '?inputFileTemplateReference=' + inputFileTemplateReference,
+            container: '#update-input-files-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
             timeout: 2500
         });
     });
-    */
 
     $('#update-input-files-list-container').on('pjax:success', function(event) {
         if (redirectToUpdateNeedSecondPjaxRequest) {
@@ -102,9 +103,9 @@ $js = <<<JS
     $(document).on('click', '.input-file-item p', function(event) {
         var inputFileBlock = $(this).data('input-file-block-id');
 
-        $(addInputFile).data('currentSelectedInputFileTemplate', inputFieldTemplate);
+        $(addInputFile).data('currentSelectedInputFileTemplate', inputFileBlock);
 
-        loadModal(inputFieldTemplate);
+        loadModal(inputFileBlock);
     });
 
     $(addInputFile).on('click', function() {
@@ -178,7 +179,7 @@ $this->registerJs($js, $this::POS_READY);
             <div class="col-xs-12">
                 <button class="btn btn-primary add-input-file"
                         data-toggle="modal"
-                        data-target="#<?= InputFilesDevModalWidget::getPjaxContainerId() ?>"
+                        data-target="#inputFilesDevModal"
                         data-input-file-template-reference="<?= $inputFileTemplateReference ?>"
                         data-home-url="<?= \yii\helpers\Url::base() ?>"
                         data-pjax-container-name="<?= InputFilesDevModalWidget::getPjaxContainerId() ?>"

@@ -7,6 +7,7 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -639,7 +640,7 @@ class DeveloperController extends Controller
         }
 
         $devInputFilesGroup = new DevInputFilesGroup();
-        $devInputFilesGroup->setInputFilesTemplateReference($feedbackStage->getInputFieldTemplateReference());
+        $devInputFilesGroup->setInputFilesTemplateReference($feedbackStage->getInputFileTemplateReference());
         $devInputFilesGroup->initialize(Yii::$app->request->post('_inputFileTemplateId'));
 
         //try to load validate and save field via pjax
@@ -649,13 +650,11 @@ class DeveloperController extends Controller
                 //TODO: bootbox error
             }
 
-            return FilesDevModalWidget::$devInputFilesGroup([
+            return InputFilesDevModalWidget::widget([
                 'devInputFilesGroup' => $devInputFilesGroup,
                 'dataSaved'          => true,
             ]);
         }
-
-
 
         $devImagesGroup = new DevImagesGroup();
         $devImagesGroup->setImagesTemplateReference($feedbackStage->getInputImageTemplateReference());
