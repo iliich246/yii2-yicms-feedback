@@ -70,8 +70,6 @@ $js = <<<JS
                 timeout: 2500
             });
 
-            console.log('there wrong');
-
             redirectToUpdateNeedSecondPjaxRequest = fileTemplateIdForRedirect;
 
             return;
@@ -79,7 +77,7 @@ $js = <<<JS
 
         var isValidatorResponse = !!($('.validator-response').length);
 
-        if (isValidatorResponse) return loadModal($(addInputFile).data('currentSelectedInputFileTemplate'));
+        if (isValidatorResponse) return loadModal($(addInputFile).data('currentSelectedInputFileBlock'));
 
         if (!$(event.target).find('form').is('[data-yicms-saved]')) return false;
 
@@ -103,7 +101,7 @@ $js = <<<JS
     $(document).on('click', '.input-file-item p', function(event) {
         var inputFileBlock = $(this).data('input-file-block-id');
 
-        $(addInputFile).data('currentSelectedInputFileTemplate', inputFileBlock);
+        $(addInputFile).data('currentSelectedInputFileBlock', inputFileBlock);
 
         loadModal(inputFileBlock);
     });
@@ -119,18 +117,10 @@ $js = <<<JS
         });
     });
 
-    $(document).on('click', '.input-file-item p', function(event) {
-        var inputFileTemplate = $(this).data('input-file-template-id');
-
-        $(addInputFile).data('currentSelectedInputFileTemplate', inputFileTemplate);
-
-        loadModal(inputFileTemplate);
-    });
-
     $(document).on('click', '.file-arrow-up', function() {
         $.pjax({
             url: inputFileBlockUpUrl + '?inputFileBlockId=' + $(this).data('inputFileBlockId'),
-            container: '#update-input-files-list-container',
+            container: '#input-files-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
@@ -141,7 +131,7 @@ $js = <<<JS
     $(document).on('click', '.file-arrow-down', function() {
         $.pjax({
             url: inputFileBlockDownUrl + '?inputFileBlockId=' + $(this).data('inputFileBlockId'),
-            container: '#update-input-files-list-container',
+            container: '#input-files-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
@@ -151,7 +141,7 @@ $js = <<<JS
 
     function loadModal(inputFileTemplate) {
         $.pjax({
-            url: loadModalUrl + '?inputFileTemplateId=' + inputFileTemplate,
+            url: loadModalUrl + '?inputFileBlockId=' + inputFileTemplate,
             container: pjaxContainerName,
             scrollTo: false,
             push: false,
@@ -168,6 +158,7 @@ $bundle = \Iliich246\YicmsCommon\Assets\DeveloperAsset::register($this);
 $src = $bundle->baseUrl . '/loader.svg';
 
 $this->registerJs($js, $this::POS_READY);
+
 ?>
 
 <div class="row content-block form-block">
@@ -185,7 +176,7 @@ $this->registerJs($js, $this::POS_READY);
                         data-pjax-container-name="<?= InputFilesDevModalWidget::getPjaxContainerId() ?>"
                         data-files-modal-name="<?= InputFilesDevModalWidget::getModalWindowName() ?>"
                         data-loader-image-src="<?= $src ?>"
-                        data-current-selected-input-file-template="null"
+                        data-current-selected-input-file-block="null"
                 >
                     <span class="glyphicon glyphicon-plus-sign"></span> Add new input file
                 </button>
@@ -205,8 +196,8 @@ $this->registerJs($js, $this::POS_READY);
                 <?php foreach ($inputFilesBlocks as $inputFilesBlock): ?>
                     <div class="row list-items input-file-item">
                         <div class="col-xs-10 list-title">
-                            <p data-input-file-template="<?= $inputFilesBlock->input_file_template_reference ?>"
-                               data-input-file-template-id="<?= $inputFilesBlock->id ?>"
+                            <p data-input-file-block="<?= $inputFilesBlock->input_file_template_reference ?>"
+                               data-input-file-block-id="<?= $inputFilesBlock->id ?>"
                             >
                                 <?= $inputFilesBlock->program_name ?>
                             </p>

@@ -44,9 +44,9 @@ else
             'id'      => InputFieldsDevModalWidget::getFormName(),
             'action'  => $widget->action,
             'options' => [
-                'data-pjax'                       => true,
-                'data-yicms-saved'                => $widget->dataSaved,
-                'data-save-and-exit'              => $widget->saveAndExit,
+                'data-pjax'                             => true,
+                'data-yicms-saved'                      => $widget->dataSaved,
+                'data-save-and-exit'                    => $widget->saveAndExit,
                 'data-redirect-to-update-input-field'   => $redirectToUpdate,
                 'data-input-field-template-id-redirect' => $inputFieldTemplateIdForRedirect
             ],

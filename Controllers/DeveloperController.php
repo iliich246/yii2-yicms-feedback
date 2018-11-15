@@ -641,7 +641,7 @@ class DeveloperController extends Controller
 
         $devInputFilesGroup = new DevInputFilesGroup();
         $devInputFilesGroup->setInputFilesTemplateReference($feedbackStage->getInputFileTemplateReference());
-        $devInputFilesGroup->initialize(Yii::$app->request->post('_inputFileTemplateId'));
+        $devInputFilesGroup->initialize(Yii::$app->request->post('_inputFilesBlockId'));
 
         //try to load validate and save field via pjax
         if ($devInputFilesGroup->load(Yii::$app->request->post()) && $devInputFilesGroup->validate()) {

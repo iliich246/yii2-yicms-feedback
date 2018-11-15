@@ -54,7 +54,7 @@ else
 
         <?php if ($widget->devInputFilesGroup->scenario == DevInputFilesGroup::SCENARIO_UPDATE): ?>
             <?= Html::hiddenInput('_inputFilesBlockId', $widget->devInputFilesGroup->inputFilesBlock->id, [
-                'id' => 'input-file-template-id-hidden'
+                'id' => 'input-file-block-id-hidden'
             ]) ?>
         <?php endif; ?>
 
@@ -100,7 +100,8 @@ else
                             <button type="button"
                                     class="btn btn-danger"
                                     id="field-delete"
-                                    data-input-file-block-reference="<?= $widget->devInputFilesGroup->inputFilesBlock->input_field_template_reference ?>"
+                                    data-input-file-block-reference="
+                                    <?= $widget->devInputFilesGroup->inputFilesBlock->input_file_template_reference ?>"
                                     data-input-file-block-id="<?= $widget->devInputFilesGroup->inputFilesBlock->id ?>"
                                     data-input-file-has-constraints="<?= (int)$widget->devInputFilesGroup->inputFilesBlock->isConstraints() ?>"
                             >
@@ -138,7 +139,7 @@ else
                         'ownerModalId'           => InputFilesDevModalWidget::getModalWindowName(),
                         'returnUrl'              => \yii\helpers\Url::toRoute([
                             '/feedback/dev-input-files/load-modal',
-                            'inputFilesBlockId' => $widget->devInputFilesGroup->inputFilesBlock->id,
+                            'inputFileBlockId' => $widget->devInputFilesGroup->inputFilesBlock->id,
                         ])
                     ]) ?>
 

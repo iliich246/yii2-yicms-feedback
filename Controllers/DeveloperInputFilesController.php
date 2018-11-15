@@ -47,7 +47,7 @@ class DeveloperInputFilesController extends Controller
             $devInputFileGroup->initialize($inputFileBlockId);
 
             return InputFilesDevModalWidget::widget([
-                'devInputFileGroup' => $devInputFileGroup
+                'devInputFilesGroup' => $devInputFileGroup
             ]);
         }
 
@@ -83,16 +83,18 @@ class DeveloperInputFilesController extends Controller
      */
     public function actionUpdateInputFilesListContainer($inputFileTemplateReference)
     {
+        //throw new \yii\base\Exception('There');
+
         if (Yii::$app->request->isPjax &&
             Yii::$app->request->post('_pjax') == '#update-input-files-list-container'
         ) {
-            $inputFileBlocks = InputFilesBlock::getListQuery($inputFileTemplateReference)
+            $inputFilesBlocks = InputFilesBlock::getListQuery($inputFileTemplateReference)
                 ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
                 ->all();
 
             return $this->render('/pjax/update-input-files-list-container', [
                 'inputFileTemplateReference' => $inputFileTemplateReference,
-                'inputFileTemplates'         => $inputFileBlocks,
+                'inputFilesBlocks'           => $inputFilesBlocks,
             ]);
         }
 
