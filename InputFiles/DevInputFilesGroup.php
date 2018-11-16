@@ -51,7 +51,7 @@ class DevInputFilesGroup extends AbstractGroup
             if (!$this->inputFilesBlock)  throw new FeedbackException("Wrong inputFilesBlockId = $inputFilesBlockId");
 
             $this->inputFilesBlock->scenario = InputFilesBlock::SCENARIO_UPDATE;
-            $this->scenario = self::SCENARIO_UPDATE;
+            $this->scenario                  = self::SCENARIO_UPDATE;
         }
 
         $languages = Language::getInstance()->usedLanguages();
