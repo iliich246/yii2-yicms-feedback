@@ -1,6 +1,7 @@
 <?php
 
 use yii\widgets\Pjax;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
 /** @var $this \yii\web\View */
 /** @var $inputConditionTemplateReference string */
@@ -40,10 +41,10 @@ $this->registerJs($js, $this::POS_READY);
                 </button>
             </div>
         </div>
-        <?php if (isset($inputFilesBlocks)): ?>
+        <?php if (isset($inputConditionTemplates)): ?>
             <?php Pjax::begin([
                 'options' => [
-                    'id' => 'update-input-files-list-container'
+                    'id' => 'update-input-conditions-list-container'
                 ]
             ]) ?>
 
@@ -51,31 +52,31 @@ $this->registerJs($js, $this::POS_READY);
                 <div class="row content-block-title">
 
                 </div>
-                <?php foreach ($inputFilesBlocks as $inputFilesBlock): ?>
+                <?php foreach ($inputConditionTemplates as $inputConditionsTemplate): ?>
                     <div class="row list-items input-file-item">
                         <div class="col-xs-10 list-title">
-                            <p data-input-file-block="<?= $inputFilesBlock->input_file_template_reference ?>"
-                               data-input-file-block-id="<?= $inputFilesBlock->id ?>"
+                            <p data-input-condition-template="<?= $inputConditionsTemplate->input_condition_template_reference ?>"
+                               data-input-condition-template-id="<?= $inputConditionsTemplate->id ?>"
                                 >
-                                <?= $inputFilesBlock->program_name ?>
+                                <?= $inputConditionsTemplate->program_name ?>
                             </p>
                         </div>
                         <div class="col-xs-2 list-controls">
-                            <?php if ($inputFilesBlock->visible): ?>
+                            <?php if ($inputConditionsTemplate->visible): ?>
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             <?php else: ?>
                                 <span class="glyphicon glyphicon-eye-close"></span>
                             <?php endif; ?>
-                            <?php if ($inputFilesBlock->editable): ?>
+                            <?php if ($inputConditionsTemplate->editable): ?>
                                 <span class="glyphicon glyphicon-pencil"></span>
                             <?php endif; ?>
-                            <?php if ($inputFilesBlock->canUpOrder()): ?>
+                            <?php if ($inputConditionsTemplate->canUpOrder()): ?>
                                 <span class="glyphicon file-arrow-up glyphicon-arrow-up"
-                                      data-input-file-block-id="<?= $inputFilesBlock->id ?>"></span>
+                                      data-input-condition-template-id="<?= $inputConditionsTemplate->id ?>"></span>
                             <?php endif; ?>
-                            <?php if ($inputFilesBlock->canDownOrder()): ?>
+                            <?php if ($inputConditionsTemplate->canDownOrder()): ?>
                                 <span class="glyphicon file-arrow-down glyphicon-arrow-down"
-                                      data-input-file-block-id="<?= $inputFilesBlock->id ?>"></span>
+                                      data-input-condition-template-id="<?= $inputConditionsTemplate->id ?>"></span>
                             <?php endif; ?>
                         </div>
                     </div>

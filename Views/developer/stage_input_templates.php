@@ -4,6 +4,8 @@ use yii\helpers\Url;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
+use Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
 /** @var $this \yii\web\View */
 /** @var $feedbackStage \Iliich246\YicmsFeedback\Base\FeedbackStages */
@@ -89,25 +91,20 @@ use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
         'inputImagesBlocks'           => $inputImagesBlocks,
     ]) ?>
 
-    <?= \Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget::widget([
+    <?= InputImagesDevModalWidget::widget([
         'devInputImagesGroup' => $devInputImagesGroup,
         'action'              => Url::toRoute(['/feedback/dev/stage-input-templates',
             'id' => $feedbackStage->id])
     ]) ?>
-
-
 
     <?= $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
         'inputConditionTemplateReference' => $feedbackStage->getInputConditionTemplateReference(),
         'inputConditionsTemplates'        => $inputConditionTemplates,
     ]) ?>
 
-    <?php /* ?>
-
-    <?= ConditionsDevModalWidget::widget([
-        'devConditionsGroup' => $devConditionsGroup,
+    <?= InputConditionsDevModalWidget::widget([
+        'devInputConditionsGroup' => $devInputConditionsGroup,
         'action' => Url::toRoute(['/feedback/dev/stage-page-templates',
             'id' => $feedbackStage->id])
     ]) ?>
- */ ?>
 </div>

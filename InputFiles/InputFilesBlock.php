@@ -225,7 +225,6 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
         return $this;
     }
 
-
     /**
      * @inheritdoc
      */

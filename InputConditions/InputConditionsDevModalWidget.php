@@ -14,7 +14,7 @@ use yii\bootstrap\Widget;
 class InputConditionsDevModalWidget extends Widget
 {
     /** @var DevInputConditionsGroup */
-    public $devInputFilesGroup;
+    public $devInputConditionsGroup;
     /** @var bool true means that widget initialized after success data save in DevInputConditionsGroup */
     public $dataSaved = false;
     /** @var string part of link for delete input condition template */
@@ -33,5 +33,42 @@ class InputConditionsDevModalWidget extends Widget
 
         if (Yii::$app->request->post('_saveAndExit'))
             $this->saveAndExit = 'true';
+    }
+
+    /**
+     * Returns name of form name of widget
+     * @return string
+     */
+    public static function getFormName()
+    {
+        return 'create-update-input-conditions';
+    }
+
+    /**
+     * Return name of modal window of widget
+     * @return string
+     */
+    public static function getModalWindowName()
+    {
+        return 'inputConditionsDevModal';
+    }
+
+    /**
+     * Returns name of pjax container for this widget
+     * @return string
+     */
+    public static function getPjaxContainerId()
+    {
+        return 'input-conditions-pjax-container';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function run()
+    {
+        return $this->render('input_conditions_dev_modal_widget', [
+            'widget' => $this
+        ]);
     }
 }
