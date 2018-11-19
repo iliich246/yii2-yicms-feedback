@@ -3,9 +3,9 @@
 use yii\widgets\Pjax;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
 
-/* @var $this \yii\web\View */
-/* @var $inputFileTemplateReference string */
-/* @var $inputFilesBlocks \Iliich246\YicmsFeedback\InputFiles\InputFilesBlock[] */
+/** @var $this \yii\web\View */
+/** @var $inputFileTemplateReference string */
+/** @var $inputFilesBlocks \Iliich246\YicmsFeedback\InputFiles\InputFilesBlock[] */
 
 $js = <<<JS
 ;(function() {
@@ -120,7 +120,7 @@ $js = <<<JS
     $(document).on('click', '.file-arrow-up', function() {
         $.pjax({
             url: inputFileBlockUpUrl + '?inputFileBlockId=' + $(this).data('inputFileBlockId'),
-            container: '#input-files-list-container',
+            container: '#update-input-files-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
@@ -131,7 +131,7 @@ $js = <<<JS
     $(document).on('click', '.file-arrow-down', function() {
         $.pjax({
             url: inputFileBlockDownUrl + '?inputFileBlockId=' + $(this).data('inputFileBlockId'),
-            container: '#input-files-list-container',
+            container: '#update-input-files-list-container',
             scrollTo: false,
             push: false,
             type: "POST",
@@ -212,11 +212,11 @@ $this->registerJs($js, $this::POS_READY);
                                 <span class="glyphicon glyphicon-pencil"></span>
                             <?php endif; ?>
                             <?php if ($inputFilesBlock->canUpOrder()): ?>
-                                <span class="glyphicon field-arrow-up glyphicon-arrow-up"
+                                <span class="glyphicon file-arrow-up glyphicon-arrow-up"
                                       data-input-file-block-id="<?= $inputFilesBlock->id ?>"></span>
                             <?php endif; ?>
                             <?php if ($inputFilesBlock->canDownOrder()): ?>
-                                <span class="glyphicon field-arrow-down glyphicon-arrow-down"
+                                <span class="glyphicon file-arrow-down glyphicon-arrow-down"
                                       data-input-file-block-id="<?= $inputFilesBlock->id ?>"></span>
                             <?php endif; ?>
                         </div>

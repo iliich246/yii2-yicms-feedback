@@ -40,7 +40,7 @@ class FeedbackModule extends AbstractConfigurableModule implements
         'dev'                   => 'Iliich246\YicmsFeedback\Controllers\DeveloperController',
         'dev-input-fields'      => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputFieldsController',
         'dev-input-files'       => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputFilesController',
-        'dev-input-images'      => 'Iliich246\YicmsFeedback\Controllers\DeveloperImagesController',
+        'dev-input-images'      => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputImagesController',
         'dev-input-conditions'  => 'Iliich246\YicmsFeedback\Controllers\DeveloperConditionsController',
     ];
 

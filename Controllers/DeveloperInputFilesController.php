@@ -83,8 +83,6 @@ class DeveloperInputFilesController extends Controller
      */
     public function actionUpdateInputFilesListContainer($inputFileTemplateReference)
     {
-        //throw new \yii\base\Exception('There');
-
         if (Yii::$app->request->isPjax &&
             Yii::$app->request->post('_pjax') == '#update-input-files-list-container'
         ) {
@@ -98,7 +96,7 @@ class DeveloperInputFilesController extends Controller
             ]);
         }
 
-        throw new BadRequestHttpException('penis');
+        throw new BadRequestHttpException();
     }
 
     /**
@@ -115,17 +113,17 @@ class DeveloperInputFilesController extends Controller
         /** @var InputFilesBlock $inputFileBlock */
         $inputFileBlock = InputFilesBlock::getInstanceById($inputFileBlockId);
 
-        if (!$inputFileBlock) throw new NotFoundHttpException('Wrong inputFieldTemplateId');
+        if (!$inputFileBlock) throw new NotFoundHttpException('Wrong inputFileBlockId');
 
         $inputFileBlock->upOrder();
 
-        $inputFileBlocks = InputFilesBlock::getListQuery($inputFileBlock->input_file_template_reference)
+        $inputFilesBlocks = InputFilesBlock::getListQuery($inputFileBlock->input_file_template_reference)
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
         return $this->render('/pjax/update-input-files-list-container', [
             'inputFileTemplateReference' => $inputFileBlock->input_file_template_reference,
-            'inputFileTemplates'         => $inputFileBlocks,
+            'inputFilesBlocks'           => $inputFilesBlocks,
         ]);
     }
 
@@ -147,14 +145,13 @@ class DeveloperInputFilesController extends Controller
 
         $inputFileBlock->downOrder();
 
-        $inputFileBlocks = InputFilesBlock::getListQuery($inputFileBlock->input_file_template_reference)
+        $inputFilesBlocks = InputFilesBlock::getListQuery($inputFileBlock->input_file_template_reference)
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
         return $this->render('/pjax/update-input-files-list-container', [
             'inputFileTemplateReference' => $inputFileBlock->input_file_template_reference,
-            'inputFileTemplates'         => $inputFileBlocks,
+            'inputFilesBlocks'           => $inputFilesBlocks,
         ]);
     }
-
 }

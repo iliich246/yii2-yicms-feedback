@@ -96,7 +96,7 @@ else
                         <div class="col-xs-12">
                             <br>
 
-                            <p>IMPORTANT! Do not delete input fields without serious reason!</p>
+                            <p>IMPORTANT! Do not delete input file blocks without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
                                     id="field-delete"

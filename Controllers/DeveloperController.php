@@ -2,12 +2,17 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
 use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
 use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
+use Iliich246\YicmsFeedback\InputImages\DevInputImagesGroup;
+use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
+use Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -656,37 +661,36 @@ class DeveloperController extends Controller
             ]);
         }
 
-        $devImagesGroup = new DevImagesGroup();
-        $devImagesGroup->setImagesTemplateReference($feedbackStage->getInputImageTemplateReference());
-        $devImagesGroup->initialize(Yii::$app->request->post('_imageTemplateId'));
+        $devInputImagesGroup = new DevInputImagesGroup();
+        $devInputImagesGroup->setInputImagesTemplateReference($feedbackStage->getInputImageTemplateReference());
+        $devInputImagesGroup->initialize(Yii::$app->request->post('_inputImageBlockId'));
 
         //try to load validate and save image block via pjax
-        if ($devImagesGroup->load(Yii::$app->request->post()) && $devImagesGroup->validate()) {
-
-            if (!$devImagesGroup->save()) {
+        if ($devInputImagesGroup->load(Yii::$app->request->post()) && $devInputImagesGroup->validate()) {
+            if (!$devInputImagesGroup->save()) {
                 //TODO: bootbox error
             }
 
-            return ImagesDevModalWidget::widget([
-                'devImagesGroup' => $devImagesGroup,
-                'dataSaved'      => true,
+            return InputImagesDevModalWidget::widget([
+                'devInputImagesGroup' => $devInputImagesGroup,
+                'dataSaved'           => true,
             ]);
         }
 
-        $devConditionsGroup = new DevConditionsGroup();
-        $devConditionsGroup->setConditionsTemplateReference($feedbackStage->getInputConditionTemplateReference());
-        $devConditionsGroup->initialize(Yii::$app->request->post('_conditionTemplateId'));
+        $devInputConditionsGroup = new DevInputConditionsGroup();
+        $devInputConditionsGroup->setInputConditionsTemplateReference($feedbackStage->getInputConditionTemplateReference());
+        $devInputConditionsGroup->initialize(Yii::$app->request->post('_inputConditionTemplateId'));
 
         //try to load validate and save image block via pjax
-        if ($devConditionsGroup->load(Yii::$app->request->post()) && $devConditionsGroup->validate()) {
+        if ($devInputConditionsGroup->load(Yii::$app->request->post()) && $devInputConditionsGroup->validate()) {
 
-            if (!$devConditionsGroup->save()) {
+            if (!$devInputConditionsGroup->save()) {
                 //TODO: bootbox error
             }
 
             return ConditionsDevModalWidget::widget([
-                'devConditionsGroup' => $devConditionsGroup,
-                'dataSaved'          => true,
+                'devInputConditionsGroup' => $devInputConditionsGroup,
+                'dataSaved'               => true,
             ]);
         }
 
@@ -698,24 +702,23 @@ class DeveloperController extends Controller
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $imagesBlocks = ImagesBlock::getListQuery($feedbackStage->getInputImageTemplateReference())
-            ->orderBy([ImagesBlock::getOrderFieldName() => SORT_ASC])
+        $inputImagesBlocks = InputImagesBlock::getListQuery($feedbackStage->getInputImageTemplateReference())
+            ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $conditionTemplates = ConditionTemplate::getListQuery($feedbackStage->getInputConditionTemplateReference())
-            ->orderBy([ConditionTemplate::getOrderFieldName() => SORT_ASC])
+        $inputConditionTemplates = InputConditionTemplate::getListQuery($feedbackStage->getInputConditionTemplateReference())
+            ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
         return $this->render('/developer/stage_input_templates', [
-            'feedbackStage'             => $feedbackStage,
-            'devInputFieldGroup'        => $devInputFieldGroup,
-            'inputFieldTemplates'       => $inputFieldTemplates,
-            'devInputFilesGroup'        => $devInputFilesGroup,
-            'inputFilesBlocks'          => $inputFilesBlocks,
-            'devImagesGroup'             => $devImagesGroup,
-            'imagesBlocks'               => $imagesBlocks,
-            'devConditionsGroup'         => $devConditionsGroup,
-            'conditionTemplates'         => $conditionTemplates
+            'feedbackStage'           => $feedbackStage,
+            'devInputFieldGroup'      => $devInputFieldGroup,
+            'inputFieldTemplates'     => $inputFieldTemplates,
+            'devInputFilesGroup'      => $devInputFilesGroup,
+            'inputFilesBlocks'        => $inputFilesBlocks,
+            'devInputImagesGroup'     => $devInputImagesGroup,
+            'inputImagesBlocks'       => $inputImagesBlocks,
+            'devInputConditionsGroup' => $devInputConditionsGroup,
+            'inputConditionTemplates' => $inputConditionTemplates
         ]);
-    }
-}
+    }}

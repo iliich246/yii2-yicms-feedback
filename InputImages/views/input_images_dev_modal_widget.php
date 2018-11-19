@@ -53,7 +53,7 @@ else
         ?>
 
         <?php if ($widget->devInputImagesGroup->scenario == DevInputImagesGroup::SCENARIO_UPDATE): ?>
-            <?= Html::hiddenInput('_inputImagesBlockId', $widget->devInputImagesGroup->inputImagesBlock->id, [
+            <?= Html::hiddenInput('_inputImageBlockId', $widget->devInputImagesGroup->inputImagesBlock->id, [
                 'id' => 'input-image-block-id-hidden'
             ]) ?>
         <?php endif; ?>
@@ -72,8 +72,11 @@ else
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-12 col-xs-12">
+                    <div class="col-sm-6 col-xs-12">
                         <?= $form->field($widget->devInputImagesGroup->inputImagesBlock, 'program_name') ?>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <?= $form->field($widget->devInputImagesGroup->inputImagesBlock, 'max_images') ?>
                     </div>
                 </div>
                 <div class="row">
@@ -96,11 +99,11 @@ else
                         <div class="col-xs-12">
                             <br>
 
-                            <p>IMPORTANT! Do not delete input fields without serious reason!</p>
+                            <p>IMPORTANT! Do not delete input images without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
                                     id="field-delete"
-                                    data-input-image-block-reference="<?= $widget->devInputImagesGroup->inputImagesBlock->input_field_template_reference ?>"
+                                    data-input-image-block-reference="<?= $widget->devInputImagesGroup->inputImagesBlock->input_image_template_reference ?>"
                                     data-input-image-block-id="<?= $widget->devInputImagesGroup->inputImagesBlock->id ?>"
                                     data-input-image-has-constraints="<?= (int)$widget->devInputImagesGroup->inputImagesBlock->isConstraints() ?>"
                             >
@@ -134,8 +137,8 @@ else
 
                     <?= ValidatorsListWidget::widget([
                         'validatorReference'     => $widget->devInputImagesGroup->inputImagesBlock,
-                        'ownerPjaxContainerName' => InputFilesDevModalWidget::getPjaxContainerId(),
-                        'ownerModalId'           => InputFilesDevModalWidget::getModalWindowName(),
+                        'ownerPjaxContainerName' => InputImagesDevModalWidget::getPjaxContainerId(),
+                        'ownerModalId'           => InputImagesDevModalWidget::getModalWindowName(),
                         'returnUrl'              => \yii\helpers\Url::toRoute([
                             '/feedback/dev-input-images/load-modal',
                             'inputImagesBlockId' => $widget->devInputImagesGroup->inputImagesBlock->id,

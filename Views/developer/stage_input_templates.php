@@ -11,10 +11,10 @@ use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
 /** @var $inputFieldTemplates InputFieldTemplate[] */
 /** @var $inputFilesBlocks \Iliich246\YicmsFeedback\InputFiles\InputFilesBlock[] */
 /** @var $devInputFilesGroup \Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup */
-/** @var $imagesBlocks \Iliich246\YicmsCommon\Images\ImagesBlock[] */
-/** @var $devImagesGroup \Iliich246\YicmsCommon\Images\DevImagesGroup */
-/** @var $devConditionsGroup Iliich246\YicmsCommon\Conditions\DevConditionsGroup */
-/** @var $conditionTemplates Iliich246\YicmsCommon\Conditions\ConditionTemplate[] */
+/** @var $inputImagesBlocks \Iliich246\YicmsFeedback\InputImages\InputImagesBlock[] */
+/** @var $devInputImagesGroup \Iliich246\YicmsFeedback\InputImages\DevInputImagesGroup */
+/** @var $devInputConditionsGroup \Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup */
+/** @var $inputConditionTemplates \Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate[] */
 /** @var $success bool */
 
 ?>
@@ -84,22 +84,25 @@ use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
             'id' => $feedbackStage->id])
     ]) ?>
 
-    <?php /* ?>
-    <?= $this->render('@yicms-common/Views/pjax/update-images-list-container', [
-        'imageTemplateReference' => $feedbackStage->getInputImageTemplateReference(),
-        'imagesBlocks'           => $imagesBlocks,
+    <?= $this->render('@yicms-feedback/Views/pjax/update-input-images-list-container', [
+        'inputImageTemplateReference' => $feedbackStage->getInputImageTemplateReference(),
+        'inputImagesBlocks'           => $inputImagesBlocks,
     ]) ?>
 
-    <?= ImagesDevModalWidget::widget([
-        'devImagesGroup' => $devImagesGroup,
-        'action' => Url::toRoute(['/feedback/dev/stage-page-templates',
+    <?= \Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget::widget([
+        'devInputImagesGroup' => $devInputImagesGroup,
+        'action'              => Url::toRoute(['/feedback/dev/stage-input-templates',
             'id' => $feedbackStage->id])
     ]) ?>
 
-    <?= $this->render('@yicms-common/Views/pjax/update-conditions-list-container', [
-        'conditionTemplateReference' => $feedbackStage->getInputConditionTemplateReference(),
-        'conditionsTemplates'        => $conditionTemplates,
+
+
+    <?= $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
+        'inputConditionTemplateReference' => $feedbackStage->getInputConditionTemplateReference(),
+        'inputConditionsTemplates'        => $inputConditionTemplates,
     ]) ?>
+
+    <?php /* ?>
 
     <?= ConditionsDevModalWidget::widget([
         'devConditionsGroup' => $devConditionsGroup,
