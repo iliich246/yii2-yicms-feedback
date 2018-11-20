@@ -3,7 +3,6 @@
 namespace Iliich246\YicmsFeedback\InputFields;
 
 use Iliich246\YicmsCommon\Base\AbstractTemplate;
-use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 

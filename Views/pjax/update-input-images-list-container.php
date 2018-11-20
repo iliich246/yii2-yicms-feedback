@@ -189,10 +189,7 @@ $this->registerJs($js, $this::POS_READY);
                     'id' => 'update-input-images-list-container'
                 ]
             ]) ?>
-            adfafd
-            <pre>
-            <?php print_r($inputImagesBlocks)?>
-        </pre>
+
             <div class="list-block">
                 <div class="row content-block-title">
 

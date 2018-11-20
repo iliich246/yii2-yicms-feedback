@@ -79,8 +79,9 @@ class DeveloperInputConditionsController extends Controller
      * @param $inputConditionTemplateReference
      * @return string
      * @throws BadRequestHttpException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
-    public function actionUpdateConditionImagesListContainer($inputConditionTemplateReference)
+    public function actionUpdateInputConditionsListContainer($inputConditionTemplateReference)
     {
         if (Yii::$app->request->isPjax &&
             Yii::$app->request->post('_pjax') == '#update-input-conditions-list-container'
@@ -91,7 +92,7 @@ class DeveloperInputConditionsController extends Controller
 
             return $this->render('/pjax/update-input-conditions-list-container', [
                 'inputConditionTemplateReference' => $inputConditionTemplateReference,
-                'inputConditionsTemplates'        => $inputConditionsTemplates,
+                'inputConditionTemplates'        => $inputConditionsTemplates,
             ]);
         }
 
@@ -104,6 +105,7 @@ class DeveloperInputConditionsController extends Controller
      * @return string
      * @throws BadRequestHttpException
      * @throws NotFoundHttpException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function actionInputConditionsTemplateUpOrder($inputConditionTemplateId)
     {
@@ -132,6 +134,7 @@ class DeveloperInputConditionsController extends Controller
      * @return string
      * @throws BadRequestHttpException
      * @throws NotFoundHttpException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function actionInputConditionsTemplateDownOrder($inputConditionTemplateId)
     {

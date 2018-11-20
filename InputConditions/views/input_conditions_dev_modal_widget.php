@@ -136,11 +136,11 @@ else
 
                     <?= ValidatorsListWidget::widget([
                         'validatorReference'     => $widget->devInputConditionsGroup->inputConditionTemplate,
-                        'ownerPjaxContainerName' => InputFilesDevModalWidget::getPjaxContainerId(),
-                        'ownerModalId'           => InputFilesDevModalWidget::getModalWindowName(),
+                        'ownerPjaxContainerName' => InputConditionsDevModalWidget::getPjaxContainerId(),
+                        'ownerModalId'           => InputConditionsDevModalWidget::getModalWindowName(),
                         'returnUrl'              => \yii\helpers\Url::toRoute([
                             '/feedback/dev-input-conditions/load-modal',
-                            'inputFileBlockId' => $widget->devInputConditionsGroup->inputConditionTemplate->id,
+                            'inputConditionTemplateId' => $widget->devInputConditionsGroup->inputConditionTemplate->id,
                         ])
                     ]) ?>
 

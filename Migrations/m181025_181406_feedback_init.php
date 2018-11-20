@@ -429,6 +429,7 @@ class m181025_181406_feedback_init extends Migration
         $this->createTable('{{%feedback_input_conditions_templates}}', [
             'id'                                 => $this->primaryKey(),
             'input_condition_template_reference' => $this->string(),
+            'validator_reference'                => $this->string(),
             'program_name'                       => $this->string(50),
             'input_condition_order'              => $this->integer(),
             'editable'                           => $this->boolean(),

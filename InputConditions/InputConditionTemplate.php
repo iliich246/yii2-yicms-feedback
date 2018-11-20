@@ -3,18 +3,21 @@
 namespace Iliich246\YicmsFeedback\InputConditions;
 
 use Iliich246\YicmsCommon\Base\AbstractTemplate;
+use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
+use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 
 /**
  * Class InputConditionTemplate
  *
  * @property string $input_condition_template_reference
+ * @property string $validator_reference
  * @property integer $input_condition_order
  * @property bool $editable
  * @property bool $visible
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputConditionTemplate extends AbstractTemplate
+class InputConditionTemplate extends AbstractTemplate implements ValidatorReferenceInterface
 {
     /** @inheritdoc */
     protected static $buffer = [];
@@ -154,5 +157,21 @@ class InputConditionTemplate extends AbstractTemplate
     protected static function getTemplateReferenceName()
     {
         return 'input_condition_template_reference';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \yii\base\Exception
+     */
+    public function getValidatorReference()
+    {
+        if (!$this->validator_reference) {
+            $this->validator_reference = ValidatorBuilder::generateValidatorReference();
+            $this->scenario = self::SCENARIO_UPDATE;
+            $this->save(false);
+        }
+
+        return $this->validator_reference;
     }
 }
