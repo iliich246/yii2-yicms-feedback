@@ -2,17 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
-use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
-use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
-use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
-use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
-use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
-use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
-use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
-use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
-use Iliich246\YicmsFeedback\InputImages\DevInputImagesGroup;
-use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
-use Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -38,6 +27,18 @@ use Iliich246\YicmsFeedback\Base\FeedbackStages;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Iliich246\YicmsFeedback\Base\FeedbackDevTranslateForm;
 use Iliich246\YicmsFeedback\Base\FeedbackStagesDevTranslateForm;
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
+use Iliich246\YicmsFeedback\InputFields\DevInputFieldsGroup;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
+use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
+use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
+use Iliich246\YicmsFeedback\InputImages\DevInputImagesGroup;
+use Iliich246\YicmsFeedback\InputImages\InputImagesDevModalWidget;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
+use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
 /**
  * Class DeveloperController
@@ -688,7 +689,7 @@ class DeveloperController extends Controller
                 //TODO: bootbox error
             }
 
-            return ConditionsDevModalWidget::widget([
+            return InputConditionsDevModalWidget::widget([
                 'devInputConditionsGroup' => $devInputConditionsGroup,
                 'dataSaved'               => true,
             ]);

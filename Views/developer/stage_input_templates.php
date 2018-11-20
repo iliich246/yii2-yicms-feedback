@@ -99,7 +99,7 @@ use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
     <?= $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
         'inputConditionTemplateReference' => $feedbackStage->getInputConditionTemplateReference(),
-        'inputConditionsTemplates'        => $inputConditionTemplates,
+        'inputConditionTemplates'         => $inputConditionTemplates,
     ]) ?>
 
     <?= InputConditionsDevModalWidget::widget([

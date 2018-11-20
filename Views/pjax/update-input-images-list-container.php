@@ -182,13 +182,17 @@ $this->registerJs($js, $this::POS_READY);
                 </button>
             </div>
         </div>
+
         <?php if (isset($inputImagesBlocks)): ?>
             <?php Pjax::begin([
                 'options' => [
                     'id' => 'update-input-images-list-container'
                 ]
             ]) ?>
-
+            adfafd
+            <pre>
+            <?php print_r($inputImagesBlocks)?>
+        </pre>
             <div class="list-block">
                 <div class="row content-block-title">
 

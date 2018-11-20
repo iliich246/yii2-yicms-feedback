@@ -109,19 +109,19 @@ class DeveloperInputImagesController extends Controller
     {
         if (!Yii::$app->request->isPjax) throw new BadRequestHttpException('Not Pjax');
 
-        /** @var InputImagesBlock $inputImageBlocks */
-        $inputImageBlocks = InputImagesBlock::getInstanceById($inputImageBlockId);
+        /** @var InputImagesBlock $inputImageBlock */
+        $inputImageBlock = InputImagesBlock::getInstanceById($inputImageBlockId);
 
-        if (!$inputImageBlocks) throw new NotFoundHttpException('Wrong inputImageBlockId');
+        if (!$inputImageBlock) throw new NotFoundHttpException('Wrong inputImageBlockId');
 
-        $inputImageBlocks->upOrder();
+        $inputImageBlock->upOrder();
 
-        $inputImagesBlocks = InputImagesBlock::getListQuery($inputImageBlocks->input_image_template_reference)
+        $inputImagesBlocks = InputImagesBlock::getListQuery($inputImageBlock->input_image_template_reference)
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
         return $this->render('/pjax/update-input-images-list-container', [
-            'inputImageTemplateReference' => $inputImageBlocks->input_image_template_reference,
+            'inputImageTemplateReference' => $inputImageBlock->input_image_template_reference,
             'inputImagesBlocks'           => $inputImagesBlocks,
         ]);
     }
@@ -137,19 +137,19 @@ class DeveloperInputImagesController extends Controller
     {
         if (!Yii::$app->request->isPjax) throw new BadRequestHttpException('Not Pjax');
 
-        /** @var InputImagesBlock $inputImageBlocks */
-        $inputImageBlocks = InputImagesBlock::getInstanceById($inputImageBlockId);
+        /** @var InputImagesBlock $inputImageBlock */
+        $inputImageBlock = InputImagesBlock::getInstanceById($inputImageBlockId);
 
-        if (!$inputImageBlocks) throw new NotFoundHttpException('Wrong inputImageBlockId');
+        if (!$inputImageBlock) throw new NotFoundHttpException('Wrong inputImageBlockId');
 
-        $inputImageBlocks->downOrder();
+        $inputImageBlock->downOrder();
 
-        $inputImagesBlocks = InputImagesBlock::getListQuery($inputImageBlocks->input_image_template_reference)
+        $inputImagesBlocks = InputImagesBlock::getListQuery($inputImageBlock->input_image_template_reference)
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
         return $this->render('/pjax/update-input-images-list-container', [
-            'inputImageTemplateReference' => $inputImageBlocks->input_image_template_reference,
+            'inputImageTemplateReference' => $inputImageBlock->input_image_template_reference,
             'inputImagesBlocks'           => $inputImagesBlocks,
         ]);
     }
