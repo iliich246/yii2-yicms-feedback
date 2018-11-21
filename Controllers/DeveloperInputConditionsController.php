@@ -122,9 +122,9 @@ class DeveloperInputConditionsController extends Controller
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-images-list-container', [
+        return $this->render('/pjax/update-input-conditions-list-container', [
             'inputConditionTemplateReference' => $inputConditionsTemplate->input_condition_template_reference,
-            'inputConditionsTemplates'        => $inputConditionsTemplates,
+            'inputConditionTemplates'         => $inputConditionsTemplates,
         ]);
     }
 
@@ -151,9 +151,9 @@ class DeveloperInputConditionsController extends Controller
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-images-list-container', [
+        return $this->render('/pjax/update-input-conditions-list-container', [
             'inputConditionTemplateReference' => $inputConditionsTemplate->input_condition_template_reference,
-            'inputConditionsTemplates'        => $inputConditionsTemplates,
+            'inputConditionTemplates'         => $inputConditionsTemplates,
         ]);
     }
 }
