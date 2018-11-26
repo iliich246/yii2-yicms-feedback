@@ -134,6 +134,18 @@ else
 
                     <hr>
 
+                    <p class="btn btn-primary input-condition-data-list"
+                       data-input-condition-template-id="<?= $widget->devInputConditionsGroup->inputConditionTemplate->id ?>"
+                       data-return-url-conditions-list="<?= \yii\helpers\Url::toRoute([
+                           '/feedback/dev-input-conditions/load-modal',
+                           'inputConditionTemplateId' => $widget->devInputConditionsGroup->inputConditionTemplate->id,
+                       ]) ?>"
+                        >
+                        Config input condition options
+                    </p>
+
+                    <hr>
+
                     <?= ValidatorsListWidget::widget([
                         'validatorReference'     => $widget->devInputConditionsGroup->inputConditionTemplate,
                         'ownerPjaxContainerName' => InputConditionsDevModalWidget::getPjaxContainerId(),

@@ -18,6 +18,7 @@ $js = <<<JS
     var updateInputConditionsListUrl    = homeUrl + '/feedback/dev-input-conditions/update-input-conditions-list-container';
     var inputConditionTemplateUpUrl     = homeUrl + '/feedback/dev-input-conditions/input-conditions-template-up-order';
     var inputConditionTemplateDownUrl   = homeUrl + '/feedback/dev-input-conditions/input-conditions-template-down-order';
+    var inputConditionDataList          = homeUrl + '/feedback/dev-input-conditions/input-condition-values-list';
 
     var inputConditionTemplateReference = $(addInputCondition).data('inputConditionTemplateReference');
     var pjaxContainerName               = '#' + $(addInputCondition).data('pjaxContainerName');
@@ -132,6 +133,21 @@ $js = <<<JS
         $.pjax({
             url: inputConditionTemplateDownUrl + '?inputConditionTemplateId=' + $(this).data('inputConditionTemplateId'),
             container: '#update-input-conditions-list-container',
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500
+        });
+    });
+
+    $(document).on('click', '.input-condition-data-list', function() {
+        var inputConditionTemplateId = $(this).data('inputConditionTemplateId');
+
+        $('#input-conditions-pjax-container').data('returnUrlConditionsList', $(this).data('returnUrlConditionsList'));
+
+        $.pjax({
+            url: inputConditionDataList + '?inputConditionTemplateId=' + $(this).data('inputConditionTemplateId'),
+            container: pjaxContainerName,
             scrollTo: false,
             push: false,
             type: "POST",
