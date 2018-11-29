@@ -78,9 +78,10 @@ class InputConditionValues extends ActiveRecord implements SortOrderInterface
      * Fetch InputConditionTemplate from db
      * @return InputConditionTemplate
      */
-    public function getConditionTemplate()
+    public function getInputConditionTemplate()
     {
-        return InputConditionTemplate::getInstanceById($this->input_condition_template_template_id);
+        return $this->inputConditionTemplate =
+            InputConditionTemplate::getInstanceById($this->input_condition_template_template_id);
     }
 
     /**
