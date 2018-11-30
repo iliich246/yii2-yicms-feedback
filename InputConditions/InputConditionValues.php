@@ -149,7 +149,7 @@ class InputConditionValues extends ActiveRecord implements SortOrderInterface
 
             /** @var self $other */
             foreach(self::find()->where([
-                'common_condition_template_id' => $this->input_condition_template_template_id
+                'input_condition_template_template_id' => $this->input_condition_template_template_id
             ])->all() as $other) {
                 if (!$other->is_default) continue;
 

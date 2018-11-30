@@ -12,7 +12,135 @@ use Iliich246\YicmsCommon\Widgets\SimpleTabsTranslatesWidget;
 
 $js = <<<JS
 ;(function() {
+    var conditionValueModal = $('.condition-create-update-input-value-modal');
+    var deleteButton        = $('#condition-input-value-delete');
+    var backButton          = $('.input-condition-create-update-value-back');
+    
+    var pjaxContainer   = $(conditionValueModal).parent('.pjax-container');
+    var pjaxContainerId = '#' + $(pjaxContainer).attr('id');
+    
+    var homeUrl           = $(conditionValueModal).data('homeUrl');
+    var returnUrl         = $(pjaxContainer).data('returnUrlInputConditionsValue');
+    var redirectUpdateUrl = $(conditionValueModal).data('redirectUpdateUrl');
+    var deleteUrl         = homeUrl + '/feedback/dev-input-conditions/delete-input-condition-value';
+        
+    var isReturn         = $(conditionValueModal).data('returnBack');
+    var isRedirectUpdate = $(conditionValueModal).data('redirectUpdate');   
 
+    if (isReturn) return goBack();
+
+    if (isRedirectUpdate) return redirectUpdate(); 
+            
+    $(backButton).on('click', function(){
+        goBack();
+    });    
+            
+    function goBack() {
+        $.pjax({
+            url: returnUrl,
+            container: pjaxContainerId,
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500,
+        });
+    }  
+              
+    function redirectUpdate() {
+        $.pjax({
+            url: redirectUpdateUrl,
+            container: pjaxContainerId,
+            scrollTo: false,
+            push: false,
+            type: "POST",
+            timeout: 2500,
+        });
+    }  
+                
+$(deleteButton).on('click',  function() {
+
+        var button = ('#condition-input-value-delete');
+
+        if (!$(button).is('[data-input-condition-value-id]')) return;
+
+        var inputConditionValueId        = $(button).data('inputConditionValueId');
+        var inputConditionHasConstraints = $(button).data('inputConditionValueHasConstraints');
+
+        if (!($(this).hasClass('input-condition-value-confirm-state'))) {
+            $(this).before('<span>Are you sure? </span>');
+            $(this).text('Yes, I`am sure!');
+            $(this).addClass('input-condition-value-confirm-state');
+        } else {
+            if (!inputConditionHasConstraints) {
+                $.pjax({
+                    url: deleteUrl + '?inputConditionValueId=' + inputConditionValueId,
+                    container: pjaxContainerId,
+                    scrollTo: false,
+                    push: false,
+                    type: "POST",
+                    timeout: 2500
+                });
+
+                var deleteActive = true;
+
+                $(pjaxContainer).on('pjax:success', function(event) {
+
+                    if (!deleteActive) return false;
+
+                    deleteActive = false;
+                });
+            } else {
+                var deleteButtonRow = $('.delete-button-row');
+
+                var template = _.template($('#delete-with-pass-template').html());
+                $(deleteButtonRow).empty();
+                $(deleteButtonRow).append(template);
+
+                var passwordInput = $('#condition-value-delete-password-input');
+                var buttonDelete  = $('#button-delete-with-pass');
+
+                $(buttonDelete).on('click', function() {
+                    $.pjax({
+                        url: deleteUrl + '?inputConditionValueId=' + inputConditionValueId +
+                                         '&deletePass=' + $(passwordInput).val(),
+                        container: pjaxContainerId,
+                        scrollTo: false,
+                        push: false,
+                        type: "POST",
+                        timeout: 2500
+                    });
+
+                    var deleteActive = true;
+
+                    //$(pjaxContainer).on('pjax:success', function(event) {
+                    //
+                    //    if (!deleteActive) return false;
+                    //
+                    //    $('#conditionsDevModal').modal('hide');
+                    //    deleteActive = false;
+                    //});
+
+                    $(pjaxContainer).on('pjax:error', function(event) {
+
+                        $('#inputConditionsDevModal').modal('hide');
+
+                        bootbox.alert({
+                            size: 'large',
+                            title: "Wrong dev password",
+                            message: "Condition value has not deleted",
+                            className: 'bootbox-error'
+                        });
+                    });
+                });
+
+//                $('#{modalName}').on('hide.bs.modal', function() {
+//                    $(pjaxContainer).off('pjax:error');
+//                    $(pjaxContainer).off('pjax:success');
+//                    $('#{modalName}').off('hide.bs.modal');
+//                });
+            }
+        }
+    });                
 })();
 JS;
 
@@ -49,7 +177,7 @@ $inputConditionValue->isNewRecord ? $inputConditionValueId = '0' : $inputConditi
             <?php else: ?>
                 Update input condition value
             <?php endif; ?>
-            <span class="glyphicon glyphicon-arrow-left condition-create-update-value-back"
+            <span class="glyphicon glyphicon-arrow-left input-condition-create-update-value-back"
                   style="float: right;margin-right: 20px"></span>
         </h3>
     </div>

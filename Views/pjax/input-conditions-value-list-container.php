@@ -94,7 +94,7 @@ $this->registerJs($js);
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 class="modal-title">
             Input conditions data list
-            <span class="glyphicon glyphicon-arrow-left condition-values-list-back"
+            <span class="glyphicon glyphicon-arrow-left input-condition-values-list-back"
                   style="float: right;margin-right: 20px"></span>
         </h3>
         <?php /*if ($inputConditionTemplate->type == \Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate::TYPE_CHECKBOX): ?>
