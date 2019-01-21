@@ -18,6 +18,9 @@ use Iliich246\YicmsCommon\Languages\LanguagesDb;
  */
 class FeedbackNamesTranslatesDb extends ActiveRecord
 {
+    /** @var array buffer of translates in view $buffer[<feedback-id>][<language-id>] */
+    private static $buffer;
+
     /**
      * @inheritdoc
      */
@@ -37,5 +40,24 @@ class FeedbackNamesTranslatesDb extends ActiveRecord
             [['common_language_id'], 'exist', 'skipOnError' => true, 'targetClass' => LanguagesDb::className(), 'targetAttribute' => ['common_language_id' => 'id']],
             [['feedback_id'], 'exist', 'skipOnError' => true, 'targetClass' => Feedback::className(), 'targetAttribute' => ['feedback_id' => 'id']],
         ];
+    }
+
+    /**
+     * Return buffered translation
+     * @param $feedbackId
+     * @param $languageId
+     * @return null|self
+     */
+    public static function getTranslate($feedbackId, $languageId)
+    {
+        if (!isset(self::$buffer[$feedbackId][$languageId]) &&
+            !is_null(self::$buffer[$feedbackId][$languageId])) {
+            self::$buffer[$feedbackId][$languageId] = self::find()->where([
+                'feedback_id' => $feedbackId,
+                'common_language_id' => $languageId,
+            ])->one();
+        }
+
+        return self::$buffer[$feedbackId][$languageId];
     }
 }
