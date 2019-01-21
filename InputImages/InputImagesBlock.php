@@ -6,12 +6,6 @@ use yii\db\ActiveQuery;
 use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\CommonException;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
-use Iliich246\YicmsCommon\Languages\Language;
-use Iliich246\YicmsCommon\Languages\LanguagesDb;
-use Iliich246\YicmsCommon\Fields\FieldTemplate;
-use Iliich246\YicmsCommon\Fields\FieldReferenceInterface;
-use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
-use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
@@ -157,11 +151,18 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     }
 
     /**
+     * Returns true if input image block has constraints
      * @return bool
      */
     public function isConstraints()
     {
         return true;
+
+        if (InputImage::find()->where([
+            'feedback_input_images_template_id' => $this->id,
+        ])->one()) return true;
+
+        return false;
     }
 
     /**
@@ -169,24 +170,56 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
      */
     public function getEntityQuery()
     {
-//        if (CommonModule::isUnderDev() || $this->editable)
-//            return Image::find()
-//                ->where([
-//                    'common_images_templates_id' => $this->id,
-//                    'image_reference'            => $this->currentImageReference
-//                ])
-//                ->indexBy('id')
-//                ->orderBy(['image_order' => SORT_ASC]);
-//
-//        return new ActiveQuery(Image::className());
+        if (CommonModule::isUnderDev() || $this->editable)
+            return InputImage::find()
+                ->where([
+                    'feedback_input_images_template_id' => $this->id,
+                    'input_image_reference'             => $this->currentInputImageReference
+                ])
+                ->indexBy('id')
+                ->orderBy(['input_image_order' => SORT_ASC]);
+
+        return new ActiveQuery(InputImage::className());
     }
 
     /**
      * @inheritdoc
+     * @throws CommonException
+     */
+    public function delete()
+    {
+        if ($this->deleteSequence())
+            return parent::delete();
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     protected function deleteSequence()
     {
+        foreach (InputImagesNamesTranslatesDb::find()->where([
+            'feedback_input_images_template_id' => $this->id,
+        ])->all() as $inputImageName)
+            if (!$inputImageName->delete()) return false;
 
+        $validators = ValidatorDb::find()->where([
+            'validator_reference' => $this->validator_reference
+        ])->all();
+
+        if ($validators)
+            foreach($validators as $validator)
+                $validator->delete();
+
+        foreach (InputImage::find()->where([
+            'feedback_input_images_template_id' => $this->id,
+        ])->all() as $inputImage)
+            $inputImage->delete();
+
+        return true;
     }
 
     /**

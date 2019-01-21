@@ -10,6 +10,103 @@ use Iliich246\YicmsFeedback\InputImages\DevInputImagesGroup;
 
 /** @var $this \yii\web\View */
 /** @var $widget InputImagesDevModalWidget */
+/** @var $bundle \Iliich246\YicmsCommon\Assets\DeveloperAsset */
+
+$bundle = \Iliich246\YicmsCommon\Assets\DeveloperAsset::register($this);
+
+$modalName = InputImagesDevModalWidget::getModalWindowName();
+$deleteLink = $widget->deleteLink . '?inputImageBlockId=';
+
+$js = <<<JS
+;(function() {
+    $(document).on('click', '#input-image-delete', function() {
+        var button = ('#input-image-delete');
+        
+        if (!$(button).is('[data-input-image-block-id]')) return;
+        
+        var inputImageBlockId             = $(button).data('inputImageBlockId');
+        var inputImageBlockHasConstraints = $(button).data('inputImageBlockHasConstraints');
+        var pjaxContainer                 = $('#update-input-images-list-container');
+        
+        if (!($(this).hasClass('input-image-confirm-state'))) {
+            $(this).before('<span>Are you sure? </span>');
+            $(this).text('Yes, I`am sure!');
+            $(this).addClass('input-image-confirm-state');
+        } else {
+            if (!inputImageBlockHasConstraints) {
+                $.pjax({
+                    url: '{$deleteLink}' + inputImageBlockId,
+                    container: '#update-input-images-list-container',
+                    scrollTo: false,
+                    push: false,
+                    type: "POST",
+                    timeout: 2500
+                });  
+                
+                var deleteActive = true;
+
+                $(pjaxContainer).on('pjax:success', function(event) {
+
+                    if (!deleteActive) return false;
+
+                    $('#{$modalName}').modal('hide');
+                    deleteActive = false;
+                });                
+            } else {
+                var deleteButtonRow = $('.delete-button-row-input-image');
+                
+                var template = _.template($('#delete-with-pass-template-input-image').html());
+                $(deleteButtonRow).empty();
+                $(deleteButtonRow).append(template);
+                
+                var passwordInput = $('#input-images-block-delete-password-input');
+                var buttonDelete  = $('#button-delete-with-pass-input-image');                
+                
+                $(buttonDelete).on('click', function() {
+                    $.pjax({
+                        url: '{$deleteLink}' + inputImageBlockId + '&deletePass=' + $(passwordInput).val(),
+                        container: '#update-input-images-list-container',
+                        scrollTo: false,
+                        push: false,
+                        type: "POST",
+                        timeout: 2500
+                    });
+                    
+                    var deleteActive = true;
+
+                    $(pjaxContainer).on('pjax:success', function(event) {
+
+                        if (!deleteActive) return false;
+
+                        $('#{$modalName}').modal('hide');
+                        deleteActive = false;
+                    });  
+                    
+                    $(pjaxContainer).on('pjax:error', function(event) {
+
+                        $('#{$modalName}').modal('hide');
+
+                         bootbox.alert({
+                             size: 'large',
+                             title: "Wrong dev password",
+                             message: "Images block template has not deleted",
+                             className: 'bootbox-error'
+                         });
+                    });                    
+                });
+                
+                $('#{$modalName}').on('hide.bs.modal', function() {
+                    $(pjaxContainer).off('pjax:error');
+                    $(pjaxContainer).off('pjax:success');
+                    $('#{$modalName}').off('hide.bs.modal');
+                });
+            }
+        }
+    });
+})();
+JS;
+
+$this->registerJs($js, $this::POS_READY);
 
 if ($widget->devInputImagesGroup->scenario == DevInputImagesGroup::SCENARIO_CREATE &&
     $widget->devInputImagesGroup->justSaved)
@@ -95,30 +192,30 @@ else
                 ?>
 
                 <?php if ($widget->devInputImagesGroup->scenario == DevInputImagesGroup::SCENARIO_UPDATE): ?>
-                    <div class="row delete-button-row-field">
+                    <div class="row delete-button-row-input-image">
                         <div class="col-xs-12">
                             <br>
 
                             <p>IMPORTANT! Do not delete input images without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="field-delete"
+                                    id="input-image-delete"
                                     data-input-image-block-reference="<?= $widget->devInputImagesGroup->inputImagesBlock->input_image_template_reference ?>"
                                     data-input-image-block-id="<?= $widget->devInputImagesGroup->inputImagesBlock->id ?>"
                                     data-input-image-has-constraints="<?= (int)$widget->devInputImagesGroup->inputImagesBlock->isConstraints() ?>"
                             >
-                                Delete input field
+                                Delete input image block
                             </button>
                         </div>
                     </div>
-                    <script type="text/template" id="delete-with-pass-template">
+                    <script type="text/template" id="delete-with-pass-template-input-image">
                         <div class="col-xs-12">
                             <br>
-                            <label for="field-delete-password-input">
+                            <label for="input-image-delete-password-input">
                                 Input image has constraints. Enter dev password for delete input image block
                             </label>
                             <input type="password"
-                                   id="image-delete-password-input"
+                                   id="input-image-delete-password-input"
                                    class="form-control" name=""
                                    value=""
                                    aria-required="true"
@@ -126,7 +223,7 @@ else
                             <br>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="button-delete-with-pass"
+                                    id="input-image-button-delete-with-pass"
                             >
                                 Yes, i am absolutely seriously!!!
                             </button>

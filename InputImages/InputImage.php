@@ -185,4 +185,72 @@ class InputImage extends AbstractEntity implements
 
         return $this->validatorBuilder;
     }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getValidatorReference()
+    {
+        $inputImagesBlock = $this->getInputImagesBlock();
+
+        if (!$inputImagesBlock->validator_reference) {
+            $inputImagesBlock->validator_reference = ValidatorBuilder::generateValidatorReference();
+            $inputImagesBlock->scenario = InputImagesBlock::SCENARIO_UPDATE;
+            $inputImagesBlock->save(false);
+        }
+
+        return $inputImagesBlock->validator_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderQuery()
+    {
+        return self::find()->where([
+            'feedback_input_images_template_id' => $this->feedback_input_images_template_id,
+            'input_image_reference'             => $this->input_image_reference,
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getOrderFieldName()
+    {
+        return 'input_image_order';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderValue()
+    {
+        return $this->input_image_order;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setOrderValue($value)
+    {
+        $this->input_image_order = $value;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function configToChangeOfOrder()
+    {
+        //$this->scenario = self::SCENARIO_CHANGE_ORDER;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getOrderAble()
+    {
+        return $this;
+    }
 }
