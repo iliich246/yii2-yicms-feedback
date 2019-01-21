@@ -12,6 +12,102 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldsDevModalWidget;
 /** @var $this \yii\web\View */
 /** @var $widget InputFieldsDevModalWidget */
 
+$bundle = \Iliich246\YicmsCommon\Assets\DeveloperAsset::register($this);
+
+$modalName = InputFieldsDevModalWidget::getModalWindowName();
+$deleteLink = $widget->deleteLink . '?inputFieldTemplateId=';
+
+$js = <<<JS
+;(function() {
+    $(document).on('click', '#input-field-delete', function() {
+        var button = ('#input-field-delete');
+
+        if (!$(button).is('[data-input-field-template-id]')) return;
+
+        var inputFieldTemplateId     = $(button).data('inputFieldTemplateId');
+        var inputFieldHasConstraints = $(button).data('inputFieldHasConstraints');
+        var pjaxContainer       = $('#update-input-fields-list-container');
+
+        if (!($(this).hasClass('input-field-confirm-state'))) {
+            $(this).before('<span>Are you sure? </span>');
+            $(this).text('Yes, I`am sure!');
+            $(this).addClass('input-field-confirm-state');
+        } else {
+            if (!inputFieldHasConstraints) {
+                $.pjax({
+                    url: '{$deleteLink}' + inputFieldTemplateId,
+                    container: '#update-input-fields-list-container',
+                    scrollTo: false,
+                    push: false,
+                    type: "POST",
+                    timeout: 2500
+                });
+
+                var deleteActive = true;
+
+                $(pjaxContainer).on('pjax:success', function(event) {
+
+                    if (!deleteActive) return false;
+
+                    $('#{$modalName}').modal('hide');
+                    deleteActive = false;
+                });
+            } else {
+                var deleteButtonRow = $('.delete-button-row-field');
+
+                var template = _.template($('#delete-with-pass-template').html());
+                $(deleteButtonRow).empty();
+                $(deleteButtonRow).append(template);
+
+                var passwordInput = $('#input-field-delete-password-input');
+                var buttonDelete  = $('#input-field-button-delete-with-pass');
+
+                $(buttonDelete).on('click', function() {
+                    $.pjax({
+                        url: '{$deleteLink}' + inputFieldTemplateId + '&deletePass=' + $(passwordInput).val(),
+                        container: '#update-input-fields-list-container',
+                        scrollTo: false,
+                        push: false,
+                        type: "POST",
+                        timeout: 2500
+                    });
+
+                    var deleteActive = true;
+
+                    $(pjaxContainer).on('pjax:success', function(event) {
+
+                        if (!deleteActive) return false;
+
+                        $('#{$modalName}').modal('hide');
+                        deleteActive = false;
+                    });
+
+                    $(pjaxContainer).on('pjax:error', function(event) {
+
+                        $('#{$modalName}').modal('hide');
+
+                        bootbox.alert({
+                            size: 'large',
+                            title: "Wrong dev password",
+                            message: "Field template has not deleted",
+                            className: 'bootbox-error'
+                        });
+                    });
+                });
+
+                $('#{$modalName}').on('hide.bs.modal', function() {
+                    $(pjaxContainer).off('pjax:error');
+                    $(pjaxContainer).off('pjax:success');
+                    $('#{$modalName}').off('hide.bs.modal');
+                });
+            }
+        }
+    });
+})();
+JS;
+
+$this->registerJs($js, $this::POS_READY);
+
 if ($widget->devInputFieldGroup->scenario == DevInputFieldsGroup::SCENARIO_CREATE &&
     $widget->devInputFieldGroup->justSaved)
     $redirectToUpdate = 'true';
@@ -100,7 +196,7 @@ else
                             <p>IMPORTANT! Do not delete input fields without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="field-delete"
+                                    id="input-field-delete"
                                     data-input-field-template-reference="<?= $widget->devInputFieldGroup->inputFieldTemplate->input_field_template_reference ?>"
                                     data-input-field-template-id="<?= $widget->devInputFieldGroup->inputFieldTemplate->id ?>"
                                     data-input-field-has-constraints="<?= (int)$widget->devInputFieldGroup->inputFieldTemplate->isConstraints() ?>"
@@ -112,11 +208,11 @@ else
                     <script type="text/template" id="delete-with-pass-template">
                         <div class="col-xs-12">
                             <br>
-                            <label for="field-delete-password-input">
+                            <label for="input-field-delete-password-input">
                                 Input field has constraints. Enter dev password for delete input field template
                             </label>
                             <input type="password"
-                                   id="field-delete-password-input"
+                                   id="input-field-delete-password-input"
                                    class="form-control" name=""
                                    value=""
                                    aria-required="true"
@@ -124,7 +220,7 @@ else
                             <br>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="button-delete-with-pass"
+                                    id="input-field-button-delete-with-pass"
                             >
                                 Yes, i am absolutely seriously!!!
                             </button>

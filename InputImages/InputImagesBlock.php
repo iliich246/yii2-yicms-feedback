@@ -181,9 +181,23 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
 //        return new ActiveQuery(Image::className());
     }
 
+    /**
+     * @inheritdoc
+     */
     protected function deleteSequence()
     {
 
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getNoExistentEntity()
+    {
+        $inputImage = new InputImage();
+        $inputImage->setNonexistent();
+
+        return $inputImage;
     }
 
     /**

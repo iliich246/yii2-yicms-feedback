@@ -4,6 +4,7 @@ namespace Iliich246\YicmsFeedback\InputFields;
 
 use Iliich246\YicmsCommon\Base\AbstractTemplate;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
+use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 
 /**
@@ -84,6 +85,8 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
      */
     public function isConstraints()
     {
+        return true;
+
         if (InputField::find()->where([
             'feedback_input_fields_template_id' => $this->id
         ])->one()) return true;
@@ -96,7 +99,28 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
      */
     public function delete()
     {
+        $inputFields = InputField::find()->where([
+            'feedback_input_fields_template_id' => $this->id
+        ])->all();
 
+        foreach($inputFields as $inputField)
+            $inputField->delete();
+
+        $inputFieldNames = InputFieldsNamesTranslatesDb::find()->where([
+            'feedback_input_fields_template_id' => $this->id,
+        ])->all();
+
+        foreach($inputFieldNames as $inputFieldName)
+            $inputFieldName->delete();
+
+        $validators = ValidatorDb::find()->where([
+            'validator_reference' => $this->validator_reference
+        ])->all();
+
+        foreach($validators as $validator)
+            $validator->delete();
+
+        return parent::delete();
     }
 
     /**

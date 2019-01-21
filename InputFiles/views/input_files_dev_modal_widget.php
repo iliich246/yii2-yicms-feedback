@@ -7,8 +7,102 @@ use Iliich246\YicmsCommon\Widgets\SimpleTabsTranslatesWidget;
 use Iliich246\YicmsCommon\Validators\ValidatorsListWidget;
 use Iliich246\YicmsFeedback\InputFiles\DevInputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesDevModalWidget;
+
 /** @var $this \yii\web\View */
 /** @var $widget InputFilesDevModalWidget */
+/** @var $bundle \Iliich246\YicmsCommon\Assets\DeveloperAsset  */
+
+$bundle = \Iliich246\YicmsCommon\Assets\DeveloperAsset::register($this);
+
+$modalName = InputFilesDevModalWidget::getModalWindowName();
+$deleteLink = $widget->deleteLink . '?inputFileBlockId=';
+
+$js = <<<JS
+;(function() {
+    $(document).on('click', '#input-file-delete', function() {
+        var button = ('#input-file-delete');
+
+        if (!$(button).is('[data-input-file-block-id]')) return;
+
+        var inputFileBlockId             = $(button).data('inputFileBlockId');
+        var inputFileBlockHasConstraints = $(button).data('inputFileBlockHasConstraints');
+        var pjaxContainer                = $('#update-input-files-list-container');
+
+        if (!($(this).hasClass('input-file-confirm-state'))) {
+            $(this).before('<span>Are you sure? </span>');
+            $(this).text('Yes, I`am sure!');
+            $(this).addClass('input-file-confirm-state');
+        } else {
+            if (!inputFileBlockHasConstraints) {
+                $.pjax({
+                    url: '{$deleteLink}' + inputFileBlockId,
+                    container: '#update-input-files-list-container',
+                    scrollTo: false,
+                    push: false,
+                    type: "POST",
+                    timeout: 2500
+                });
+
+                var deleteActive = true;
+
+                $(pjaxContainer).on('pjax:success', function(event) {
+
+                    if (!deleteActive) return false;
+
+                    $('#{$modalName}').modal('hide');
+                    deleteActive = false;
+                });
+            } else {
+                var deleteButtonRow = $('.delete-button-row-input-files');
+
+                var template = _.template($('#delete-with-pass-template').html());
+                $(deleteButtonRow).empty();
+                $(deleteButtonRow).append(template);
+
+                var passwordInput = $('#input-file-delete-password-input');
+                var buttonDelete  = $('#input-file-button-delete-with-pass');
+
+                $(buttonDelete).on('click', function() {
+                    $.pjax({
+                        url: '{$deleteLink}' + inputFileBlockId + '&deletePass=' + $(passwordInput).val(),
+                        container: '#update-input-files-list-container',
+                        scrollTo: false,
+                        push: false,
+                        type: "POST",
+                        timeout: 2500
+                    });
+
+                    var deleteActive = true;
+
+                    $(pjaxContainer).on('pjax:success', function(event) {
+
+                        if (!deleteActive) return false;
+
+                        $('#{$modalName}').modal('hide');
+                        deleteActive = false;
+                    });
+
+                    $(pjaxContainer).on('pjax:error', function(event) {
+
+                         $('#{$modalName}').modal('hide');
+
+                         bootbox.alert({
+                             size: 'large',
+                             title: "Wrong dev password",
+                             message: "Files block template has not deleted",
+                             className: 'bootbox-error'
+                         });
+                    });
+                });
+            }
+        }
+    });
+})();
+JS;
+
+$this->registerJs($js, $this::POS_READY);
+
+$this->registerAssetBundle(\Iliich246\YicmsCommon\Assets\LodashAsset::className());
 
 if ($widget->devInputFilesGroup->scenario == DevInputFilesGroup::SCENARIO_CREATE &&
     $widget->devInputFilesGroup->justSaved)
@@ -20,7 +114,6 @@ if ($redirectToUpdate == 'true')
     $inputFilesBlockIdForRedirect = $widget->devInputFilesGroup->inputFilesBlock->id;
 else
     $inputFilesBlockIdForRedirect = '0';
-
 ?>
 
 <div class="modal fade"
@@ -91,18 +184,18 @@ else
                 ?>
 
                 <?php if ($widget->devInputFilesGroup->scenario == DevInputFilesGroup::SCENARIO_UPDATE): ?>
-                    <div class="row delete-button-row-field">
+                    <div class="row delete-button-row-input-files">
                         <div class="col-xs-12">
                             <br>
 
                             <p>IMPORTANT! Do not delete input file blocks without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="field-delete"
+                                    id="input-file-delete"
                                     data-input-file-block-reference="
                                     <?= $widget->devInputFilesGroup->inputFilesBlock->input_file_template_reference ?>"
                                     data-input-file-block-id="<?= $widget->devInputFilesGroup->inputFilesBlock->id ?>"
-                                    data-input-file-has-constraints="<?= (int)$widget->devInputFilesGroup->inputFilesBlock->isConstraints() ?>"
+                                    data-input-file-block-has-constraints="<?= (int)$widget->devInputFilesGroup->inputFilesBlock->isConstraints() ?>"
                             >
                                 Delete input file
                             </button>
@@ -111,11 +204,11 @@ else
                     <script type="text/template" id="delete-with-pass-template">
                         <div class="col-xs-12">
                             <br>
-                            <label for="file-delete-password-input">
+                            <label for="input-file-delete-password-input">
                                 Input file has constraints. Enter dev password for delete input file block
                             </label>
                             <input type="password"
-                                   id="field-delete-password-input"
+                                   id="input-file-delete-password-input"
                                    class="form-control" name=""
                                    value=""
                                    aria-required="true"
@@ -123,7 +216,7 @@ else
                             <br>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="button-delete-with-pass"
+                                    id="input-file-button-delete-with-pass"
                             >
                                 Yes, i am absolutely seriously!!!
                             </button>

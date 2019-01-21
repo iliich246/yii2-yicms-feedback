@@ -29,7 +29,7 @@ class InputFieldsDevModalWidget extends Widget
      */
     public function init()
     {
-        $this->deleteLink = Url::toRoute(['/feedback/dev-fields/delete-field-template']);
+        $this->deleteLink = Url::toRoute(['/feedback/dev-input-fields/delete-input-field-template']);
 
         if (Yii::$app->request->post('_saveAndExit'))
             $this->saveAndExit = 'true';

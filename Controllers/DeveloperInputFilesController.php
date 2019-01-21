@@ -2,6 +2,8 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsCommon\Base\CommonException;
+use Iliich246\YicmsCommon\Base\CommonHashForm;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -97,6 +99,43 @@ class DeveloperInputFilesController extends Controller
         }
 
         throw new BadRequestHttpException();
+    }
+
+    /**
+     * Action for delete input file block template
+     * @param $inputFileBlockId
+     * @param bool|false $deletePass
+     * @return string
+     * @throws BadRequestHttpException
+     * @throws CommonException
+     * @throws NotFoundHttpException
+     */
+    public function actionDeleteInputFileBlock($inputFileBlockId, $deletePass = false)
+    {
+        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException('No pjax');
+
+        /** @var InputFilesBlock $inputFileBlock */
+        $inputFileBlock = InputFilesBlock::findOne($inputFileBlockId);
+
+        if (!$inputFileBlock) throw new NotFoundHttpException('Wrong inputFileBlockId');
+
+        if ($inputFileBlock->isConstraints())
+            if (!Yii::$app->security->validatePassword($deletePass, CommonHashForm::DEV_HASH))
+                throw new CommonException('Wrong dev password');
+
+        $inputFileTemplateReference = $inputFileBlock->input_file_template_reference;
+
+        $inputFileBlock->delete();
+
+        $inputFilesBlocks = InputFilesBlock::getListQuery($inputFileTemplateReference)
+                ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
+                ->all();
+
+        return $this->render('/pjax/update-input-files-list-container', [
+            'inputFileTemplateReference' => $inputFileTemplateReference,
+            'inputFilesBlocks'           => $inputFilesBlocks,
+        ]);
+
     }
 
     /**

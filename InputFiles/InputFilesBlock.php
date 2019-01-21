@@ -110,11 +110,16 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     }
 
     /**
+     * Return true if input file block has constrains
      * @return bool
      */
     public function isConstraints()
     {
-        return true;
+        if (InputFile::find()->where([
+            'feedback_input_files_template_id' => $this->id
+        ])->one()) return true;
+
+        return false;
     }
 
     /**
@@ -170,9 +175,49 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     /**
      * @inheritdoc
      */
+    public function delete()
+    {
+        if ($this->deleteSequence())
+            return parent::delete();
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function deleteSequence()
     {
+        foreach(InputFilesNamesTranslatesDb::find()->where([
+            'feedback_input_files_template_id' => $this->id,
+        ])->all() as $inputFileName)
+            if (!$inputFileName->delete()) return false;
 
+        $validators = ValidatorDb::find()->where([
+            'validator_reference' => $this->validator_reference
+        ])->all();
+
+        if ($validators)
+            foreach($validators as $validator)
+                $validator->delete();
+
+        foreach(InputFile::find()->where([
+            'feedback_input_files_template_id' => $this->id,
+        ])->all() as $inputFile)
+            $inputFile->delete();
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function getNoExistentEntity()
+    {
+        $inputFile = new InputFile();
+        $inputFile->setNonexistent();
+
+        return $inputFile;
     }
 
     /**
