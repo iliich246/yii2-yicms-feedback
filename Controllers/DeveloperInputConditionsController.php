@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsCommon\Base\CommonException;
 use Iliich246\YicmsCommon\Base\CommonHashForm;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Yii;
@@ -98,11 +99,47 @@ class DeveloperInputConditionsController extends Controller
 
             return $this->render('/pjax/update-input-conditions-list-container', [
                 'inputConditionTemplateReference' => $inputConditionTemplateReference,
-                'inputConditionTemplates'        => $inputConditionsTemplates,
+                'inputConditionTemplates'         => $inputConditionsTemplates,
             ]);
         }
 
         throw new BadRequestHttpException();
+    }
+
+    /**
+     * Action for delete input conditions template
+     * @param $inputConditionTemplateId
+     * @param bool|false $deletePass
+     * @return string
+     * @throws BadRequestHttpException
+     * @throws FeedbackException
+     * @throws NotFoundHttpException
+     */
+    public function actionDeleteInputConditionTemplate($inputConditionTemplateId, $deletePass = false)
+    {
+        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
+
+        /** @var InputConditionTemplate $inputConditionsTemplate */
+        $inputConditionsTemplate = InputConditionTemplate::findOne($inputConditionTemplateId);
+
+        if (!$inputConditionsTemplate) throw new NotFoundHttpException('Wrong inputConditionTemplateId');
+
+        if ($inputConditionsTemplate->isConstraints())
+            if (!Yii::$app->security->validatePassword($deletePass, CommonHashForm::DEV_HASH))
+                throw new FeedbackException('Wrong dev password');
+
+        $inputConditionTemplateReference = $inputConditionsTemplate->input_condition_template_reference;
+
+        $inputConditionsTemplate->delete();
+
+        $inputConditionsTemplates = InputConditionTemplate::getListQuery($inputConditionTemplateReference)
+            ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
+            ->all();
+
+        return $this->render('/pjax/update-input-conditions-list-container', [
+            'inputConditionTemplateReference' => $inputConditionTemplateReference,
+            'inputConditionTemplates'         => $inputConditionsTemplates,
+        ]);
     }
 
     /**

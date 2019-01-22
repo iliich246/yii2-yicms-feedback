@@ -156,8 +156,6 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
      */
     public function isConstraints()
     {
-        return true;
-
         if (InputImage::find()->where([
             'feedback_input_images_template_id' => $this->id,
         ])->one()) return true;

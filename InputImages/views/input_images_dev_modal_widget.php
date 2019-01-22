@@ -202,7 +202,7 @@ else
                                     id="input-image-delete"
                                     data-input-image-block-reference="<?= $widget->devInputImagesGroup->inputImagesBlock->input_image_template_reference ?>"
                                     data-input-image-block-id="<?= $widget->devInputImagesGroup->inputImagesBlock->id ?>"
-                                    data-input-image-has-constraints="<?= (int)$widget->devInputImagesGroup->inputImagesBlock->isConstraints() ?>"
+                                    data-input-image-block-has-constraints="<?= (int)$widget->devInputImagesGroup->inputImagesBlock->isConstraints() ?>"
                             >
                                 Delete input image block
                             </button>
@@ -211,11 +211,11 @@ else
                     <script type="text/template" id="delete-with-pass-template-input-image">
                         <div class="col-xs-12">
                             <br>
-                            <label for="input-image-delete-password-input">
+                            <label for="input-images-block-delete-password-input">
                                 Input image has constraints. Enter dev password for delete input image block
                             </label>
                             <input type="password"
-                                   id="input-image-delete-password-input"
+                                   id="input-images-block-delete-password-input"
                                    class="form-control" name=""
                                    value=""
                                    aria-required="true"
@@ -223,7 +223,7 @@ else
                             <br>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="input-image-button-delete-with-pass"
+                                    id="button-delete-with-pass-input-image"
                             >
                                 Yes, i am absolutely seriously!!!
                             </button>

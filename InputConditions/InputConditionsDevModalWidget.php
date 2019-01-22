@@ -29,7 +29,7 @@ class InputConditionsDevModalWidget extends Widget
      */
     public function init()
     {
-        $this->deleteLink = Url::toRoute(['/feedback/dev-input-conditions/delete-input-file-block']);
+        $this->deleteLink = Url::toRoute(['/feedback/dev-input-conditions/delete-input-condition-template']);
 
         if (Yii::$app->request->post('_saveAndExit'))
             $this->saveAndExit = 'true';

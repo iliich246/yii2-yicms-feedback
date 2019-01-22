@@ -82,6 +82,10 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
      */
     public function isConstraints()
     {
+        if (InputCondition::find()->where([
+            'input_condition_template_template_id' => $this->id
+        ])->one()) return true;
+
         return false;
     }
 
@@ -90,7 +94,28 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
      */
     public function delete()
     {
+        $templateNames = InputConditionsNamesTranslatesDb::find()->where([
+            'input_condition_template_template_id' => $this->id,
+        ])->all();
 
+        foreach($templateNames as $templateName)
+            $templateName->delete();
+
+        $inputConditions = InputCondition::find()->where([
+            'input_condition_template_template_id' => $this->id
+        ])->all();
+
+        foreach($inputConditions as $inputCondition)
+            $inputCondition->delete();
+
+        $inputConditionValues = InputConditionValues::find()->where([
+            'input_condition_template_template_id' => $this->id
+        ])->all();
+
+        foreach($inputConditionValues as $inputConditionValue)
+            $inputConditionValue->delete();
+
+        return parent::delete();
     }
 
     /**

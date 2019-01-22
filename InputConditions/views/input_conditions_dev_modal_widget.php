@@ -8,9 +8,107 @@ use Iliich246\YicmsCommon\Validators\ValidatorsListWidget;
 use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
 use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
-
 /** @var $this \yii\web\View */
 /** @var $widget \Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget */
+/** @var $bundle \Iliich246\YicmsCommon\Assets\DeveloperAsset */
+
+$bundle = \Iliich246\YicmsCommon\Assets\DeveloperAsset::register($this);
+
+$modalName = InputConditionsDevModalWidget::getModalWindowName();
+$deleteLink = $widget->deleteLink . '?inputConditionTemplateId=';
+
+$js = <<<JS
+;(function() {
+    $(document).on('click', '#input-condition-delete', function() {
+        var button = ('#input-condition-delete');
+
+        if (!$(button).is('[data-input-condition-template-id]')) return;
+
+        var inputConditionTemplateId     = $(button).data('inputConditionTemplateId');
+        var inputConditionHasConstraints = $(button).data('inputConditionHasConstraints');
+        var pjaxContainer                = $('#update-input-conditions-list-container');
+
+        if (!($(this).hasClass('input-condition-confirm-state'))) {
+            $(this).before('<span>Are you sure? </span>');
+            $(this).text('Yes, I`am sure!');
+            $(this).addClass('input-condition-confirm-state');
+        } else {
+            if (!inputConditionHasConstraints) {
+                 $.pjax({
+                    url: '{$deleteLink}' + inputConditionTemplateId,
+                    container: '#update-input-conditions-list-container',
+                    scrollTo: false,
+                    push: false,
+                    type: "POST",
+                    timeout: 2500
+                });
+
+                var deleteActive = true;
+
+                $(pjaxContainer).on('pjax:success', function(event) {
+                    if (!deleteActive) return false;
+
+                    $('#{$modalName}').modal('hide');
+                    deleteActive = false;
+                });
+            } else {
+                var deleteButtonRow = $('.delete-button-row-input-condition');
+
+                var template = _.template($('#delete-with-pass-template-input-condition').html());
+                $(deleteButtonRow).empty();
+                $(deleteButtonRow).append(template);
+
+                var passwordInput = $('#input-condition-delete-password-input');
+                var buttonDelete  = $('#button-delete-with-pass-input-condition');
+
+                $(buttonDelete).on('click', function() {
+                    $.pjax({
+                        url: '{$deleteLink}' + inputConditionTemplateId + '&deletePass=' + $(passwordInput).val(),
+                        container: '#update-input-conditions-list-container',
+                        scrollTo: false,
+                        push: false,
+                        type: "POST",
+                        timeout: 2500
+                    });
+
+                    var deleteActive = true;
+
+                    $(pjaxContainer).on('pjax:success', function(event) {
+
+                        if (!deleteActive) return false;
+
+                        $('#{$modalName}').modal('hide');
+
+                        deleteActive = false;
+                    });
+
+                    $(pjaxContainer).on('pjax:error', function(event) {
+
+                        $('#{$modalName}').modal('hide');
+
+                        bootbox.alert({
+                            size: 'large',
+                            title: "Wrong dev password",
+                            message: "Input condition template has not deleted",
+                            className: 'bootbox-error'
+                        });
+                    });
+                });
+
+                $('#{$modalName}').on('hide.bs.modal', function() {
+                    $(pjaxContainer).off('pjax:error');
+                    $(pjaxContainer).off('pjax:success');
+                    $('#{$modalName}').off('hide.bs.modal');
+                });
+            }
+        }
+    });
+})();
+JS;
+
+$this->registerJs($js, $this::POS_READY);
+
+$this->registerAssetBundle(\Iliich246\YicmsCommon\Assets\LodashAsset::className());
 
 if ($widget->devInputConditionsGroup->scenario == DevInputConditionsGroup::SCENARIO_CREATE &&
     $widget->devInputConditionsGroup->justSaved)
@@ -93,14 +191,14 @@ else
                 ?>
 
                 <?php if ($widget->devInputConditionsGroup->scenario == DevInputConditionsGroup::SCENARIO_UPDATE): ?>
-                    <div class="row delete-button-row-field">
+                    <div class="row delete-button-row-input-condition">
                         <div class="col-xs-12">
                             <br>
 
                             <p>IMPORTANT! Do not delete input conditions template without serious reason!</p>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="field-delete"
+                                    id="input-condition-delete"
                                     data-input-condition-template-reference="
                                     <?= $widget->devInputConditionsGroup->inputConditionTemplate->input_condition_template_reference ?>"
                                     data-input-condition-template-id="<?= $widget->devInputConditionsGroup->inputConditionTemplate->id ?>"
@@ -110,14 +208,14 @@ else
                             </button>
                         </div>
                     </div>
-                    <script type="text/template" id="delete-with-pass-template">
+                    <script type="text/template" id="delete-with-pass-template-input-condition">
                         <div class="col-xs-12">
                             <br>
-                            <label for="file-delete-password-input">
+                            <label for="input-condition-delete-password-input">
                                 Input condition has constraints. Enter dev password for delete input condition template
                             </label>
                             <input type="password"
-                                   id="condition-delete-password-input"
+                                   id="input-condition-delete-password-input"
                                    class="form-control" name=""
                                    value=""
                                    aria-required="true"
@@ -125,7 +223,7 @@ else
                             <br>
                             <button type="button"
                                     class="btn btn-danger"
-                                    id="button-delete-with-pass"
+                                    id="button-delete-with-pass-input-condition"
                             >
                                 Yes, i am absolutely seriously!!!
                             </button>
