@@ -208,8 +208,21 @@ class Feedback extends ActiveRecord implements SortOrderInterface
      */
     public function delete()
     {
-        return true;
-        //return parent::delete();
+        $feedbackNames = FeedbackNamesTranslatesDb::find()->where([
+            'feedback_id' => $this->id,
+        ])->all();
+
+        foreach($feedbackNames as $feedbackName)
+            $feedbackName->delete();
+
+        $feedbackStages = FeedbackStages::find()->where([
+            'feedback_id' => $this->id,
+        ])->all();
+
+        foreach($feedbackStages as $feedbackStage)
+            $feedbackStage->delete();
+
+        return parent::delete();
     }
 
     /**

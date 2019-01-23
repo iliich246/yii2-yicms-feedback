@@ -123,7 +123,7 @@ class DeveloperController extends Controller
 
         if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
 
-            if ($feedback->save()) {
+            if ($feedback->save(false)) {
                 $success = true;
             } else {
                 $success = false;

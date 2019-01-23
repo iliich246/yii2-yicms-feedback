@@ -250,6 +250,9 @@ class FeedbackStages extends ActiveRecord implements
         return true;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function isConstraints()
     {
         return false;
@@ -260,7 +263,7 @@ class FeedbackStages extends ActiveRecord implements
      */
     public function delete()
     {
-        return true;
+        return parent::delete();
     }
 
     /**
