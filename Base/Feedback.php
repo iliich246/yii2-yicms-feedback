@@ -5,7 +5,41 @@ namespace Iliich246\YicmsFeedback\Base;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
+use Iliich246\YicmsCommon\Fields\Field;
+use Iliich246\YicmsCommon\Fields\FieldsHandler;
+use Iliich246\YicmsCommon\Fields\FieldTemplate;
+use Iliich246\YicmsCommon\Fields\FieldsInterface;
+use Iliich246\YicmsCommon\Fields\FieldReferenceInterface;
+use Iliich246\YicmsCommon\Files\File;
+use Iliich246\YicmsCommon\Files\FilesBlock;
+use Iliich246\YicmsCommon\Files\FilesHandler;
+use Iliich246\YicmsCommon\Files\FilesInterface;
+use Iliich246\YicmsCommon\Files\FilesReferenceInterface;
+use Iliich246\YicmsCommon\Images\Image;
+use Iliich246\YicmsCommon\Images\ImagesBlock;
+use Iliich246\YicmsCommon\Images\ImagesHandler;
+use Iliich246\YicmsCommon\Images\ImagesInterface;
+use Iliich246\YicmsCommon\Images\ImagesReferenceInterface;
+use Iliich246\YicmsCommon\Conditions\Condition;
+use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
+use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
+use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
+use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
+use Iliich246\YicmsFeedback\InputFields\InputField;
+use Iliich246\YicmsFeedback\InputFields\InputFieldsStates;
+use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
+use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
+use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
+use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
+use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
+use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
 
 /**
  * Class Feedback
@@ -16,10 +50,39 @@ use Iliich246\YicmsCommon\Base\SortOrderInterface;
  * @property integer $type
  * @property bool $editable
  * @property bool $visible
+ * @property string $stage_field_template_reference
+ * @property string $stage_file_template_reference
+ * @property string $stage_image_template_reference
+ * @property string $stage_condition_template_reference
+ * @property string $stage_field_reference
+ * @property string $stage_file_reference
+ * @property string $stage_image_reference
+ * @property string $stage_condition_reference
+ * @property string $input_field_template_reference
+ * @property string $input_file_template_reference
+ * @property string $input_image_template_reference
+ * @property string $input_condition_template_reference
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class Feedback extends ActiveRecord implements SortOrderInterface
+class Feedback extends ActiveRecord implements
+    SortOrderInterface,
+    FieldsInterface,
+    FieldReferenceInterface,
+    FilesInterface,
+    FilesReferenceInterface,
+    ImagesInterface,
+    ImagesReferenceInterface,
+    ConditionsReferenceInterface,
+    ConditionsInterface,
+    FieldInputReferenceInterface,
+    FieldInputInterface,
+    FileInputReferenceInterface,
+    FileInputInterface,
+    ImageInputReferenceInterface,
+    ImageInputInterface,
+    ConditionsInputReferenceInterface,
+    ConditionsInputInterface
 {
     use SortOrderTrait;
 
@@ -29,8 +92,22 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     /** @var self[] buffer array */
     private static $feedbackBuffer = [];
 
-    /** @var FeedbackStages active stage for feedback*/
-    private $activeStage;
+    /** @var FieldsHandler instance of field handler object */
+    private $fieldHandler;
+    /** @var FilesHandler instance of file handler object */
+    private $fileHandler;
+    /** @var ImagesHandler instance of image handler object */
+    private $imageHandler;
+    /** @var ConditionsHandler instance of condition handler object */
+    private $conditionHandler;
+    /** @var FieldsHandler instance of input field handler object */
+    private $fieldInputHandler;
+    /** @var FilesHandler instance of input file handler object */
+    private $fileInputHandler;
+    /** @var ImagesHandler instance of input image handler object */
+    private $imageInputHandler;
+    /** @var ConditionsHandler instance of input condition handler object */
+    private $conditionInputHandler;
 
     /**
      * @inheritdoc
@@ -47,14 +124,6 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     {
         $this->visible  = true;
         $this->editable = true;
-
-        $this->on(self::EVENT_AFTER_FIND, function() {
-            $this->activeStage = FeedbackStages::find()->where([
-                'feedback_id' => $this->id
-            ])->one();
-        });
-
-        //$this->activeStage = 'penis';
 
         parent::init();
     }
@@ -204,6 +273,37 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     }
 
     /**
+     * Returns name of feedback
+     * @param LanguagesDb|null $language
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name(LanguagesDb $language = null)
+    {
+        if (!$language) $language = Language::getInstance()->getCurrentLanguage();
+
+        if (!FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)) return $this->program_name;
+
+        return FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)->name;
+    }
+
+    /**
+     * Returns description of feedback
+     * @param LanguagesDb|null $language
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description(LanguagesDb $language = null)
+    {
+        if (!$language) $language = Language::getInstance()->getCurrentLanguage();
+
+        if (!FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)) return $this->program_name;
+
+        return FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)->description;
+
+    }
+
+    /**
      * @inheritdoc
      */
     public function delete()
@@ -340,5 +440,373 @@ class Feedback extends ActiveRecord implements SortOrderInterface
     public function getOrderQuery()
     {
         return self::find();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFieldHandler()
+    {
+        if (!$this->fieldHandler)
+            $this->fieldHandler = new FieldsHandler($this);
+
+        return $this->fieldHandler;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Exception
+     */
+    public function getField($name)
+    {
+        return $this->getFieldHandler()->getField($name);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getFieldTemplateReference()
+    {
+        if (!$this->stage_field_template_reference) {
+            $this->stage_field_template_reference = FieldTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_field_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getFieldReference()
+    {
+        if (!$this->stage_field_reference) {
+            $this->stage_field_reference = Field::generateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_field_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFileHandler()
+    {
+        if (!$this->fileHandler)
+            $this->fileHandler = new FilesHandler($this);
+
+        return $this->fileHandler;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getFileReference()
+    {
+        if (!$this->stage_file_reference) {
+            $this->stage_file_reference = File::generateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_file_reference;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getFileTemplateReference()
+    {
+        if (!$this->stage_file_template_reference) {
+            $this->stage_file_template_reference = FilesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_file_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFileBlock($name)
+    {
+        return $this->getFileHandler()->getFileBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getImagesHandler()
+    {
+        if (!$this->imageHandler)
+            $this->imageHandler = new ImagesHandler($this);
+
+        return $this->imageHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getImageBlock($name)
+    {
+        return $this->getImagesHandler()->getImageBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getImageTemplateReference()
+    {
+        if (!$this->stage_image_template_reference) {
+            $this->stage_image_template_reference = ImagesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_image_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getImageReference()
+    {
+        if (!$this->stage_image_reference) {
+            $this->stage_image_reference = Image::generateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_image_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConditionsHandler()
+    {
+        if (!$this->conditionHandler)
+            $this->conditionHandler = new ConditionsHandler($this);
+
+        return $this->conditionHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getCondition($name)
+    {
+        return $this->getConditionsHandler()->getCondition($name);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getConditionTemplateReference()
+    {
+        if (!$this->stage_condition_template_reference) {
+            $this->stage_condition_template_reference = ConditionTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_condition_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getConditionReference()
+    {
+        if (!$this->stage_condition_reference) {
+            $this->stage_condition_reference = Condition::generateReference();
+            $this->save(false);
+        }
+
+        return $this->stage_condition_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFieldHandler()
+    {
+        if (!$this->fieldInputHandler)
+            $this->fieldInputHandler = new FieldsInputHandler($this);
+
+        return $this->fieldInputHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputField($name)
+    {
+//        if ($this->isFictive()) {
+//            $fictiveField = new InputField();
+//            $fictiveField->setFictive();
+//
+//            /** @var FieldTemplate $template */
+//            $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
+//            $fictiveField->setTemplate($template);
+//
+//            return $fictiveField;
+//        }
+
+        return $this->getInputFieldHandler()->getInputField($name);
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputFieldTemplateReference()
+    {
+        if (!$this->input_field_template_reference) {
+            $this->input_field_template_reference = FieldTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_field_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFieldReference()
+    {
+        //if active stage return stage reference else generate new
+        return 'test_reference';
+    }
+
+    ////file
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileHandler()
+    {
+        if (!$this->fileInputHandler)
+            //$this->fileInputHandler = new FileIn($this);
+
+            return $this->fileInputHandler;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileBlock($name)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputFileTemplateReference()
+    {
+        if (!$this->input_file_template_reference) {
+            $this->input_file_template_reference = FilesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_file_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputFileReference()
+    {
+        //TODO:
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImagesHandler()
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImageBlock($name)
+    {
+
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputImageTemplateReference()
+    {
+        if (!$this->input_image_template_reference) {
+            $this->input_image_template_reference = ImagesBlock::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_image_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputImageReference()
+    {
+        // TODO: Implement getInputImageReference() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputConditionsHandler()
+    {
+        // TODO: Implement getInputConditionsHandler() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputCondition($name)
+    {
+        // TODO: Implement getInputCondition() method.
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getInputConditionTemplateReference()
+    {
+        if (!$this->input_condition_template_reference) {
+            $this->input_condition_template_reference = ConditionTemplate::generateTemplateReference();
+            $this->save(false);
+        }
+
+        return $this->input_condition_template_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getInputConditionReference()
+    {
+        // TODO: Implement getInputConditionReference() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getConditionInputModel()
+    {
+        // TODO: Implement getConditionInputModel() method.
     }
 }

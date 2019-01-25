@@ -18,12 +18,24 @@ class m181025_181406_feedback_init extends Migration
          * feedback table
          */
         $this->createTable('{{%feedback}}', [
-            'id'             => $this->primaryKey(),
-            'program_name'   => $this->string(50),
-            'type'           => $this->smallInteger(),
-            'feedback_order' => $this->integer(),
-            'editable'       => $this->boolean(),
-            'visible'        => $this->boolean(),
+            'id'                                 => $this->primaryKey(),
+            'program_name'                       => $this->string(50),
+            'type'                               => $this->smallInteger(),
+            'feedback_order'                     => $this->integer(),
+            'editable'                           => $this->boolean(),
+            'visible'                            => $this->boolean(),
+            'stage_field_template_reference'     => $this->string(),
+            'stage_file_template_reference'      => $this->string(),
+            'stage_image_template_reference'     => $this->string(),
+            'stage_condition_template_reference' => $this->string(),
+            'stage_field_reference'              => $this->string(),
+            'stage_file_reference'               => $this->string(),
+            'stage_image_reference'              => $this->string(),
+            'stage_condition_reference'          => $this->string(),
+            'input_field_template_reference'     => $this->string(),
+            'input_file_template_reference'      => $this->string(),
+            'input_image_template_reference'     => $this->string(),
+            'input_condition_template_reference' => $this->string(),
         ]);
 
         /**
@@ -63,68 +75,11 @@ class m181025_181406_feedback_init extends Migration
         );
 
         /**
-         * feedback_stages table
-         */
-        $this->createTable('{{%feedback_stages}}', [
-            'id'                                 => $this->primaryKey(),
-            'feedback_id'                        => $this->integer(),
-            'program_name'                       => $this->string(50),
-            'stage_order'                        => $this->integer(),
-            'editable'                           => $this->boolean(),
-            'visible'                            => $this->boolean(),
-            'stage_field_template_reference'     => $this->string(),
-            'stage_file_template_reference'      => $this->string(),
-            'stage_image_template_reference'     => $this->string(),
-            'stage_condition_template_reference' => $this->string(),
-            'stage_field_reference'              => $this->string(),
-            'stage_file_reference'               => $this->string(),
-            'stage_image_reference'              => $this->string(),
-            'stage_condition_reference'          => $this->string(),
-            'input_field_template_reference'     => $this->string(),
-            'input_file_template_reference'      => $this->string(),
-            'input_image_template_reference'     => $this->string(),
-            'input_condition_template_reference' => $this->string(),
-        ]);
-
-        $this->addForeignKey('feedback_stages-to-feedback',
-            '{{%feedback_stages}}',
-            'feedback_id',
-            '{{%feedback}}',
-            'id'
-        );
-
-        /**
-         * feedback_stages_names_translates table
-         */
-        $this->createTable('{{%feedback_stages_names_translates}}', [
-            'id'                 => $this->primaryKey(),
-            'stage_id'           => $this->integer(),
-            'common_language_id' => $this->integer(),
-            'name'               => $this->string(),
-            'description'        => $this->string(),
-        ]);
-
-
-        $this->addForeignKey('feedback_stages_names_translates-to-feedback_stages',
-            '{{%feedback_stages_names_translates}}',
-            'stage_id',
-            '{{%feedback_stages}}',
-            'id'
-        );
-
-        $this->addForeignKey('feedback_stages_names_translates-to-common_languages',
-            '{{%feedback_stages_names_translates}}',
-            'common_language_id',
-            '{{%common_languages}}',
-            'id'
-        );
-
-        /**
          * feedback_stages_names_translates table
          */
         $this->createTable('{{%feedback_states}}', [
             'id'                         => $this->primaryKey(),
-            'stage_id'                   => $this->integer(),
+            'feedback_id'                => $this->integer(),
             'input_fields_reference'     => $this->string(),
             'input_files_reference'      => $this->string(),
             'input_images_reference'     => $this->string(),
@@ -133,10 +88,10 @@ class m181025_181406_feedback_init extends Migration
             'updated_at'                 => $this->integer(),
         ]);
 
-        $this->addForeignKey('feedback_states-to-feedback_stages',
+        $this->addForeignKey('feedback_states-to-feedback',
             '{{%feedback_states}}',
-            'stage_id',
-            '{{%feedback_stages}}',
+            'feedback_id',
+            '{{%feedback}}',
             'id'
         );
 
@@ -655,17 +610,9 @@ class m181025_181406_feedback_init extends Migration
         $this->dropTable('{{%feedback_input_fields_templates}}');
 
         //feedback functionality
+        $this->dropForeignKey('feedback_states-to-feedback',
+            '{{%feedback_states}}');
         $this->dropTable('{{%feedback_states}}');
-
-        $this->dropForeignKey('feedback_stages_names_translates-to-common_languages',
-            '{{%feedback_stages_names_translates}}');
-        $this->dropForeignKey('feedback_stages_names_translates-to-feedback_stages',
-            '{{%feedback_stages_names_translates}}');
-        $this->dropTable('{{%feedback_stages_names_translates}}');
-
-        $this->dropForeignKey('feedback_stages-to-feedback',
-            '{{%feedback_stages}}');
-        $this->dropTable('{{%feedback_stages}}');
 
         $this->dropForeignKey('feedback_names_translates-to-common_languages',
             '{{%feedback_names_translates}}');

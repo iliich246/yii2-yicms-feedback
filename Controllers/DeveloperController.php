@@ -274,224 +274,7 @@ class DeveloperController extends Controller
         ]);
     }
 
-    /**
-     * Returns list of oll feedback stages for concrete feedback
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
-     * @throws \Iliich246\YicmsFeedback\Base\FeedbackException
-     */
-    public function actionStagesList($id)
-    {
-        $feedback = Feedback::getInstance($id);
 
-        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedbackStages = FeedbackStages::find()
-            ->where([
-                'feedback_id' => $feedback->id,
-            ])
-            ->orderBy([
-                'stage_order' => SORT_ASC
-        ])->all();
-
-        return $this->render('/developer/stages-list', [
-            'feedback'       => $feedback,
-            'feedbackStages' => $feedbackStages,
-        ]);
-    }
-
-    /**
-     * Creates new feedback stage
-     * @param $id
-     * @return string|\yii\web\Response
-     * @throws FeedbackException
-     * @throws NotFoundHttpException
-     */
-    public function actionCreateStage($id)
-    {
-        $feedback = Feedback::getInstance($id);
-
-        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedbackStage = new FeedbackStages();
-        $feedbackStage->setFeedback($feedback);
-        $feedbackStage->scenario = FeedbackStages::SCENARIO_CREATE;
-
-        if ($feedbackStage->loadDev(Yii::$app->request->post()) && $feedbackStage->validateDev()) {
-
-            if ($feedbackStage->create()) {
-                return $this->redirect(Url::toRoute(['update-stage', 'id' => $feedback->id]));
-            } else {
-                //TODO: add bootbox error
-            }
-        }
-
-        return $this->render('/developer/create-update-stage', [
-            'feedbackStage' => $feedbackStage,
-        ]);
-    }
-
-    /**
-     * Update feedback stage
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
-     */
-    public function actionUpdateStage($id)
-    {
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
-
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
-
-        $feedbackStage->scenario = FeedbackStages::SCENARIO_UPDATE;
-
-        if ($feedbackStage->loadDev(Yii::$app->request->post()) && $feedbackStage->validateDev()) {
-
-            if ($feedbackStage->save()) {
-                $success = true;
-            } else {
-                $success = false;
-            }
-
-            return $this->render('/developer/create-update-stage', [
-                'feedbackStage' => $feedbackStage,
-                'success'  => $success
-            ]);
-        }
-
-        return $this->render('/developer/create-update-stage', [
-            'feedbackStage' => $feedbackStage,
-        ]);
-    }
-
-    /**
-     * Displays page for work with admin translations of feedback states
-     * @param $id
-     * @return string
-     * @throws NotFoundHttpException
-     * @throws \Iliich246\YicmsCommon\Base\CommonException
-     */
-    public function actionStageTranslates($id)
-    {
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
-
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
-
-        $languages = Language::getInstance()->usedLanguages();
-
-        $translateModels = [];
-
-        foreach($languages as $key => $language) {
-            $essenceTranslate = new FeedbackStagesDevTranslateForm();
-            $essenceTranslate->setLanguage($language);
-            $essenceTranslate->setFeedbackStage($feedbackStage);
-            $essenceTranslate->loadFromDb();
-
-            $translateModels[$key] = $essenceTranslate;
-        }
-
-        if (Model::loadMultiple($translateModels, Yii::$app->request->post()) &&
-            Model::validateMultiple($translateModels)) {
-
-            /** @var FeedbackDevTranslateForm $translateModel */
-            foreach($translateModels as $key=>$translateModel) {
-                $translateModel->save();
-            }
-
-            return $this->render('/developer/feedback-stages-translates', [
-                'feedbackStage'   => $feedbackStage,
-                'translateModels' => $translateModels,
-                'success'         => true,
-            ]);
-        }
-
-        return $this->render('/developer/feedback-stages-translates', [
-            'feedbackStage'   => $feedbackStage,
-            'translateModels' => $translateModels,
-        ]);
-    }
-
-    public function actionDeleteStage($id)
-    {
-
-    }
-
-    /**
-     * Action for up feedback stage order
-     * @param $id
-     * @return string
-     * @throws BadRequestHttpException
-     * @throws FeedbackException
-     * @throws NotFoundHttpException
-     */
-    public function actionStageUpOrder($id)
-    {
-        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
-
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
-
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
-
-        $feedbackStage->configToChangeOfOrder();
-        $feedbackStage->upOrder();
-
-        $feedback = Feedback::getInstance($feedbackStage->feedback_id);
-
-        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedbackStages = FeedbackStages::find()
-            ->where([
-                'feedback_id' => $feedback->id,
-            ])
-            ->orderBy([
-                'stage_order' => SORT_ASC
-            ])->all();
-
-        return $this->render('/pjax/update-feedback-stages-list-container', [
-            'feedbackStages' => $feedbackStages,
-        ]);
-    }
-
-    /**
-     * Action for down feedback stage order
-     * @param $id
-     * @return string
-     * @throws BadRequestHttpException
-     * @throws FeedbackException
-     * @throws NotFoundHttpException
-     */
-    public function actionStageDownOrder($id)
-    {
-        if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
-
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
-
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
-
-        $feedbackStage->configToChangeOfOrder();
-        $feedbackStage->downOrder();
-
-        $feedback = Feedback::getInstance($feedbackStage->feedback_id);
-
-        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedbackStages = FeedbackStages::find()
-            ->where([
-                'feedback_id' => $feedback->id,
-            ])
-            ->orderBy([
-                'stage_order' => SORT_ASC
-            ])->all();
-
-        return $this->render('/pjax/update-feedback-stages-list-container', [
-            'feedbackStages' => $feedbackStages,
-        ]);
-    }
 
     /**
      * Renders feedback stage templates page
@@ -501,16 +284,15 @@ class DeveloperController extends Controller
      * @throws \Exception
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
-    public function actionStagePageTemplates($id)
+    public function actionFeedbackPageTemplates($id)
     {
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
+        $feedback = Feedback::getInstance($id);
 
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
         //initialize fields group
         $devFieldGroup = new DevFieldsGroup();
-        $devFieldGroup->setFieldTemplateReference($feedbackStage->getFieldTemplateReference());
+        $devFieldGroup->setFieldTemplateReference($feedback->getFieldTemplateReference());
         $devFieldGroup->initialize(Yii::$app->request->post('_fieldTemplateId'));
 
         //try to load validate and save field via pjax
@@ -527,7 +309,7 @@ class DeveloperController extends Controller
         }
 
         $devFilesGroup = new DevFilesGroup();
-        $devFilesGroup->setFilesTemplateReference($feedbackStage->getFileTemplateReference());
+        $devFilesGroup->setFilesTemplateReference($feedback->getFileTemplateReference());
         $devFilesGroup->initialize(Yii::$app->request->post('_fileTemplateId'));
 
         //try to load validate and save field via pjax
@@ -544,7 +326,7 @@ class DeveloperController extends Controller
         }
 
         $devImagesGroup = new DevImagesGroup();
-        $devImagesGroup->setImagesTemplateReference($feedbackStage->getImageTemplateReference());
+        $devImagesGroup->setImagesTemplateReference($feedback->getImageTemplateReference());
         $devImagesGroup->initialize(Yii::$app->request->post('_imageTemplateId'));
 
         //try to load validate and save image block via pjax
@@ -561,7 +343,7 @@ class DeveloperController extends Controller
         }
 
         $devConditionsGroup = new DevConditionsGroup();
-        $devConditionsGroup->setConditionsTemplateReference($feedbackStage->getConditionTemplateReference());
+        $devConditionsGroup->setConditionsTemplateReference($feedback->getConditionTemplateReference());
         $devConditionsGroup->initialize(Yii::$app->request->post('_conditionTemplateId'));
 
         //try to load validate and save image block via pjax
@@ -577,30 +359,30 @@ class DeveloperController extends Controller
             ]);
         }
 
-        $fieldTemplatesTranslatable = FieldTemplate::getListQuery($feedbackStage->getFieldTemplateReference())
+        $fieldTemplatesTranslatable = FieldTemplate::getListQuery($feedback->getFieldTemplateReference())
             ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_TRANSLATABLE])
             ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $fieldTemplatesSingle = FieldTemplate::getListQuery($feedbackStage->getFieldTemplateReference())
+        $fieldTemplatesSingle = FieldTemplate::getListQuery($feedback->getFieldTemplateReference())
             ->andWhere(['language_type' => FieldTemplate::LANGUAGE_TYPE_SINGLE])
             ->orderBy([FieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $filesBlocks = FilesBlock::getListQuery($feedbackStage->getFileTemplateReference())
+        $filesBlocks = FilesBlock::getListQuery($feedback->getFileTemplateReference())
             ->orderBy([FilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $imagesBlocks = ImagesBlock::getListQuery($feedbackStage->getImageTemplateReference())
+        $imagesBlocks = ImagesBlock::getListQuery($feedback->getImageTemplateReference())
             ->orderBy([ImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $conditionTemplates = ConditionTemplate::getListQuery($feedbackStage->getConditionTemplateReference())
+        $conditionTemplates = ConditionTemplate::getListQuery($feedback->getConditionTemplateReference())
             ->orderBy([ConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/developer/stage_page_templates', [
-            'feedbackStage'             => $feedbackStage,
+        return $this->render('/developer/feedback_page_templates', [
+            'feedback'                   => $feedback,
             'devFieldGroup'              => $devFieldGroup,
             'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
             'fieldTemplatesSingle'       => $fieldTemplatesSingle,
@@ -620,16 +402,15 @@ class DeveloperController extends Controller
      * @throws \Exception
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
-    public function actionStageInputTemplates($id)
+    public function actionFeedbackInputTemplates($id)
     {
-        /** @var FeedbackStages $feedbackStage */
-        $feedbackStage = FeedbackStages::findOne($id);
+        $feedback = Feedback::getInstance($id);
 
-        if (!$feedbackStage) throw new NotFoundHttpException('Wrong id of feedback stage = ' . $id);
+        if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
         //initialize fields group
         $devInputFieldGroup = new DevInputFieldsGroup();
-        $devInputFieldGroup->setInputFieldTemplateReference($feedbackStage->getInputFieldTemplateReference());
+        $devInputFieldGroup->setInputFieldTemplateReference($feedback->getInputFieldTemplateReference());
         $devInputFieldGroup->initialize(Yii::$app->request->post('_inputFieldTemplateId'));
 
         //try to load validate and save field via pjax
@@ -646,7 +427,7 @@ class DeveloperController extends Controller
         }
 
         $devInputFilesGroup = new DevInputFilesGroup();
-        $devInputFilesGroup->setInputFilesTemplateReference($feedbackStage->getInputFileTemplateReference());
+        $devInputFilesGroup->setInputFilesTemplateReference($feedback->getInputFileTemplateReference());
         $devInputFilesGroup->initialize(Yii::$app->request->post('_inputFilesBlockId'));
 
         //try to load validate and save field via pjax
@@ -663,7 +444,7 @@ class DeveloperController extends Controller
         }
 
         $devInputImagesGroup = new DevInputImagesGroup();
-        $devInputImagesGroup->setInputImagesTemplateReference($feedbackStage->getInputImageTemplateReference());
+        $devInputImagesGroup->setInputImagesTemplateReference($feedback->getInputImageTemplateReference());
         $devInputImagesGroup->initialize(Yii::$app->request->post('_inputImageBlockId'));
 
         //try to load validate and save image block via pjax
@@ -679,7 +460,7 @@ class DeveloperController extends Controller
         }
 
         $devInputConditionsGroup = new DevInputConditionsGroup();
-        $devInputConditionsGroup->setInputConditionsTemplateReference($feedbackStage->getInputConditionTemplateReference());
+        $devInputConditionsGroup->setInputConditionsTemplateReference($feedback->getInputConditionTemplateReference());
         $devInputConditionsGroup->initialize(Yii::$app->request->post('_inputConditionTemplateId'));
 
         //try to load validate and save image block via pjax
@@ -695,24 +476,24 @@ class DeveloperController extends Controller
             ]);
         }
 
-        $inputFieldTemplates = InputFieldTemplate::getListQuery($feedbackStage->getInputFieldTemplateReference())
+        $inputFieldTemplates = InputFieldTemplate::getListQuery($feedback->getInputFieldTemplateReference())
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $inputFilesBlocks = InputFilesBlock::getListQuery($feedbackStage->getInputFileTemplateReference())
+        $inputFilesBlocks = InputFilesBlock::getListQuery($feedback->getInputFileTemplateReference())
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $inputImagesBlocks = InputImagesBlock::getListQuery($feedbackStage->getInputImageTemplateReference())
+        $inputImagesBlocks = InputImagesBlock::getListQuery($feedback->getInputImageTemplateReference())
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        $inputConditionTemplates = InputConditionTemplate::getListQuery($feedbackStage->getInputConditionTemplateReference())
+        $inputConditionTemplates = InputConditionTemplate::getListQuery($feedback->getInputConditionTemplateReference())
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/developer/stage_input_templates', [
-            'feedbackStage'           => $feedbackStage,
+        return $this->render('/developer/feedback_input_templates', [
+            'feedback'                => $feedback,
             'devInputFieldGroup'      => $devInputFieldGroup,
             'inputFieldTemplates'     => $inputFieldTemplates,
             'devInputFilesGroup'      => $devInputFilesGroup,

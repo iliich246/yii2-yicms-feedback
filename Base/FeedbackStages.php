@@ -347,21 +347,21 @@ class FeedbackStages extends ActiveRecord implements
     {
         if (!$this->isActiveState()) {
 
-            $state = new FeedbackState();
-            $state->stage_id = $this->id;
+            $state                         = new FeedbackState();
+            $state->stage_id               = $this->id;
             $state->input_fields_reference = Field::generateReference();
 
             $state->save(false);
 
             foreach ($this->inputFields as $templateId => $inputField) {
-                $fieldState = new InputFieldsStates();
-                $fieldState->state_id = $state->id;
+                $fieldState                            = new InputFieldsStates();
+                $fieldState->state_id                  = $state->id;
                 $fieldState->common_fields_template_id = $templateId;
 
                 $fieldState->save();
 
-                $inputField->common_fields_template_id = $templateId;
-                $inputField->field_reference = $state->input_fields_reference;
+                $inputField->feedback_input_fields_template_id = $templateId;
+                $inputField->input_field_reference = $state->input_fields_reference;
 
                 $inputField->save();
             }

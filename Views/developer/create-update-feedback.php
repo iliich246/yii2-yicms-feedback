@@ -136,9 +136,18 @@ $this->registerJs($js, $this::POS_READY);
                             Feedback name translates
                         </a>
 
-                        <a href="<?= Url::toRoute(['stages-list', 'id' => $feedback->id]) ?>"
+                        <a href="<?= Url::toRoute([
+                            '/feedback/dev/feedback-page-templates', 'id' => $feedback->id
+                        ]) ?>"
                            class="btn btn-primary">
-                            Feedback stages list
+                            Feedback page templates
+                        </a>
+
+                        <a href="<?= Url::toRoute([
+                            '/feedback/dev/feedback-input-templates', 'id' => $feedback->id
+                        ]) ?>"
+                           class="btn btn-primary">
+                            Feedback input templates
                         </a>
                     </div>
                 </div>
@@ -147,7 +156,9 @@ $this->registerJs($js, $this::POS_READY);
             <?php Pjax::begin([
                 'options' => [
                     'id' => 'update-feedback-container',
-                ]
+                ],
+                'enablePushState'    => false,
+                'enableReplaceState' => false
             ]) ?>
             <?php $form = ActiveForm::begin([
                 'id' => 'create-update-feedback-form',
