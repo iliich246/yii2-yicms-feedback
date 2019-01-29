@@ -2,11 +2,13 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
+use Iliich246\YicmsCommon\Base\NonexistentInterface;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Fields\Field;
@@ -67,6 +69,7 @@ use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
  */
 class Feedback extends ActiveRecord implements
     SortOrderInterface,
+    NonexistentInterface,
     FieldsInterface,
     FieldReferenceInterface,
     FilesInterface,
@@ -108,6 +111,10 @@ class Feedback extends ActiveRecord implements
     private $imageInputHandler;
     /** @var ConditionsHandler instance of input condition handler object */
     private $conditionInputHandler;
+    /** @var bool keep nonexistent state of feedback */
+    private $isNonexistent = false;
+    /** @var string keeps name of nonexistent feedback */
+    private $nonexistentName;
 
     /**
      * @inheritdoc
@@ -808,5 +815,37 @@ class Feedback extends ActiveRecord implements
     public function getConditionInputModel()
     {
         // TODO: Implement getConditionInputModel() method.
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNonexistent()
+    {
+        return $this->isNonexistent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistent()
+    {
+        $this->isNonexistent = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNonexistentName()
+    {
+        return $this->nonexistentName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistentName($name)
+    {
+        $this->nonexistentName = $name;
     }
 }

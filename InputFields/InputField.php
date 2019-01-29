@@ -5,6 +5,7 @@ namespace Iliich246\YicmsFeedback\InputFields;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\validators\SafeValidator;
+use Iliich246\YicmsCommon\Base\NonexistentInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
@@ -23,12 +24,17 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  */
 class InputField extends ActiveRecord implements
     ValidatorBuilderInterface,
-    ValidatorReferenceInterface
+    ValidatorReferenceInterface,
+    NonexistentInterface
 {
     /** @var InputFieldTemplate instance of field template */
     private $inputTemplate;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
+    /** @var bool if true field will behaviour as nonexistent   */
+    private $isNonexistent = false;
+    /** @var string value for keep program name in nonexistent mode */
+    private $nonexistentProgramName;
 
     /**
      * @inheritdoc
@@ -209,5 +215,37 @@ class InputField extends ActiveRecord implements
         }
 
         return $fieldTemplate->validator_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNonexistent()
+    {
+        return $this->isNonexistent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistent()
+    {
+        $this->isNonexistent = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNonexistentName()
+    {
+        return $this->nonexistentProgramName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistentName($name)
+    {
+        $this->nonexistentProgramName = $name;
     }
 }
