@@ -3,23 +3,20 @@
 namespace Iliich246\YicmsFeedback\InputFields;
 
 use Iliich246\YicmsCommon\Base\AbstractHandler;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\NonexistentInterface;
-use Iliich246\YicmsCommon\Fields\Field;
-use Iliich246\YicmsCommon\Fields\FieldTemplate;
 
 /**
  * Class FieldsInputHandler
  *
  * Object of this class must aggregate any object, that must implement input fields functionality.
  *
- * @property FieldInputReferenceInterface|NonexistentInterface $aggregator
+ * @property FieldInputReferenceInterface|NonexistentInterface|FictiveInterface $aggregator
  *
  * @author iliich246 <iliich246@gmail.com>
  */
 class FieldsInputHandler extends AbstractHandler
 {
-    const FICTIVE_PREFIX = '__fictive__';
-
     /**
      * FieldsInputHandler constructor.
      * @param FieldInputReferenceInterface $aggregator
@@ -36,7 +33,13 @@ class FieldsInputHandler extends AbstractHandler
      */
     public function getInputField($name)
     {
-        return $this->forRealField($name);
+        if ($this->aggregator->isNonexistent()) {
+            $nonexistentInputField = new InputField();
+            $nonexistentInputField->setNonexistent();
+            $nonexistentInputField->setNonexistentName($name);
+
+            return $nonexistentInputField;
+        }
 
         if (!$this->aggregator->isFictive()) return $this->forRealField($name);
 
@@ -50,12 +53,12 @@ class FieldsInputHandler extends AbstractHandler
      */
     private function forFictiveField($name)
     {
-        return $this->getOrSet(self::FICTIVE_PREFIX . $name, function() use($name) {
+        return $this->getOrSet($name, function() use($name) {
             $fictiveField = new InputField();
-            //$fictiveField->setFictive();
+            $fictiveField->setFictive();
 
-            /** @var FieldTemplate $template */
-            $template =  FieldTemplate::getInstance($this->aggregator->getInputFieldTemplateReference(), $name);
+            /** @var InputFieldTemplate $template */
+            $template =  InputFieldTemplate::getInstance($this->aggregator->getInputFieldTemplateReference(), $name);
             $fictiveField->setTemplate($template);
 
             return $fictiveField;
@@ -69,14 +72,6 @@ class FieldsInputHandler extends AbstractHandler
      */
     private function forRealField($name)
     {
-        if ($this->aggregator->isNonexistent()) {
-            $nonexistentInputField = new Field();
-            $nonexistentInputField->setNonexistent();
-            $nonexistentInputField->setNonexistentName($name);
-
-            return $nonexistentInputField;
-        }
-
         return $this->getOrSet($name, function() use($name) {
             return InputField::getInstance(
                 $this->aggregator->getInputFieldTemplateReference(),

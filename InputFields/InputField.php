@@ -2,9 +2,13 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
+use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\validators\SafeValidator;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\NonexistentInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
@@ -25,16 +29,21 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
 class InputField extends ActiveRecord implements
     ValidatorBuilderInterface,
     ValidatorReferenceInterface,
+    FictiveInterface,
     NonexistentInterface
 {
     /** @var InputFieldTemplate instance of field template */
     private $inputTemplate;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
+    /** @var InputFieldsNamesTranslatesDb[] buffer for language */
+    private $inputFieldNamesTranslations = [];
     /** @var bool if true field will behaviour as nonexistent   */
     private $isNonexistent = false;
     /** @var string value for keep program name in nonexistent mode */
     private $nonexistentProgramName;
+    /** @var bool keeps fictive state of this input field */
+    private $isFictive = false;
 
     /**
      * @inheritdoc
@@ -42,6 +51,28 @@ class InputField extends ActiveRecord implements
     public static function tableName()
     {
         return '{{%feedback_input_fields_represents}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function init()
+    {
+        //if (defined('YICMS_ALERTS')) $this->setAlertMode();
+
+        //$this->unic = uniqid();
+
+        $this->on(self::EVENT_AFTER_FIND, function() {
+
+            $validators = $this->getValidatorBuilder()->build();
+
+            if (!$validators) return;
+
+            foreach($validators as $validator)
+                $this->validators[] = $validator;
+        });
+
+        parent::init();
     }
 
     /**
@@ -59,9 +90,74 @@ class InputField extends ActiveRecord implements
     /**
      * @inheritdoc
      */
+    public function attributeLabels()
+    {
+        return [
+            'value' => $this->name(),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function delete()
     {
         parent::delete();
+    }
+
+    public function setTemplate(InputFieldTemplate $inputTemplate)
+    {
+        $this->inputTemplate = $inputTemplate;
+    }
+
+    /**
+     * Returns name of field
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name()
+    {
+        $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFieldName && trim($inputFieldName->admin_name) && CommonModule::isUnderAdmin())
+            return $inputFieldName->admin_name;
+
+        if ((!$inputFieldName || !trim($inputFieldName->admin_name)) && CommonModule::isUnderAdmin())
+            return $this->getTemplate()->program_name;
+
+        if ($inputFieldName && trim($inputFieldName->admin_name) && CommonModule::isUnderDev())
+            return $inputFieldName->admin_name . ' (' . $this->getTemplate()->program_name . ')';
+
+        if ((!$inputFieldName || !trim($inputFieldName->admin_name)) && CommonModule::isUnderDev())
+            return 'No translate for field \'' . $this->getTemplate()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+
+    }
+
+    /**
+     * Returns description of field
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description()
+    {
+        $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFieldName)
+            return $inputFieldName->admin_description;
+
+        return false;
+    }
+
+    public function devName()
+    {
+
+    }
+
+    public function devDescription()
+    {
+
     }
 
     /**
@@ -247,5 +343,47 @@ class InputField extends ActiveRecord implements
     public function setNonexistentName($name)
     {
         $this->nonexistentProgramName = $name;
+    }
+
+    /**
+     * Returns buffered name translate db
+     * @param LanguagesDb $language
+     * @return InputFieldsNamesTranslatesDb
+     */
+    public function getInputFieldNameTranslate(LanguagesDb $language)
+    {
+        if (!array_key_exists($language->id, $this->inputFieldNamesTranslations)) {
+            $this->inputFieldNamesTranslations[$language->id] =
+                InputFieldsNamesTranslatesDb::find()->where([
+                'feedback_input_fields_template_id' => $this->getTemplate()->id,
+                'common_language_id'                => $language->id,
+            ])->one();
+        }
+
+        return $this->inputFieldNamesTranslations[$language->id];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }

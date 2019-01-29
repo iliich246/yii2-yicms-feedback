@@ -31,8 +31,6 @@ use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
 use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
-use Iliich246\YicmsFeedback\InputFields\InputField;
-use Iliich246\YicmsFeedback\InputFields\InputFieldsStates;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
@@ -68,6 +66,7 @@ use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
  * @author iliich246 <iliich246@gmail.com>
  */
 class Feedback extends ActiveRecord implements
+    FictiveInterface,
     SortOrderInterface,
     NonexistentInterface,
     FieldsInterface,
@@ -115,6 +114,8 @@ class Feedback extends ActiveRecord implements
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
     private $nonexistentName;
+    /** @var bool keeps fictive state of this input feedback */
+    private $isFictive = true;
 
     /**
      * @inheritdoc
@@ -357,7 +358,7 @@ class Feedback extends ActiveRecord implements
      */
     public function initialize()
     {
-        return $this->activeStage->initialize();
+
     }
 
     /**
@@ -368,7 +369,7 @@ class Feedback extends ActiveRecord implements
      */
     public function load($data, $formName = null)
     {
-        return $this->activeStage->load($data, $formName);
+
     }
 
     /**
@@ -379,15 +380,7 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-        return $this->activeStage->validate($attributeNames, $clearErrors);
-    }
 
-    /**
-     * TEMP METHOD!!!
-     */
-    public function getActiveStage()
-    {
-        return $this->activeStage;
     }
 
     /**
@@ -398,7 +391,7 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
-        return $this->activeStage->handle();
+
     }
 
     /**
@@ -654,17 +647,6 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputField($name)
     {
-//        if ($this->isFictive()) {
-//            $fictiveField = new InputField();
-//            $fictiveField->setFictive();
-//
-//            /** @var FieldTemplate $template */
-//            $template = FieldTemplate::getInstance($this->input_field_template_reference, $name);
-//            $fictiveField->setTemplate($template);
-//
-//            return $fictiveField;
-//        }
-
         return $this->getInputFieldHandler()->getInputField($name);
     }
 
@@ -847,5 +829,29 @@ class Feedback extends ActiveRecord implements
     public function setNonexistentName($name)
     {
         $this->nonexistentName = $name;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }
