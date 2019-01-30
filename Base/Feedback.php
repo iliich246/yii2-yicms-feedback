@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -110,6 +109,8 @@ class Feedback extends ActiveRecord implements
     private $imageInputHandler;
     /** @var ConditionsHandler instance of input condition handler object */
     private $conditionInputHandler;
+
+    private $inputFieldsGroup;
     /** @var bool keep nonexistent state of feedback */
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
