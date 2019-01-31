@@ -17,9 +17,9 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  * @property string $input_file_template_reference
  * @property string $validator_reference
  * @property integer $input_file_order
- * @property bool $visible
+ * @property bool $active
  * @property bool $editable
- * @property bool $max_files *
+ * @property bool $max_files
  *
  * @author iliich246 <iliich246@gmail.com>
  */
@@ -43,7 +43,7 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
      */
     public function init()
     {
-        $this->visible  = true;
+        $this->active   = true;
         $this->editable = true;
         parent::init();
     }
@@ -64,7 +64,7 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['visible', 'editable'], 'boolean'],
+            [['active', 'editable'], 'boolean'],
             ['max_files', 'integer', 'min' => 0],
             ['max_files', 'default', 'value' => 0]
         ]);
@@ -77,9 +77,9 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     {
         $prevScenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['visible', 'editable', 'max_files']);
+            ['active', 'editable', 'max_files']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['visible', 'editable', 'max_files']);
+            ['active', 'editable', 'max_files']);
 
         return $scenarios;
     }

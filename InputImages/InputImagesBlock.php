@@ -17,7 +17,7 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  * @property string $validator_reference
  * @property integer $input_image_order
  * @property bool $editable
- * @property bool $visible
+ * @property bool $active
  * @property integer $max_images
  *
  * @author iliich246 <iliich246@gmail.com>
@@ -42,7 +42,7 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
      */
     public function init()
     {
-        $this->visible  = true;
+        $this->active   = true;
         $this->editable = true;
         $this->max_images = 0;
         parent::init();
@@ -64,7 +64,7 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['editable', 'visible'], 'boolean'],
+            [['editable', 'active'], 'boolean'],
             [['max_images',], 'integer', 'min' => 0],
         ]);
     }
@@ -78,13 +78,13 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
             [
                 'editable',
-                'visible',
+                'active',
                 'max_images',
             ]);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
             [
                 'editable',
-                'visible',
+                'active',
                 'max_images',
             ]);
 

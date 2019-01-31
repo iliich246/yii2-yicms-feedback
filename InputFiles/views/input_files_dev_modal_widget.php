@@ -170,7 +170,7 @@ else
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-xs-12 ">
-                        <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'visible')->checkbox() ?>
+                        <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'active')->checkbox() ?>
                     </div>
                     <div class="col-sm-6 col-xs-12 ">
                         <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'editable')->checkbox() ?>
