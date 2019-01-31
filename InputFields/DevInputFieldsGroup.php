@@ -111,7 +111,7 @@ class DevInputFieldsGroup extends AbstractGroup
             $needSaveFieldTemplate = true;
 
         if (!$needSaveFieldTemplate &&
-            $this->inputFieldTemplate->getOldAttribute('visible') != $this->inputFieldTemplate->visible)
+            $this->inputFieldTemplate->getOldAttribute('active') != $this->inputFieldTemplate->active)
             $needSaveFieldTemplate = true;
 
         if (!$needSaveFieldTemplate &&

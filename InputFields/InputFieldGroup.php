@@ -2,10 +2,10 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
  * Class InputFieldGroup
@@ -14,8 +14,10 @@ use Iliich246\YicmsCommon\Base\AbstractGroup;
  */
 class InputFieldGroup extends AbstractGroup
 {
-    /** @var string inputFieldTemplateReference value for current group */
+    /** @var FieldInputReferenceInterface|FieldInputInterface inputFieldTemplateReference value for current group */
     protected $fieldInputReference;
+    /** @var InputField[] for working with forms */
+    public $inputFields;
 
     /**
      * Sets fieldInputReference object for this
@@ -26,9 +28,25 @@ class InputFieldGroup extends AbstractGroup
         $this->fieldInputReference = $fieldInputReference;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function initialize($inputFieldTemplateId = null)
     {
+        /** @var InputFieldTemplate[] $inputFieldTemplates */
+        $inputFieldTemplates = InputFieldTemplate::find()->where([
+            'input_field_template_reference' => $this->fieldInputReference->getInputFieldTemplateReference(),
+            'active'                         => true,
+        ])->all();
 
+        foreach($inputFieldTemplates as $inputFieldTemplate) {
+            /** @var InputField $inputField */
+            $inputField = $this->fieldInputReference->getInputFieldHandler()->getInputField($inputFieldTemplate->program_name);
+
+            $this->inputFields["$inputFieldTemplate->id"] = $inputField;
+        }
+
+        return $this->inputFields;
     }
 
     /**
@@ -36,7 +54,7 @@ class InputFieldGroup extends AbstractGroup
      */
     public function validate()
     {
-
+        return Model::validateMultiple($this->inputFields);
     }
 
     /**
@@ -44,7 +62,7 @@ class InputFieldGroup extends AbstractGroup
      */
     public function load($data)
     {
-
+        return Model::loadMultiple($this->inputFields, $data);
     }
 
     /**

@@ -13,7 +13,7 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  * @property string $input_field_template_reference
  * @property string $validator_reference
  * @property integer $input_field_order
- * @property bool $visible
+ * @property bool $active
  * @property bool $editable
  *
  * @package Iliich246\YicmsFeedback\InputFields
@@ -30,7 +30,7 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
      */
     public function init()
     {
-        $this->visible  = true;
+        $this->active   = true;
         $this->editable = true;
         parent::init();
     }
@@ -49,7 +49,7 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['visible', 'editable'], 'boolean'],
+            [['active', 'editable'], 'boolean'],
         ]);
     }
 
@@ -60,9 +60,9 @@ class InputFieldTemplate extends AbstractTemplate implements ValidatorReferenceI
     {
         $prevScenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['visible', 'editable']);
+            ['active', 'editable']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['visible', 'editable']);
+            ['active', 'editable']);
 
         return $scenarios;
     }

@@ -2,14 +2,14 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
-use Iliich246\YicmsCommon\CommonModule;
-use Iliich246\YicmsCommon\Languages\Language;
-use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\validators\SafeValidator;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\NonexistentInterface;
+use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
@@ -22,6 +22,7 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  * @property integer $feedback_input_fields_template_id
  * @property integer $input_field_reference
  * @property string $value
+ * @property string $active
  * @property integer $editable
  *
  * @author iliich246 <iliich246@gmail.com>
@@ -62,6 +63,7 @@ class InputField extends ActiveRecord implements
 
         //$this->unic = uniqid();
 
+        /*
         $this->on(self::EVENT_AFTER_FIND, function() {
 
             $validators = $this->getValidatorBuilder()->build();
@@ -71,6 +73,7 @@ class InputField extends ActiveRecord implements
             foreach($validators as $validator)
                 $this->validators[] = $validator;
         });
+        */
 
         parent::init();
     }
@@ -158,6 +161,15 @@ class InputField extends ActiveRecord implements
     public function devDescription()
     {
 
+    }
+
+    /**
+     * Returns true, if field is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        return !!$this->getTemplate()->active;
     }
 
     /**

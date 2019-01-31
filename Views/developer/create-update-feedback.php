@@ -190,7 +190,7 @@ $this->registerJs($js, $this::POS_READY);
 
             <div class="row">
                 <div class="col-xs-12">
-                    <?= $form->field($feedback, 'visible')->checkbox() ?>
+                    <?= $form->field($feedback, 'active')->checkbox() ?>
                 </div>
             </div>
 

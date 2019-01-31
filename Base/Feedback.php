@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -48,7 +49,7 @@ use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
  * @property integer $feedback_order
  * @property integer $type
  * @property bool $editable
- * @property bool $visible
+ * @property bool $active
  * @property string $stage_field_template_reference
  * @property string $stage_file_template_reference
  * @property string $stage_image_template_reference
@@ -109,8 +110,8 @@ class Feedback extends ActiveRecord implements
     private $imageInputHandler;
     /** @var ConditionsHandler instance of input condition handler object */
     private $conditionInputHandler;
-
-    private $inputFieldsGroup;
+    /** @var InputFieldGroup instance */
+    public $inputFieldsGroup;
     /** @var bool keep nonexistent state of feedback */
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
@@ -131,7 +132,7 @@ class Feedback extends ActiveRecord implements
      */
     public function init()
     {
-        $this->visible  = true;
+        $this->active   = true;
         $this->editable = true;
 
         parent::init();
@@ -145,7 +146,7 @@ class Feedback extends ActiveRecord implements
         return [
             'program_name'   => 'Program name',
             'editable'       => 'Editable',
-            'visible'        => 'Visible',
+            'active'         => 'Active',
         ];
     }
 
@@ -156,10 +157,10 @@ class Feedback extends ActiveRecord implements
     {
         return [
             self::SCENARIO_CREATE => [
-                'program_name', 'editable', 'visible'
+                'program_name', 'editable', 'active'
             ],
             self::SCENARIO_UPDATE => [
-                'program_name', 'editable', 'visible'
+                'program_name', 'editable', 'active'
             ],
         ];
     }
@@ -173,7 +174,7 @@ class Feedback extends ActiveRecord implements
             ['program_name', 'required', 'message' => 'Obligatory input field'],
             ['program_name', 'string', 'max' => '50', 'tooLong' => 'Program name must be less than 50 symbols'],
             ['program_name', 'validateProgramName'],
-            [['visible', 'editable'], 'boolean']
+            [['active', 'editable'], 'boolean']
         ];
     }
 
@@ -359,7 +360,11 @@ class Feedback extends ActiveRecord implements
      */
     public function initialize()
     {
+        $this->inputFieldsGroup = new InputFieldGroup();
+        $this->inputFieldsGroup->setFieldInputReference($this);
+        return $this->inputFieldsGroup->initialize();
 
+        //TODO: make with other input objects
     }
 
     /**
@@ -370,7 +375,7 @@ class Feedback extends ActiveRecord implements
      */
     public function load($data, $formName = null)
     {
-
+        return $this->inputFieldsGroup->load($data);
     }
 
     /**
@@ -381,7 +386,7 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-
+        return $this->inputFieldsGroup->validate();
     }
 
     /**
@@ -392,7 +397,7 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
-
+        throw new \yii\base\Exception(print_r(1, true));
     }
 
     /**
