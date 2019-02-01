@@ -45,6 +45,8 @@ class InputField extends ActiveRecord implements
     private $nonexistentProgramName;
     /** @var bool keeps fictive state of this input field */
     private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
 
     /**
      * @inheritdoc
@@ -103,15 +105,65 @@ class InputField extends ActiveRecord implements
     /**
      * @inheritdoc
      */
-    public function delete()
+    public function load($data, $formName = null)
     {
-        parent::delete();
+        if ($this->isNonexistent()) return false;
+
+        if (parent::load($data, $formName)) {
+            $this->isLoaded = true;
+            return true;
+        }
+
+        return false;
     }
 
+    /**
+     * Returns true if this model is loaded
+     * @return bool
+     */
+    public function isLoaded()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->isLoaded;
+    }
+
+    /**
+     * Makes is loaded method for group of models
+     * @param $models
+     * @return bool
+     */
+    public static function isLoadedMultiple($models)
+    {
+        /** @var InputField $model */
+        foreach ($models as $model) {
+            if (!$model->isLoaded()) return false;
+
+        }
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return parent::delete();
+    }
+
+    /**
+     * Sets InputFieldTemplate for this input field
+     * @param InputFieldTemplate $inputTemplate
+     */
     public function setTemplate(InputFieldTemplate $inputTemplate)
     {
         $this->inputTemplate = $inputTemplate;
     }
+
+
 
     /**
      * Returns name of field
@@ -120,6 +172,8 @@ class InputField extends ActiveRecord implements
      */
     public function name()
     {
+        if ($this->isNonexistent()) return '';
+
         $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
 
         if ($inputFieldName && trim($inputFieldName->admin_name) && CommonModule::isUnderAdmin())
@@ -145,6 +199,8 @@ class InputField extends ActiveRecord implements
      */
     public function description()
     {
+        if ($this->isNonexistent()) return '';
+
         $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
 
         if ($inputFieldName)
@@ -155,12 +211,12 @@ class InputField extends ActiveRecord implements
 
     public function devName()
     {
-
+        if ($this->isNonexistent()) return '';
     }
 
     public function devDescription()
     {
-
+        if ($this->isNonexistent()) return '';
     }
 
     /**
@@ -169,6 +225,8 @@ class InputField extends ActiveRecord implements
      */
     public function isActive()
     {
+        if ($this->isNonexistent()) return false;
+
         return !!$this->getTemplate()->active;
     }
 

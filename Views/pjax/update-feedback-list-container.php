@@ -25,7 +25,7 @@ use yii\helpers\Url;
                 </a>
             </div>
             <div class="col-xs-2 list-controls">
-                <?php if ($oneFeedback->visible): ?>
+                <?php if ($oneFeedback->active): ?>
                     <span class="glyphicon glyphicon-eye-open"></span>
                 <?php else: ?>
                     <span class="glyphicon glyphicon-eye-close"></span>

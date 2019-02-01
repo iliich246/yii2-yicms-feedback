@@ -54,12 +54,21 @@ class FieldsInputHandler extends AbstractHandler
     private function forFictiveField($name)
     {
         return $this->getOrSet($name, function() use($name) {
+            /** @var InputFieldTemplate $template */
+            $template =  InputFieldTemplate::getInstance($this->aggregator->getInputFieldTemplateReference(), $name);
+
+            if (!$template) {
+                $nonexistentInputField = new InputField();
+                $nonexistentInputField->setNonexistent();
+                $nonexistentInputField->setNonexistentName($name);
+
+                return $nonexistentInputField;
+            }
+
             $fictiveField = new InputField();
             $fictiveField->setFictive();
 
-            /** @var InputFieldTemplate $template */
-            $template =  InputFieldTemplate::getInstance($this->aggregator->getInputFieldTemplateReference(), $name);
-            $fictiveField->setTemplate($template);
+           $fictiveField->setTemplate($template);
 
             return $fictiveField;
         });

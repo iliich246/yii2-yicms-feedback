@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputFields\InputField;
 use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 use Yii;
 use yii\db\ActiveRecord;
@@ -390,14 +391,34 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
-     * Proxy save method to active stage
      * @param bool|true $runValidation
      * @param null $attributeNames
-     * @return bool|void
+     * @throws FeedbackException
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
-        throw new \yii\base\Exception(print_r(1, true));
+        if (!InputField::isLoadedMultiple($this->inputFieldsGroup->inputFields)) {
+
+            $result = '';
+
+            foreach($this->inputFieldsGroup->inputFields as $inputField)
+                if (!$inputField->isLoaded())
+                    $result .= '"' . $inputField->getTemplate()->program_name . '", ';
+
+            $result = substr($result , 0, -2);
+
+            Yii::warning(
+                'In feedback form with name "' .
+                $this->program_name . '" don`t used next active input fields: ' .
+                $result,  __METHOD__);
+
+            if (defined('YICMS_STRICT')) {
+                throw new FeedbackException('In feedback form with name "' .
+                    $this->program_name . '" don`t used next active input fields: ' .
+                    $result);
+            }
+        }
+
     }
 
     /**
