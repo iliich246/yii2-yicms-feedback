@@ -177,7 +177,7 @@ else
                 </div>
                 <div class="row">
                     <div class="col-sm-6 col-xs-12 ">
-                        <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'visible')->checkbox() ?>
+                        <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'active')->checkbox() ?>
                     </div>
                     <div class="col-sm-6 col-xs-12 ">
                         <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'editable')->checkbox() ?>

@@ -23,7 +23,7 @@ class m181025_181406_feedback_init extends Migration
             'type'                               => $this->smallInteger(),
             'feedback_order'                     => $this->integer(),
             'editable'                           => $this->boolean(),
-            'visible'                            => $this->boolean(),
+            'active'                             => $this->boolean(),
             'stage_field_template_reference'     => $this->string(),
             'stage_file_template_reference'      => $this->string(),
             'stage_image_template_reference'     => $this->string(),
@@ -108,7 +108,7 @@ class m181025_181406_feedback_init extends Migration
             'program_name'                   => $this->string(50),
             'input_field_order'              => $this->integer(),
             'editable'                       => $this->boolean(),
-            'visible'                        => $this->boolean(),
+            'active'                         => $this->boolean(),
         ]);
 
         $this->createIndex(
@@ -198,7 +198,7 @@ class m181025_181406_feedback_init extends Migration
             'program_name'                  => $this->string(50),
             'input_file_order'              => $this->integer(),
             'editable'                      => $this->boolean(),
-            'visible'                       => $this->boolean(),
+            'active'                        => $this->boolean(),
             'max_files'                     => $this->integer(),
         ]);
 
@@ -294,7 +294,7 @@ class m181025_181406_feedback_init extends Migration
             'validator_reference'            => $this->string(),
             'program_name'                   => $this->string(50),
             'input_image_order'              => $this->integer(),
-            'visible'                        => $this->boolean(),
+            'active'                            => $this->boolean(),
             'editable'                       => $this->boolean(),
             'max_images'                     => $this->smallInteger(),
         ]);
@@ -391,7 +391,7 @@ class m181025_181406_feedback_init extends Migration
             'program_name'                       => $this->string(50),
             'input_condition_order'              => $this->integer(),
             'editable'                           => $this->boolean(),
-            'visible'                            => $this->boolean(),
+            'active'                            => $this->boolean(),
         ]);
 
         $this->createIndex(

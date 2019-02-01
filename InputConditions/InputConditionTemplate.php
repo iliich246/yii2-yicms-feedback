@@ -13,7 +13,7 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  * @property string $validator_reference
  * @property integer $input_condition_order
  * @property bool $editable
- * @property bool $visible
+ * @property bool $active
  *
  * @author iliich246 <iliich246@gmail.com>
  */
@@ -28,7 +28,7 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     public function init()
     {
         $this->editable = true;
-        $this->visible  = true;
+        $this->active   = true;
         parent::init();
     }
 
@@ -46,7 +46,7 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     public function rules()
     {
         return array_merge(parent::rules(), [
-            [['editable', 'visible'], 'boolean'],
+            [['editable', 'active'], 'boolean'],
         ]);
     }
 
@@ -57,9 +57,9 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     {
         $prevScenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['editable', 'visible']);
+            ['editable', 'active']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['editable', 'visible']);
+            ['editable', 'active']);
 
         return $scenarios;
     }
