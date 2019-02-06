@@ -425,8 +425,8 @@ class InputField extends ActiveRecord implements
         if (!array_key_exists($language->id, $this->inputFieldNamesTranslations)) {
             $this->inputFieldNamesTranslations[$language->id] =
                 InputFieldsNamesTranslatesDb::find()->where([
-                'feedback_input_fields_template_id' => $this->getTemplate()->id,
-                'common_language_id'                => $language->id,
+                    'feedback_input_fields_template_id' => $this->getTemplate()->id,
+                    'common_language_id'                => $language->id,
             ])->one();
         }
 

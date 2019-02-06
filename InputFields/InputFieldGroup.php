@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\InputFields;
 
+use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
@@ -43,6 +44,7 @@ class InputFieldGroup extends AbstractGroup
             /** @var InputField $inputField */
             $inputField = $this->fieldInputReference->getInputFieldHandler()->getInputField($inputFieldTemplate->program_name);
 
+            $inputField->prepareValidators();
             $this->inputFields["$inputFieldTemplate->id"] = $inputField;
         }
 
@@ -54,6 +56,25 @@ class InputFieldGroup extends AbstractGroup
      */
     public function validate()
     {
+        if (!InputField::isLoadedMultiple($this->inputFields)) {
+            $result = '';
+
+            foreach($this->inputFields as $inputField)
+                if (!$inputField->isLoaded())
+                    $result .= '"' . $inputField->getTemplate()->program_name . '", ';
+
+            $result = substr($result , 0, -2);
+
+            Yii::error(
+                'In feedback form don`t used next active input fields: ' .
+                $result,  __METHOD__);
+
+            if (defined('YICMS_STRICT')) {
+                throw new FeedbackException('In feedback form don`t used next active input fields: ' .
+                    $result);
+            }
+        }
+
         return Model::validateMultiple($this->inputFields);
     }
 

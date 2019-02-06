@@ -2,8 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-use Iliich246\YicmsFeedback\InputFields\InputField;
-use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -41,6 +39,7 @@ use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 
 /**
  * Class Feedback
@@ -228,7 +227,11 @@ class Feedback extends ActiveRecord implements
             throw new FeedbackException('Сan not find feedback with name ' . $programName);
         }
 
-        return new self();//TODO: makes mark as empty feedback
+        $nonexistentFeedback = new self();
+        $nonexistentFeedback->setNonexistent();
+        $nonexistentFeedback->nonexistentName = $programName;
+
+        return $nonexistentFeedback;
     }
 
     /**
@@ -255,7 +258,10 @@ class Feedback extends ActiveRecord implements
             throw new FeedbackException("Сan not find feedback with id " . $id);
         }
 
-        return new self();//TODO: makes mark as empty essence
+        $nonexistentFeedback = new self();
+        $nonexistentFeedback->setNonexistent();
+
+        return $nonexistentFeedback;
     }
 
     /**
@@ -265,6 +271,8 @@ class Feedback extends ActiveRecord implements
      */
     public function create()
     {
+        if ($this->isNonexistent) return false;
+
         if ($this->scenario == self::SCENARIO_CREATE) {
             $this->feedback_order = $this->maxOrder();
         }
@@ -280,6 +288,8 @@ class Feedback extends ActiveRecord implements
      */
     public function isConstraints()
     {
+        if ($this->isNonexistent) return false;
+
         return true;
     }
 
@@ -291,6 +301,8 @@ class Feedback extends ActiveRecord implements
      */
     public function name(LanguagesDb $language = null)
     {
+        if ($this->isNonexistent) return false;
+
         if (!$language) $language = Language::getInstance()->getCurrentLanguage();
 
         if (!FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)) return $this->program_name;
@@ -306,6 +318,8 @@ class Feedback extends ActiveRecord implements
      */
     public function description(LanguagesDb $language = null)
     {
+        if ($this->isNonexistent) return false;
+
         if (!$language) $language = Language::getInstance()->getCurrentLanguage();
 
         if (!FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)) return $this->program_name;
@@ -319,6 +333,8 @@ class Feedback extends ActiveRecord implements
      */
     public function delete()
     {
+        if ($this->isNonexistent) return false;
+
         $feedbackNames = FeedbackNamesTranslatesDb::find()->where([
             'feedback_id' => $this->id,
         ])->all();
@@ -397,27 +413,7 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
-        if (!InputField::isLoadedMultiple($this->inputFieldsGroup->inputFields)) {
 
-            $result = '';
-
-            foreach($this->inputFieldsGroup->inputFields as $inputField)
-                if (!$inputField->isLoaded())
-                    $result .= '"' . $inputField->getTemplate()->program_name . '", ';
-
-            $result = substr($result , 0, -2);
-
-            Yii::warning(
-                'In feedback form with name "' .
-                $this->program_name . '" don`t used next active input fields: ' .
-                $result,  __METHOD__);
-
-            if (defined('YICMS_STRICT')) {
-                throw new FeedbackException('In feedback form with name "' .
-                    $this->program_name . '" don`t used next active input fields: ' .
-                    $result);
-            }
-        }
 
     }
 
