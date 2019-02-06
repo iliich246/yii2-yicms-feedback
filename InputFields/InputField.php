@@ -22,8 +22,6 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  * @property integer $feedback_input_fields_template_id
  * @property integer $input_field_reference
  * @property string $value
- * @property string $active
- * @property integer $editable
  *
  * @author iliich246 <iliich246@gmail.com>
  */
@@ -160,7 +158,8 @@ class InputField extends ActiveRecord implements
      */
     public function setTemplate(InputFieldTemplate $inputTemplate)
     {
-        $this->inputTemplate = $inputTemplate;
+        $this->inputTemplate                     = $inputTemplate;
+        $this->feedback_input_fields_template_id = $inputTemplate->id;
     }
 
 
@@ -294,7 +293,7 @@ class InputField extends ActiveRecord implements
 
         while($coincidence) {
             if (!self::find()->where([
-                'field_reference' => $value
+                'input_field_reference' => $value
             ])->one()) return $value;
 
             if ($counter++ > 100) {

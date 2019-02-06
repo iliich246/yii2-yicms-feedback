@@ -91,7 +91,17 @@ class InputFieldGroup extends AbstractGroup
      */
     public function save()
     {
+        if (!$this->inputFields) return false;
 
+        $success = true;
+
+        foreach($this->inputFields as $inputField) {
+            if (!$success) return false;
+            $inputField->input_field_reference = $this->fieldInputReference->getInputFieldReference();
+            $success = $inputField->save();
+        }
+
+        return $success;
     }
 
     /**

@@ -8,8 +8,10 @@ use yii\behaviors\TimestampBehavior;
 use yii\validators\SafeValidator;
 use yii\validators\RequiredValidator;
 use Iliich246\YicmsCommon\Base\AbstractEntity;
-use Iliich246\YicmsCommon\Base\SortOrderInterface;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
+use Iliich246\YicmsCommon\Base\SortOrderInterface;
+use Iliich246\YicmsCommon\Base\NonexistentInterface;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
@@ -36,7 +38,9 @@ use Iliich246\YicmsFeedback\FeedbackModule;
 class InputFile extends AbstractEntity implements
     SortOrderInterface,
     ValidatorBuilderInterface,
-    ValidatorReferenceInterface
+    ValidatorReferenceInterface,
+    FictiveInterface,
+    NonexistentInterface
 {
     use SortOrderTrait;
 
@@ -44,7 +48,14 @@ class InputFile extends AbstractEntity implements
     public $inputFile;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
-
+    /** @var bool if true file will behaviour as nonexistent   */
+    private $isNonexistent = false;
+    /** @var string value for keep program name in nonexistent mode */
+    private $nonexistentProgramName;
+    /** @var bool keeps fictive state of this input file */
+    private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
     /**
      * @inheritdoc
      */
@@ -270,5 +281,61 @@ class InputFile extends AbstractEntity implements
     public function getOrderAble()
     {
         return $this;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNonexistent()
+    {
+        return $this->isNonexistent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistent()
+    {
+        $this->isNonexistent = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNonexistentName()
+    {
+        return $this->nonexistentProgramName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistentName($name)
+    {
+        $this->nonexistentProgramName = $name;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }

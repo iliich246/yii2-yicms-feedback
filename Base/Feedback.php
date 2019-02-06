@@ -2,6 +2,8 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+
+use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -30,6 +32,9 @@ use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
 use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
+use Iliich246\YicmsFeedback\InputFields\InputField;
+use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
@@ -39,7 +44,6 @@ use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
-use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 
 /**
  * Class Feedback
@@ -118,6 +122,8 @@ class Feedback extends ActiveRecord implements
     private $nonexistentName;
     /** @var bool keeps fictive state of this input feedback */
     private $isFictive = true;
+    /** @var FeedbackState|null current state of this feedback */
+    private $currentState = null;
 
     /**
      * @inheritdoc
@@ -342,13 +348,6 @@ class Feedback extends ActiveRecord implements
         foreach($feedbackNames as $feedbackName)
             $feedbackName->delete();
 
-        $feedbackStages = FeedbackStages::find()->where([
-            'feedback_id' => $this->id,
-        ])->all();
-
-        foreach($feedbackStages as $feedbackStage)
-            $feedbackStage->delete();
-
         return parent::delete();
     }
 
@@ -413,7 +412,11 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
+        $this->currentState = new FeedbackState();
+        $this->currentState->feedback_id = $this->id;
+        $this->currentState->save(false);
 
+        $this->inputFieldsGroup->save();
 
     }
 
@@ -680,7 +683,7 @@ class Feedback extends ActiveRecord implements
     public function getInputFieldTemplateReference()
     {
         if (!$this->input_field_template_reference) {
-            $this->input_field_template_reference = FieldTemplate::generateTemplateReference();
+            $this->input_field_template_reference = InputFieldTemplate::generateTemplateReference();
             $this->save(false);
         }
 
@@ -692,8 +695,14 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputFieldReference()
     {
-        //if active stage return stage reference else generate new
-        return 'test_reference';
+        if (!$this->currentState) return false;//TODO: may be exception???
+
+        if (!$this->currentState->input_fields_reference) {
+            $this->currentState->input_fields_reference = InputField::generateReference();
+            $this->currentState->save(false);
+        }
+
+        return $this->currentState->input_fields_reference;
     }
 
     ////file
@@ -703,7 +712,7 @@ class Feedback extends ActiveRecord implements
     public function getInputFileHandler()
     {
         if (!$this->fileInputHandler)
-            //$this->fileInputHandler = new FileIn($this);
+            $this->fileInputHandler = new FilesInputHandler($this);
 
             return $this->fileInputHandler;
     }

@@ -152,8 +152,6 @@ class m181025_181406_feedback_init extends Migration
             'feedback_input_fields_template_id' => $this->integer(),
             'input_field_reference'             => $this->string(),
             'value'                             => $this->text()->defaultValue(null),
-            'active'                            => $this->boolean(),
-            'editable'                          => $this->boolean(),
         ]);
 
         $this->createIndex(
@@ -166,22 +164,6 @@ class m181025_181406_feedback_init extends Migration
             '{{%feedback_input_fields_represents}}',
             'feedback_input_fields_template_id',
             '{{%feedback_input_fields_templates}}',
-            'id'
-        );
-
-        /**
-         * feedback_input_fields_states table
-         */
-        $this->createTable('{{%feedback_input_fields_states}}', [
-            'id'                              => $this->primaryKey(),
-            'state_id'                        => $this->integer(),
-            'feedback_input_fields_templates' => $this->integer(),
-        ]);
-
-        $this->addForeignKey('feedback_input_fields_states-to-feedback_states',
-            '{{%feedback_input_fields_states}}',
-            'state_id',
-            '{{%feedback_states}}',
             'id'
         );
 
@@ -247,8 +229,6 @@ class m181025_181406_feedback_init extends Migration
             'input_file_order'                 => $this->integer(),
             'size'                             => $this->integer(),
             'type'                             => $this->string(),
-            'active'                           => $this->boolean(),
-            'editable'                         => $this->boolean(),
             'created_at'                       => $this->integer(),
             'updated_at'                       => $this->integer(),
         ]);
@@ -263,22 +243,6 @@ class m181025_181406_feedback_init extends Migration
             '{{%feedback_input_files}}',
             'feedback_input_files_template_id',
             '{{%feedback_input_files_templates}}',
-            'id'
-        );
-
-        /**
-         * feedback_input_files_states table
-         */
-        $this->createTable('{{%feedback_input_files_states}}', [
-            'id'                       => $this->primaryKey(),
-            'state_id'                 => $this->integer(),
-            'common_files_template_id' => $this->integer(),
-        ]);
-
-        $this->addForeignKey('feedback_input_files_states-to-feedback_states',
-            '{{%feedback_input_files_states}}',
-            'state_id',
-            '{{%feedback_states}}',
             'id'
         );
 
@@ -359,22 +323,6 @@ class m181025_181406_feedback_init extends Migration
             '{{%feedback_input_images}}',
             'feedback_input_images_template_id',
             '{{%feedback_input_images_templates}}',
-            'id'
-        );
-
-        /**
-         * feedback_input_images_states table
-         */
-        $this->createTable('{{%feedback_input_images_states}}', [
-            'id'                         => $this->primaryKey(),
-            'state_id'                   => $this->integer(),
-            'common_images_templates_id' => $this->integer(),
-        ]);
-
-        $this->addForeignKey('feedback_input_images_states-to-feedback_states',
-            '{{%feedback_input_images_states}}',
-            'state_id',
-            '{{%feedback_states}}',
             'id'
         );
 
@@ -502,22 +450,6 @@ class m181025_181406_feedback_init extends Migration
             '{{%common_languages}}',
             'id'
         );
-
-        /**
-         * feedback_input_conditions_states table
-         */
-        $this->createTable('{{%feedback_input_conditions_states}}', [
-            'id'                           => $this->primaryKey(),
-            'state_id'                     => $this->integer(),
-            'common_condition_template_id' => $this->integer(),
-        ]);
-
-        $this->addForeignKey('feedback_input_conditions_states-to-feedback_states',
-            '{{%feedback_input_conditions_states}}',
-            'state_id',
-            '{{%feedback_states}}',
-            'id'
-        );
     }
 
     /**
@@ -526,10 +458,6 @@ class m181025_181406_feedback_init extends Migration
     public function safeDown()
     {
         //input conditions functionality
-        $this->dropForeignKey('feedback_input_conditions_states-to-feedback_states',
-            '{{%feedback_input_conditions_states}}');
-        $this->dropTable('{{%feedback_input_conditions_states}}');
-
         $this->dropForeignKey('input_conditions_value_names-to-common_languages',
             '{{%feedback_input_conditions_value_names}}');
         $this->dropForeignKey('input_conditions_value_names-to-input_conditions_values',
@@ -557,10 +485,6 @@ class m181025_181406_feedback_init extends Migration
         $this->dropTable('{{%feedback_input_conditions_templates}}');
 
         //input images functionality
-        $this->dropForeignKey('feedback_input_images_states-to-feedback_states',
-            '{{%feedback_input_images_states}}');
-        $this->dropTable('{{%feedback_input_images_states}}');
-
         $this->dropForeignKey('input_images-to-input_images_templates',
             '{{%feedback_input_images}}');
         $this->dropIndex('feedback_input_images-index', '{{%feedback_input_images}}');
@@ -576,10 +500,6 @@ class m181025_181406_feedback_init extends Migration
         $this->dropTable('{{%feedback_input_images_templates}}');
 
         //input files functionality
-        $this->dropForeignKey('feedback_input_files_states-to-feedback_states',
-            '{{%feedback_input_files_states}}');
-        $this->dropTable('{{%feedback_input_files_states}}');
-
         $this->dropForeignKey('feedback_input_files-to-feedback_input_files_templates',
             '{{%feedback_input_files}}');
         $this->dropIndex('input_file_reference-index', '{{%feedback_input_files}}');
@@ -595,10 +515,6 @@ class m181025_181406_feedback_init extends Migration
         $this->dropTable('{{%feedback_input_files_templates}}');
 
         //input fields functionality
-        $this->dropForeignKey('feedback_input_fields_states-to-feedback_states',
-            '{{%feedback_input_fields_states}}');
-        $this->dropTable('{{%feedback_input_fields_states}}');
-
         $this->dropForeignKey('input_fields_represents-to-input_fields_templates',
             '{{%feedback_input_fields_represents}}');
         $this->dropIndex('input_field_reference-index', '{{%feedback_input_fields_represents}}');

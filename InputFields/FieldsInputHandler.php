@@ -68,7 +68,7 @@ class FieldsInputHandler extends AbstractHandler
             $fictiveField = new InputField();
             $fictiveField->setFictive();
 
-           $fictiveField->setTemplate($template);
+            $fictiveField->setTemplate($template);
 
             return $fictiveField;
         });

@@ -17,8 +17,6 @@ class FeedbackModule extends AbstractConfigurableModule implements
     BootstrapInterface,
     YicmsModuleInterface
 {
-
-
     /**
      * Block of fields with various paths
      */

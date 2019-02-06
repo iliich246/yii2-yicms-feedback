@@ -9,7 +9,7 @@ use yii\behaviors\TimestampBehavior;
  * Class FeedbackState
  *
  * @property integer $id
- * @property integer $stage_id
+ * @property integer $feedback_id
  * @property string $input_fields_reference
  * @property string $input_files_reference
  * @property string $input_images_reference
