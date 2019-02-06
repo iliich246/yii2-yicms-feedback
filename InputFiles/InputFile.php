@@ -39,8 +39,7 @@ class InputFile extends AbstractEntity implements
     SortOrderInterface,
     ValidatorBuilderInterface,
     ValidatorReferenceInterface,
-    FictiveInterface,
-    NonexistentInterface
+    FictiveInterface
 {
     use SortOrderTrait;
 
@@ -48,10 +47,6 @@ class InputFile extends AbstractEntity implements
     public $inputFile;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
-    /** @var bool if true file will behaviour as nonexistent   */
-    private $isNonexistent = false;
-    /** @var string value for keep program name in nonexistent mode */
-    private $nonexistentProgramName;
     /** @var bool keeps fictive state of this input file */
     private $isFictive = false;
     /** @var bool keep state of load */
@@ -281,38 +276,6 @@ class InputFile extends AbstractEntity implements
     public function getOrderAble()
     {
         return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function isNonexistent()
-    {
-        return $this->isNonexistent;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setNonexistent()
-    {
-        $this->isNonexistent = true;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getNonexistentName()
-    {
-        return $this->nonexistentProgramName;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setNonexistentName($name)
-    {
-        $this->nonexistentProgramName = $name;
     }
 
     /**

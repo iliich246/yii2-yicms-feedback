@@ -82,6 +82,7 @@ class DeveloperInputFilesController extends Controller
      * @param $inputFileTemplateReference
      * @return string
      * @throws BadRequestHttpException
+     * @throws CommonException
      */
     public function actionUpdateInputFilesListContainer($inputFileTemplateReference)
     {
@@ -104,11 +105,13 @@ class DeveloperInputFilesController extends Controller
     /**
      * Action for delete input file block template
      * @param $inputFileBlockId
-     * @param bool|false $deletePass
+     * @param bool $deletePass
      * @return string
      * @throws BadRequestHttpException
      * @throws CommonException
      * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     public function actionDeleteInputFileBlock($inputFileBlockId, $deletePass = false)
     {

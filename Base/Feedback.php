@@ -2,8 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-
-use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -38,6 +36,7 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;

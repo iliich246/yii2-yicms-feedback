@@ -203,7 +203,7 @@ $this->registerJs($js, $this::POS_READY);
                             </p>
                         </div>
                         <div class="col-xs-2 list-controls">
-                            <?php if ($inputFilesBlock->visible): ?>
+                            <?php if ($inputFilesBlock->active): ?>
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             <?php else: ?>
                                 <span class="glyphicon glyphicon-eye-close"></span>

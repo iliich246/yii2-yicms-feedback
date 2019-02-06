@@ -64,7 +64,7 @@ use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
     ?>
 
     <?= $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
-        'inputFileTemplateReference' => $feedback->getInputFieldTemplateReference(),
+        'inputFileTemplateReference' => $feedback->getInputFileTemplateReference(),
         'inputFilesBlocks'           => $inputFilesBlocks,
     ]) ?>
 
