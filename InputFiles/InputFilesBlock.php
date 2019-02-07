@@ -16,6 +16,7 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @property string $input_file_template_reference
  * @property string $validator_reference
+ * @property integer $type
  * @property integer $input_file_order
  * @property bool $active
  * @property bool $editable
@@ -25,6 +26,13 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  */
 class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceInterface
 {
+    /**
+     * Input files types
+     */
+    const TYPE_ONE_FILE     = 0;
+    const TYPE_MULTIPLICITY = 1;
+
+
     /** @var string inputFileReference for what files group must be fetched */
     private $currentInputFileReference;
     /** @inheritdoc */
@@ -82,6 +90,33 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
             ['active', 'editable', 'max_files']);
 
         return $scenarios;
+    }
+
+    /**
+     * Return array of input file types
+     * @return array|bool
+     */
+    public static function getTypes()
+    {
+        static $array = false;
+
+        if ($array) return $array;
+
+        $array = [
+            self::TYPE_ONE_FILE     => 'One file on input block',
+            self::TYPE_MULTIPLICITY => 'Multiple files on input block',
+        ];
+
+        return $array;
+    }
+
+    /**
+     * Return name of type of concrete field
+     * @return mixed
+     */
+    public function getTypeName()
+    {
+        return self::getTypes()[$this->type];
     }
 
     /**

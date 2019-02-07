@@ -164,8 +164,22 @@ else
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-12 col-xs-12">
+                    <div class="col-sm-6 col-xs-12">
                         <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'program_name') ?>
+                    </div>
+
+                    <div class="col-sm-6 col-xs-12">
+                        <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'type')->dropDownList(
+                            \Iliich246\YicmsFeedback\InputFiles\InputFilesBlock::getTypes()
+                        ) ?>
+                    </div>
+
+                    <div class="col-sm-6 col-xs-12">
+                        <?= $form->field($widget->devInputFilesGroup->inputFilesBlock, 'max_files') ?>
+                    </div>
+                    <div class="col-sm-6 col-xs-12">
+                        <br>
+                        <p>zero value - infinite count of files in block</p>
                     </div>
                 </div>
                 <div class="row">

@@ -29,7 +29,7 @@ class FilesInputHandler extends AbstractHandler
     /**
      * Return instance of field by name
      * @param $name
-     * @return bool|object
+     * @return InputFile
      */
     public function getInputFileBlock($name)
     {
@@ -64,8 +64,7 @@ class FilesInputHandler extends AbstractHandler
 
             $fictiveFile = new InputFile();
             $fictiveFile->setFictive();
-
-            $fictiveFile->setTemplate($template);
+            $fictiveFile->setEntityBlock($template);
 
             return $fictiveFile;
         });

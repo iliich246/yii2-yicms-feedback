@@ -99,7 +99,7 @@ class DevInputFilesGroup extends AbstractGroup
             $needSaveInputFileBlock = true;
 
         if (!$needSaveInputFileBlock &&
-            $this->inputFilesBlock->getOldAttribute('visible') != $this->inputFilesBlock->visible)
+            $this->inputFilesBlock->getOldAttribute('active') != $this->inputFilesBlock->active)
             $needSaveInputFileBlock = true;
 
         if (!$needSaveInputFileBlock &&

@@ -73,6 +73,8 @@ class InputFieldGroup extends AbstractGroup
                 throw new FeedbackException('In feedback form don`t used next active input fields: ' .
                     $result);
             }
+
+            return false;
         }
 
         return Model::validateMultiple($this->inputFields);

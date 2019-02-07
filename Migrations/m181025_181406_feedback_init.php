@@ -178,6 +178,7 @@ class m181025_181406_feedback_init extends Migration
             'input_file_template_reference' => $this->string(),
             'validator_reference'           => $this->string(),
             'program_name'                  => $this->string(50),
+            'type'                          => $this->smallInteger(),
             'input_file_order'              => $this->integer(),
             'editable'                      => $this->boolean(),
             'active'                        => $this->boolean(),
@@ -257,8 +258,9 @@ class m181025_181406_feedback_init extends Migration
             'input_image_template_reference' => $this->string(),
             'validator_reference'            => $this->string(),
             'program_name'                   => $this->string(50),
+            'type'                           => $this->smallInteger(),
             'input_image_order'              => $this->integer(),
-            'active'                            => $this->boolean(),
+            'active'                         => $this->boolean(),
             'editable'                       => $this->boolean(),
             'max_images'                     => $this->smallInteger(),
         ]);

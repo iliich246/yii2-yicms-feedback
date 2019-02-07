@@ -1,13 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Zalupitto
- * Date: 05.02.2019
- * Time: 14:35
- */
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
+use Iliich246\YicmsFeedback\InputFields\InputField;
 use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
@@ -24,7 +19,7 @@ class InputFilesGroup extends AbstractGroup
     /** @var FileInputReferenceInterface|FileInputInterface inputFileTemplateReference value for current group */
     protected $fileInputReference;
     /** @var InputFile[] for working with forms */
-    public $inputFields;
+    public $inputFiles;
 
     /**
      * Sets fileInputReference object for this
@@ -40,7 +35,25 @@ class InputFilesGroup extends AbstractGroup
      */
     public function initialize($inputFieldTemplateId = null)
     {
+        /** @var InputFilesBlock[] $inputFilesBlocks */
+        $inputFilesBlocks = InputFilesBlock::find()->where([
+            'input_file_template_reference' => $this->fileInputReference->getInputFileTemplateReference(),
+            'active'                        => true,
+        ])->all();
 
+        foreach($inputFilesBlocks as $inputFilesBlock) {
+            $inputFile = $this
+                ->fileInputReference
+                ->getInputFileHandler()
+                ->getInputFileBlock($inputFilesBlock->program_name);
+
+
+            //$inputFile->setEntityBlock($inputFilesBlock);
+            $inputFile->prepareValidators();
+            $this->inputFiles["$inputFilesBlock->id"] = $inputFile;
+        }
+
+        return $this->inputFiles;
     }
 
     /**
@@ -48,7 +61,28 @@ class InputFilesGroup extends AbstractGroup
      */
     public function validate()
     {
+        if (!InputFile::isLoadedMultiple($this->inputFiles)) {
+            $result = '';
 
+            foreach($this->inputFiles as $inputFile)
+                if (!$inputFile->isLoaded())
+                    $result .= '"' . $inputFile->getInputFileBlock()->program_name . '", ';
+
+            $result = substr($result , 0, -2);
+
+            Yii::error(
+                'In feedback form don`t used next active input fields: ' .
+                $result,  __METHOD__);
+
+            if (defined('YICMS_STRICT')) {
+                throw new FeedbackException('In feedback form don`t used next active input fields: ' .
+                    $result);
+            }
+
+            return false;
+        }
+
+        return Model::validateMultiple($this->inputFiles);
     }
 
     /**
@@ -56,7 +90,7 @@ class InputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
-
+        return Model::loadMultiple($this->inputFiles, $data);
     }
 
     /**

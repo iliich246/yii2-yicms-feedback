@@ -162,10 +162,8 @@ class InputField extends ActiveRecord implements
         $this->feedback_input_fields_template_id = $inputTemplate->id;
     }
 
-
-
     /**
-     * Returns name of field
+     * Returns name of field for form
      * @return string
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
@@ -208,14 +206,24 @@ class InputField extends ActiveRecord implements
         return false;
     }
 
+    /**
+     * @return string
+     */
     public function devName()
     {
         if ($this->isNonexistent()) return '';
+
+        return '';//TODO: implement this method
     }
 
+    /**
+     * @return string
+     */
     public function devDescription()
     {
         if ($this->isNonexistent()) return '';
+
+        return '';//TODO: implement this method
     }
 
     /**
@@ -306,15 +314,8 @@ class InputField extends ActiveRecord implements
     }
 
     /**
-     * @inheritdoc
-     */
-    public function isEditable()
-    {
-        return (bool)$this->editable;
-    }
-
-    /**
-     * @inheritdoc
+     * Returns key for working with form
+     * @return string
      */
     public function getKey()
     {

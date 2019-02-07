@@ -15,6 +15,7 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @property string $input_image_template_reference
  * @property string $validator_reference
+ * @property integer $type
  * @property integer $input_image_order
  * @property bool $editable
  * @property bool $active

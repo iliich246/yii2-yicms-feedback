@@ -2,9 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsCommon\Files\FilesBlock;
-use Iliich246\YicmsCommon\Files\FilesHandler;
-
 /**
  * Interface FileInputInterface
  *
@@ -15,14 +12,14 @@ use Iliich246\YicmsCommon\Files\FilesHandler;
 interface FileInputInterface
 {
     /**
-     * @return FilesHandler object, that aggregated in object with files functionality.
+     * @return FilesInputHandler object, that aggregated in object with files functionality.
      */
     public function getInputFileHandler();
 
     /**
      * This method must proxy FilesHandler method for work with him directly from aggregator.
      * @param $name
-     * @return FilesBlock
+     * @return InputFile
      */
-    public function getInputFileBlock($name);
+    public function getInputFile($name);
 }

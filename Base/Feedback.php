@@ -36,6 +36,8 @@ use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputFiles\InputFile;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
@@ -115,6 +117,8 @@ class Feedback extends ActiveRecord implements
     private $conditionInputHandler;
     /** @var InputFieldGroup instance */
     public $inputFieldsGroup;
+    /** @var InputFilesGroup instance */
+    public $inputFilesGroup;
     /** @var bool keep nonexistent state of feedback */
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
@@ -377,7 +381,11 @@ class Feedback extends ActiveRecord implements
     {
         $this->inputFieldsGroup = new InputFieldGroup();
         $this->inputFieldsGroup->setFieldInputReference($this);
-        return $this->inputFieldsGroup->initialize();
+        $this->inputFieldsGroup->initialize();
+
+        $this->inputFilesGroup = new InputFilesGroup();
+        $this->inputFilesGroup->setFileInputReference($this);
+        $this->inputFilesGroup->initialize();
 
         //TODO: make with other input objects
     }
@@ -390,7 +398,10 @@ class Feedback extends ActiveRecord implements
      */
     public function load($data, $formName = null)
     {
-        return $this->inputFieldsGroup->load($data);
+        $inputFieldsLoaded = $this->inputFieldsGroup->load($data);
+        $inputFilesLoaded  = $this->inputFilesGroup->load($data);
+
+        return $inputFilesLoaded;
     }
 
     /**
@@ -401,7 +412,10 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-        return $this->inputFieldsGroup->validate();
+        $inputFieldsValidated = $this->inputFieldsGroup->validate();
+        $inputFilesValidated  = $this->inputFilesGroup->validate();
+
+        return $inputFilesValidated;
     }
 
     /**
@@ -694,7 +708,8 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputFieldReference()
     {
-        if (!$this->currentState) return false;//TODO: may be exception???
+        if (!$this->currentState)
+            throw new FeedbackException('This method actual only for concrete feedback state');
 
         if (!$this->currentState->input_fields_reference) {
             $this->currentState->input_fields_reference = InputField::generateReference();
@@ -719,9 +734,9 @@ class Feedback extends ActiveRecord implements
     /**
      * @inheritdoc
      */
-    public function getInputFileBlock($name)
+    public function getInputFile($name)
     {
-
+        return $this->getInputFileHandler()->getInputFileBlock($name);
     }
 
     /**
@@ -743,7 +758,15 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputFileReference()
     {
-        //TODO:
+        if (!$this->currentState)
+            throw new FeedbackException('This method actual only for concrete feedback state');
+
+        if (!$this->currentState->input_files_reference) {
+            $this->currentState->input_files_reference = InputFile::generateReference();
+            $this->currentState->save(false);
+        }
+
+        return $this->currentState->input_files_reference;
     }
 
     /**
