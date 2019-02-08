@@ -2,17 +2,17 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsCommon\CommonModule;
+use Yii;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
 use yii\validators\SafeValidator;
 use yii\validators\RequiredValidator;
+use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\AbstractEntity;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
-use Iliich246\YicmsCommon\Base\NonexistentInterface;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
@@ -243,13 +243,13 @@ class InputFile extends AbstractEntity implements
             return $inputFileName->admin_name . ' (' . $this->getInputFileBlock()->program_name . ')';
 
         if ((!$inputFileName || !trim($inputFileName->admin_name)) && CommonModule::isUnderDev())
-            return 'No translate for field \'' . $this->getInputFileBlock()->program_name . '\'';
+            return 'No translate for input file \'' . $this->getInputFileBlock()->program_name . '\'';
 
         return 'Can`t reach this place if all correct';
     }
 
     /**
-     * Returns description of field
+     * Returns description of input file
      * @return bool|string
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */

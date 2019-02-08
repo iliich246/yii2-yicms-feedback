@@ -7,9 +7,13 @@ use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
 use yii\validators\SafeValidator;
 use yii\validators\RequiredValidator;
+use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\AbstractEntity;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
@@ -34,7 +38,8 @@ use Iliich246\YicmsFeedback\FeedbackModule;
 class InputImage extends AbstractEntity implements
     SortOrderInterface,
     ValidatorBuilderInterface,
-    ValidatorReferenceInterface
+    ValidatorReferenceInterface,
+    FictiveInterface
 {
     use SortOrderTrait;
 
@@ -42,6 +47,12 @@ class InputImage extends AbstractEntity implements
     public $inputImage;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
+    /** @var InputImagesNamesTranslatesDb[] buffer for language */
+    private $inputImagesNamesTranslations = [];
+    /** @var bool keeps fictive state of this input file */
+    private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
 
     /**
      * @inheritdoc
@@ -145,6 +156,50 @@ class InputImage extends AbstractEntity implements
     {
 
     }
+
+    /**
+     * Returns name of file for form
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName && trim($inputImageName->admin_name) && CommonModule::isUnderAdmin())
+            return $inputImageName->admin_name;
+
+        if ((!$inputImageName || !trim($inputImageName->admin_name)) && CommonModule::isUnderAdmin())
+            return $this->getInputImagesBlock()->program_name;
+
+        if ($inputImageName && trim($inputImageName->admin_name) && CommonModule::isUnderDev())
+            return $inputImageName->admin_name . ' (' . $this->getInputImagesBlock()->program_name . ')';
+
+        if ((!$inputImageName || !trim($inputImageName->admin_name)) && CommonModule::isUnderDev())
+            return 'No translate for input image \'' . $this->getInputImagesBlock()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns description of input file
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName)
+            return $inputImageName->admin_description;
+
+        return false;
+    }
+    
 
     /**
      * Method config validators for this model
@@ -252,5 +307,47 @@ class InputImage extends AbstractEntity implements
     public function getOrderAble()
     {
         return $this;
+    }
+
+    /**
+     * Returns buffered name translate db
+     * @param LanguagesDb $language
+     * @return InputImagesNamesTranslatesDb
+     */
+    public function getInputImageNameTranslate(LanguagesDb $language)
+    {
+        if (!array_key_exists($language->id, $this->inputImagesNamesTranslations)) {
+            $this->inputImagesNamesTranslations[$language->id] =
+                InputImagesNamesTranslatesDb::find()->where([
+                    'feedback_input_images_template_id' => $this->getInputImagesBlock()->id,
+                    'common_language_id'                => $language->id,
+                ])->one();
+        }
+
+        return $this->inputImagesNamesTranslations[$language->id];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }

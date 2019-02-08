@@ -204,7 +204,7 @@ $this->registerJs($js, $this::POS_READY);
                             </p>
                         </div>
                         <div class="col-xs-2 list-controls">
-                            <?php if ($inputImagesBlock->visible): ?>
+                            <?php if ($inputImagesBlock->active): ?>
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             <?php else: ?>
                                 <span class="glyphicon glyphicon-eye-close"></span>

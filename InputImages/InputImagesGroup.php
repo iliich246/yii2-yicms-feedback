@@ -34,7 +34,13 @@ class InputImagesGroup extends AbstractGroup
      */
     public function initialize($inputImageTemplateId = null)
     {
+        /** @var InputImagesBlock[] $inputImagesBlocks */
+        $inputImagesBlocks = InputImagesBlock::find()->where([
+            'input_image_template_reference' => $this->imageInputReference->getInputImageTemplateReference(),
+            'active'                         => true
+        ])->all();
 
+        //foreach($inputImagesBlocks as $inputImagesBlock)
     }
 
     /**

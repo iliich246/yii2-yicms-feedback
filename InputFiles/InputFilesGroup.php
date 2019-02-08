@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsFeedback\InputFields\InputField;
 use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;

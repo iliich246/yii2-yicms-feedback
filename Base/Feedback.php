@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputImages\InputImagesGroup;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -41,6 +42,8 @@ use Iliich246\YicmsFeedback\InputFiles\InputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputImages\InputImage;
+use Iliich246\YicmsFeedback\InputImages\ImagesInputHandler;
 use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
@@ -119,6 +122,8 @@ class Feedback extends ActiveRecord implements
     public $inputFieldsGroup;
     /** @var InputFilesGroup instance */
     public $inputFilesGroup;
+    /** @var InputImagesGroup instance */
+    public $inputImagesGroup;
     /** @var bool keep nonexistent state of feedback */
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
@@ -387,6 +392,10 @@ class Feedback extends ActiveRecord implements
         $this->inputFilesGroup->setFileInputReference($this);
         $this->inputFilesGroup->initialize();
 
+        $this->inputImagesGroup = new InputImagesGroup();
+        $this->inputImagesGroup->setImageInputReference($this);
+        $this->inputImagesGroup->initialize();
+
         //TODO: make with other input objects
     }
 
@@ -400,6 +409,7 @@ class Feedback extends ActiveRecord implements
     {
         $inputFieldsLoaded = $this->inputFieldsGroup->load($data);
         $inputFilesLoaded  = $this->inputFilesGroup->load($data);
+        $inputImagesLoaded = $this->inputImagesGroup->load($data);
 
         return $inputFilesLoaded;
     }
@@ -769,20 +779,24 @@ class Feedback extends ActiveRecord implements
         return $this->currentState->input_files_reference;
     }
 
+    ////image
     /**
      * @inheritdoc
      */
     public function getInputImagesHandler()
     {
+        if (!$this->imageInputHandler)
+            $this->imageInputHandler = new ImagesInputHandler($this);
 
+        return $this->imageInputHandler;
     }
 
     /**
      * @inheritdoc
      */
-    public function getInputImageBlock($name)
+    public function getInputImage($name)
     {
-
+        return $this->getInputImagesHandler()->getImageBlock($name);
     }
 
     /**
@@ -804,9 +818,18 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputImageReference()
     {
-        // TODO: Implement getInputImageReference() method.
+        if (!$this->currentState)
+            throw new FeedbackException('This method actual only for concrete feedback state');
+
+        if (!$this->currentState->input_images_reference) {
+            $this->currentState->input_images_reference = InputImage::generateReference();
+            $this->currentState->save(false);
+        }
+
+        return $this->currentState->input_images_reference;
     }
 
+    /////condition
     /**
      * @inheritdoc
      */

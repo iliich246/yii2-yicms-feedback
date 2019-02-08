@@ -24,5 +24,5 @@ interface ImageInputInterface
      * @param $name
      * @return ImagesBlock
      */
-    public function getInputImageBlock($name);
+    public function getInputImage($name);
 }

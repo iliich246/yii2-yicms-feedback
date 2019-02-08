@@ -27,7 +27,7 @@ class FilesInputHandler extends AbstractHandler
     }
 
     /**
-     * Return instance of field by name
+     * Return instance of input file by name
      * @param $name
      * @return InputFile
      */
@@ -44,10 +44,13 @@ class FilesInputHandler extends AbstractHandler
         if (!$this->aggregator->isFictive()) return $this->forRealFile($name);
 
         return $this->forFictiveFile($name);
-
-
     }
 
+    /**
+     * Makes fictive input file
+     * @param $name
+     * @return bool|object
+     */
     private function forFictiveFile($name)
     {
         return $this->getOrSet($name, function() use($name) {
