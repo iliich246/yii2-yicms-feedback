@@ -53,6 +53,7 @@ class InputFieldGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
      */
     public function validate()
     {
