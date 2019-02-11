@@ -68,6 +68,7 @@ class FilesInputHandler extends AbstractHandler
             $fictiveFile = new InputFile();
             $fictiveFile->setFictive();
             $fictiveFile->setEntityBlock($template);
+            $fictiveFile->scenario = InputFile::SCENARIO_CREATE;
 
             return $fictiveFile;
         });
@@ -81,11 +82,15 @@ class FilesInputHandler extends AbstractHandler
     private function forRealFile($name)
     {
         return $this->getOrSet($name, function() use($name) {
-            return InputFilesBlock::getInstance(
+            $inputFile = InputFilesBlock::getInstance(
                 $this->aggregator->getInputFileTemplateReference(),
                 $name,
                 $this->aggregator->getInputFileReference()
             );
+
+            $inputFile->scenario = InputFile::SCENARIO_UPDATE;
+
+            return $inputFile;
         });
     }
 }

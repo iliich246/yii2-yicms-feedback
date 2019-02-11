@@ -2,8 +2,10 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Yii;
 use yii\base\Model;
+use yii\helpers\FileHelper;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
@@ -45,7 +47,6 @@ class InputFilesGroup extends AbstractGroup
                 ->fileInputReference
                 ->getInputFileHandler()
                 ->getInputFileBlock($inputFilesBlock->program_name);
-
 
             //$inputFile->setEntityBlock($inputFilesBlock);
             $inputFile->prepareValidators();
@@ -97,7 +98,23 @@ class InputFilesGroup extends AbstractGroup
      */
     public function save()
     {
+        if (!$this->inputFiles) return false;
 
+        $path = FeedbackModule::getInstance()->inputFilesPatch;
+
+        if (!is_dir($path))
+            FileHelper::createDirectory($path);
+
+        $success = true;
+
+        foreach($this->inputFiles as $inputFile) {
+
+            $success = $inputFile->saveInputFile();
+
+            if (!$success) return false;
+        }
+
+        return $success;
     }
 
     /**

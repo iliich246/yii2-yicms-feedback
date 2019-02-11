@@ -20,7 +20,7 @@ class FeedbackModule extends AbstractConfigurableModule implements
     /**
      * Block of fields with various paths
      */
-    public $filesPatch           = DIRECTORY_SEPARATOR .
+    public $inputFilesPatch      = DIRECTORY_SEPARATOR .
                                 'web' . DIRECTORY_SEPARATOR .
                                 'input_files' . DIRECTORY_SEPARATOR;
 
@@ -50,6 +50,9 @@ class FeedbackModule extends AbstractConfigurableModule implements
     {
         //TODO: makes correct build of controller map via common->$yicmsLocation
         $this->controllerMap['admin'] = 'app\yicms\Feedback\Controllers\AdminController';
+
+        $this->inputFilesPatch        = Yii::$app->basePath . $this->inputFilesPatch;
+
         parent::init();
     }
 

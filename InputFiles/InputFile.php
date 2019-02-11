@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputFiles;
 
 use Yii;
+use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
@@ -30,6 +31,7 @@ use Iliich246\YicmsFeedback\FeedbackModule;
  * @property string $original_name
  * @property integer $input_file_order
  * @property integer $size
+ * @property integer $type
  * @property bool $editable
  * @property integer $created_at
  * @property integer $updated_at
@@ -85,6 +87,25 @@ class InputFile extends AbstractEntity implements
     /**
      * @inheritdoc
      */
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_DEFAULT => [
+                'inputFile'
+            ],
+            self::SCENARIO_CREATE => [
+                'inputFile'
+            ],
+            self::SCENARIO_UPDATE => [
+                'inputFile'
+            ]
+        ];
+    }
+
+
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -106,6 +127,8 @@ class InputFile extends AbstractEntity implements
             $this->inputFile =
                 UploadedFile::getInstances($this, '[' . $this->getInputFileBlock()->id . ']inputFile');
         }
+
+        Yii::error(print_r($this->inputFile, true));
 
         if ($this->inputFile) {
             $this->isLoaded = true;
@@ -142,6 +165,54 @@ class InputFile extends AbstractEntity implements
         }
 
         return true;
+    }
+
+    /**
+     * Save input file or group of input files
+     * @return bool|void
+     */
+    public function saveInputFile()
+    {
+        if (!is_array($this->inputFile)) {
+            return $this->physicalSaveInputFile($this->inputFile);
+        } else {
+            $success = true;
+
+            /** @var UploadedFile $inputFile */
+            foreach($this->inputFile as $inputFile)
+                if (!$this->physicalSaveInputFile($inputFile)) return false;
+
+            return true;
+        }
+    }
+
+    /**
+     * Inner mechanism of input file saving
+     * @param UploadedFile $inputFile
+     * @return bool
+     */
+    private function physicalSaveInputFile(UploadedFile $inputFile)
+    {
+        $path = FeedbackModule::getInstance()->inputFilesPatch;
+
+        if ($this->scenario == self::SCENARIO_UPDATE) {
+            if (file_exists($path . $this->system_name) &&
+                !is_dir($path . $this->system_name))
+                unlink($path . $this->system_name);
+        }
+
+        $name = uniqid() . '.' . $inputFile->extension;
+        $inputFile->saveAs($path . $name);
+
+        $inputFileRecord = new self();
+        $inputFileRecord->feedback_input_files_template_id = $this->getInputFileBlock()->id;
+        $inputFileRecord->input_file_reference = $this->input_file_reference;
+        $inputFileRecord->system_name = $name;
+        $inputFileRecord->original_name =  $inputFile->baseName;
+        $inputFileRecord->size =  $inputFile->size;
+        $inputFileRecord->type = FileHelper::getMimeType($path . $name);
+
+        return $inputFileRecord->save(false);
     }
 
     /**

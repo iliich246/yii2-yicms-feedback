@@ -440,6 +440,7 @@ class Feedback extends ActiveRecord implements
         $this->currentState->save(false);
 
         $this->inputFieldsGroup->save();
+        $this->inputFilesGroup->save();
 
     }
 
