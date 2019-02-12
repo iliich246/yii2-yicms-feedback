@@ -25,6 +25,12 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  */
 class InputImagesBlock extends AbstractEntityBlock implements ValidatorReferenceInterface
 {
+    /**
+     * Input files types
+     */
+    const TYPE_ONE_IMAGE    = 0;
+    const TYPE_MULTIPLICITY = 1;
+
     /** @var string inputImageReference for what images group must be fetched */
     private $currentInputImageReference;
     /** @inheritdoc */

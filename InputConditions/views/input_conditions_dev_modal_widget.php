@@ -5,6 +5,7 @@ use yii\widgets\Pjax;
 use yii\bootstrap\ActiveForm;
 use Iliich246\YicmsCommon\Widgets\SimpleTabsTranslatesWidget;
 use Iliich246\YicmsCommon\Validators\ValidatorsListWidget;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
 use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
 use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
 
@@ -171,8 +172,18 @@ else
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-sm-12 col-xs-12">
+                    <div class="col-sm-4 col-xs-12">
                         <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'program_name') ?>
+                    </div>
+                    <div class="col-sm-4 col-xs-12">
+                        <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'type')->dropDownList(
+                            InputConditionTemplate::getTypes())
+                        ?>
+                    </div>
+                    <div class="col-sm-4 col-xs-12">
+                        <?= $form->field($widget->devInputConditionsGroup->inputConditionTemplate, 'checkbox_state_default')->dropDownList(
+                            InputConditionTemplate::getCheckBoxDefaultList())
+                        ?>
                     </div>
                 </div>
                 <div class="row">

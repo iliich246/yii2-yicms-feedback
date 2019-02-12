@@ -11,9 +11,9 @@ $js = <<<JS
     var homeUrl = $(inputConditionDataListModal).data('homeUrl');
 
     var createInputConditionValueUrl        = homeUrl + '/feedback/dev-input-conditions/create-input-condition-value';
-    var updateConditionValueUrl        = homeUrl + '/feedback/dev-input-conditions/update-input-condition-value';
-    var conditionValueUpUrl   = homeUrl + '/feedback/dev-input-conditions/input-condition-value-up-order';
-    var conditionValueDownUrl = homeUrl + '/feedback/dev-input-conditions/input-condition-value-down-order';
+    var updateConditionValueUrl             = homeUrl + '/feedback/dev-input-conditions/update-input-condition-value';
+    var conditionValueUpUrl                 = homeUrl + '/feedback/dev-input-conditions/input-condition-value-up-order';
+    var conditionValueDownUrl               = homeUrl + '/feedback/dev-input-conditions/input-condition-value-down-order';
 
     var pjaxContainer   = $(inputConditionDataListModal).parent('.pjax-container');
     var pjaxContainerId = '#' + $(pjaxContainer).attr('id');
@@ -66,7 +66,7 @@ $js = <<<JS
         $(pjaxContainer).data('returnUrlConditionsValue', $(this).data('returnUrlConditionsValue'));
 
         $.pjax({
-            url: updateConditionValueUrl
+            url: conditionValueDownUrl
                  + '?conditionValueId=' + $(this).data('conditionValueId'),
             container: pjaxContainerId,
             scrollTo: false,

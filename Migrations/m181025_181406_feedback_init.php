@@ -337,11 +337,13 @@ class m181025_181406_feedback_init extends Migration
         $this->createTable('{{%feedback_input_conditions_templates}}', [
             'id'                                 => $this->primaryKey(),
             'input_condition_template_reference' => $this->string(),
-            'validator_reference'                => $this->string(),
             'program_name'                       => $this->string(50),
+            'type'                               => $this->smallInteger(),
+            'checkbox_state_default'             => $this->boolean(),
             'input_condition_order'              => $this->integer(),
+            'validator_reference'                => $this->string(),
             'editable'                           => $this->boolean(),
-            'active'                            => $this->boolean(),
+            'active'                             => $this->boolean(),
         ]);
 
         $this->createIndex(

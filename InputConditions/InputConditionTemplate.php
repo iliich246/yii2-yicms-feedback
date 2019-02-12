@@ -12,6 +12,8 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  * @property string $input_condition_template_reference
  * @property string $validator_reference
  * @property integer $input_condition_order
+ * @property bool $checkbox_state_default
+ * @property integer $type
  * @property bool $editable
  * @property bool $active
  *
@@ -19,16 +21,27 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  */
 class InputConditionTemplate extends AbstractTemplate implements ValidatorReferenceInterface
 {
+    const TYPE_CHECKBOX = 0;
+    const TYPE_RADIO    = 1;
+    const TYPE_SELECT   = 2;
+
+    const DEFAULT_VALUE_TRUE  = 1;
+    const DEFAULT_VALUE_FALSE = 0;
+
     /** @inheritdoc */
     protected static $buffer = [];
+    /** @var InputConditionValues[] */
+    private $values = null;
 
     /**
      * @inheritdoc
      */
     public function init()
     {
-        $this->editable = true;
-        $this->active   = true;
+        $this->editable               = true;
+        $this->active                 = true;
+        $this->type                   = self::TYPE_CHECKBOX;
+        $this->checkbox_state_default = false;
         parent::init();
     }
 
@@ -46,7 +59,19 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     public function rules()
     {
         return array_merge(parent::rules(), [
+            [['type'], 'integer'],
             [['editable', 'active'], 'boolean'],
+            [['checkbox_state_default'], 'boolean']
+        ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return array_merge(parent::attributeLabels(), [
+            'checkbox_state_default' => 'Default checkbox value',
         ]);
     }
 
@@ -57,11 +82,59 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     {
         $prevScenarios = parent::scenarios();
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['editable', 'active']);
+            ['type', 'editable', 'active', 'checkbox_state_default']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['editable', 'active']);
+            ['type', 'editable', 'active', 'checkbox_state_default']);
 
         return $scenarios;
+    }
+
+    /**
+     * Returns array of input condition types
+     * @return array|bool
+     */
+    public static function getTypes()
+    {
+        static $array = false;
+
+        if ($array) return $array;
+
+        $array = [
+            self::TYPE_CHECKBOX => 'Check box type',
+            self::TYPE_RADIO    => 'Radio group type',
+            self::TYPE_SELECT   => 'Select dropdown type',
+        ];
+
+        return $array;
+    }
+
+    /**
+     * Returns array of input condition checkbox default values
+     * @return array|bool
+     */
+    public static function getCheckBoxDefaultList()
+    {
+        static $array = false;
+
+        if ($array) return $array;
+
+        $array = [
+            self::DEFAULT_VALUE_FALSE => 'FALSE',
+            self::DEFAULT_VALUE_TRUE  => 'TRUE',
+        ];
+
+        return $array;
+    }
+
+    /**
+     * Return name of condition type
+     * @return string
+     */
+    public function getTypeName()
+    {
+        if (!isset(self::getTypes()[$this->type])) return 'Undefined';
+
+        return self::getTypes()[$this->type];
     }
 
     /**

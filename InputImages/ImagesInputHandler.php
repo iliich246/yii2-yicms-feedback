@@ -39,9 +39,9 @@ class ImagesInputHandler extends AbstractHandler
             return $nonexistentInputImage;
         }
 
-        if (!$this->aggregator->isFictive()) return $this->forRealFile($name);
+        if (!$this->aggregator->isFictive()) return $this->forRealImage($name);
 
-        return $this->forFictiveFile($name);
+        return $this->forFictiveImage($name);
     }
 
     /**
@@ -49,7 +49,7 @@ class ImagesInputHandler extends AbstractHandler
      * @param $name
      * @return bool|object
      */
-    private function forFictiveFile($name)
+    private function forFictiveImage($name)
     {
         return $this->getOrSet($name, function() use($name) {
             /** @var InputImagesBlock $template */
@@ -66,6 +66,7 @@ class ImagesInputHandler extends AbstractHandler
             $fictiveImage = new InputImage();
             $fictiveImage->setFictive();
             $fictiveImage->setEntityBlock($template);
+            $fictiveImage->scenario = InputImage::SCENARIO_CREATE;
 
             return $fictiveImage;
         });
@@ -76,14 +77,18 @@ class ImagesInputHandler extends AbstractHandler
      * @param $name
      * @return bool|object
      */
-    private function forRealFile($name)
+    private function forRealImage($name)
     {
         return $this->getOrSet($name, function() use($name) {
-            return InputImagesBlock::getInstance(
+            $inputImage = InputImagesBlock::getInstance(
                 $this->aggregator->getInputImageTemplateReference(),
                 $name,
                 $this->aggregator->getInputImageReference()
             );
+
+            $inputImage->scenario = InputImage::SCENARIO_UPDATE;
+
+            return $inputImage;
         });
     }
 }

@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputImages;
 
 use Yii;
+use yii\helpers\FileHelper;
 use yii\web\UploadedFile;
 use yii\behaviors\TimestampBehavior;
 use yii\validators\SafeValidator;
@@ -86,6 +87,24 @@ class InputImage extends AbstractEntity implements
     /**
      * @inheritdoc
      */
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_DEFAULT => [
+                'inputImage'
+            ],
+            self::SCENARIO_CREATE => [
+                'inputImage'
+            ],
+            self::SCENARIO_UPDATE => [
+                'inputImage'
+            ]
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function behaviors()
     {
         return [
@@ -95,6 +114,118 @@ class InputImage extends AbstractEntity implements
 
     /**
      * @inheritdoc
+     */
+    public function load($data, $formName = null)
+    {
+        if ($this->isNonexistent()) return false;
+
+        if ($this->getInputImagesBlock()->type == InputImagesBlock::TYPE_ONE_IMAGE) {
+            $this->inputImage =
+                UploadedFile::getInstance($this, '[' . $this->getInputImagesBlock()->id . ']inputImage');
+        } else {
+            $this->inputImage =
+                UploadedFile::getInstances($this, '[' . $this->getInputImagesBlock()->id . ']inputImage');
+        }
+
+        if ($this->inputImage) {
+            $this->isLoaded = true;
+            return true;
+        }
+
+        return false;
+    }
+
+
+
+    /**
+     * Returns true if this model is loaded
+     * @return bool
+     */
+    public function isLoaded()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->isLoaded;
+    }
+
+
+    /**
+     * Makes is loaded method for group of models
+     * @param $models
+     * @return bool
+     */
+    public static function isLoadedMultiple($models)
+    {
+        /** @var InputImage $model */
+        foreach ($models as $model)
+            if (!$model->isLoaded()) return false;
+
+        return true;
+    }
+
+    /**
+     * Save input image or group of input files
+     * @return bool|void
+     */
+    public function saveInputFile()
+    {
+        if (!is_array($this->inputImage)) {
+            return $this->physicalSaveInputImage($this->inputFile);
+        } else {
+            $success = true;
+
+            /** @var UploadedFile $inputFile */
+            foreach($this->inputImage as $inputFile)
+                if (!$this->physicalSaveInputImage($inputFile)) return false;
+
+            return true;
+        }
+    }
+
+    /**
+     * Inner mechanism of input image saving
+     * @param UploadedFile $inputImage
+     * @return bool
+     */
+    private function physicalSaveInputImage(UploadedFile $inputImage)
+    {
+        $path = FeedbackModule::getInstance()->inputImagesPath;
+
+        if ($this->scenario == self::SCENARIO_UPDATE) {
+            if (file_exists($path . $this->system_name) &&
+                !is_dir($path . $this->system_name))
+                unlink($path . $this->system_name);
+        }
+
+        $name = uniqid() . '.' . $inputImage->extension;
+        $inputImage->saveAs($path . $name);
+
+        $inputImageRecord = new self();
+        $inputImageRecord->feedback_input_images_template_id = $this->getInputImagesBlock()->id;
+        $inputImageRecord->input_image_reference = $this->input_image_reference;
+        $inputImageRecord->system_name = $name;
+        $inputImageRecord->original_name =  $inputImage->baseName;
+        $inputImageRecord->size =  $inputImage->size;
+        $inputImageRecord->type = FileHelper::getMimeType($path . $name);
+
+        return $inputImageRecord->save(false);
+    }
+
+    /**
+     * Returns key for working with form
+     * @return string
+     */
+    public function getKey()
+    {
+        if ($this->getInputImagesBlock()->type == InputImagesBlock::TYPE_ONE_IMAGE)
+            return '[' . $this->getInputImagesBlock()->id . ']inputImage';
+
+        return '[' . $this->getInputImagesBlock()->id . ']inputImage[]';
+    }
+
+    /**
+     * @inheritdoc
+     * @return InputImagesBlock
      */
     public function getInputImagesBlock()
     {
@@ -112,8 +243,9 @@ class InputImage extends AbstractEntity implements
     /**
      * @inheritdoc
      */
+
     public function getPath()
-    {
+    {/*
         if ($this->isNonexistent) return false;
 
         $systemName = $this->system_name;
@@ -123,12 +255,14 @@ class InputImage extends AbstractEntity implements
         if (!file_exists($path) || is_dir($path)) return false;
 
         return $path;
+*/
     }
 
     public function getSrc()
     {
 
     }
+
 
     /**
      * @inheritdoc
@@ -143,6 +277,7 @@ class InputImage extends AbstractEntity implements
     /**
      * @inheritdoc
      */
+
     public function delete()
     {
         $this->deleteSequence();
@@ -212,7 +347,7 @@ class InputImage extends AbstractEntity implements
         if (!$validators) {
 
             $safeValidator = new SafeValidator();
-            $safeValidator->attributes = ['image'];
+            $safeValidator->attributes = ['inputImage'];
             $this->validators[] = $safeValidator;
 
             return;
@@ -222,7 +357,7 @@ class InputImage extends AbstractEntity implements
 
             if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
 
-            $validator->attributes = ['image'];
+            $validator->attributes = ['inputImage'];
             $this->validators[] = $validator;
         }
     }
