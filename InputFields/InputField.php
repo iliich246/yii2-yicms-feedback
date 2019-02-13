@@ -334,7 +334,8 @@ class InputField extends ActiveRecord implements
     }
 
     /**
-     * Method config validators for this model
+     * Method configs validators for this model
+     * @return void
      */
     public function prepareValidators()
     {

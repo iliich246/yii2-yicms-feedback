@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
-use Iliich246\YicmsFeedback\InputImages\InputImagesGroup;
 use Yii;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
@@ -43,9 +42,13 @@ use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputImages\InputImage;
+use Iliich246\YicmsFeedback\InputImages\InputImagesGroup;
 use Iliich246\YicmsFeedback\InputImages\ImagesInputHandler;
 use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
 use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
+use Iliich246\YicmsFeedback\InputConditions\InputCondition;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionsGroup;
+use Iliich246\YicmsFeedback\InputConditions\ConditionsInputHandler;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
 
@@ -110,13 +113,13 @@ class Feedback extends ActiveRecord implements
     private $imageHandler;
     /** @var ConditionsHandler instance of condition handler object */
     private $conditionHandler;
-    /** @var FieldsHandler instance of input field handler object */
+    /** @var FieldsInputHandler instance of input field handler object */
     private $fieldInputHandler;
-    /** @var FilesHandler instance of input file handler object */
+    /** @var FilesInputHandler instance of input file handler object */
     private $fileInputHandler;
-    /** @var ImagesHandler instance of input image handler object */
+    /** @var ImagesInputHandler instance of input image handler object */
     private $imageInputHandler;
-    /** @var ConditionsHandler instance of input condition handler object */
+    /** @var ConditionsInputHandler instance of input condition handler object */
     private $conditionInputHandler;
     /** @var InputFieldGroup instance */
     public $inputFieldsGroup;
@@ -124,6 +127,8 @@ class Feedback extends ActiveRecord implements
     public $inputFilesGroup;
     /** @var InputImagesGroup instance */
     public $inputImagesGroup;
+    /** @var InputConditionsGroup instance */
+    public $inputConditionsGroup;
     /** @var bool keep nonexistent state of feedback */
     private $isNonexistent = false;
     /** @var string keeps name of nonexistent feedback */
@@ -380,7 +385,7 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
-     * Proxy initialize method to active stage
+     *
      */
     public function initialize()
     {
@@ -396,7 +401,9 @@ class Feedback extends ActiveRecord implements
         $this->inputImagesGroup->setImageInputReference($this);
         $this->inputImagesGroup->initialize();
 
-        //TODO: make with other input objects
+        $this->inputConditionsGroup = new InputConditionsGroup();
+        $this->inputConditionsGroup->setConditionInputReference($this);
+        $this->inputConditionsGroup->initialize();
     }
 
     /**
@@ -407,9 +414,10 @@ class Feedback extends ActiveRecord implements
      */
     public function load($data, $formName = null)
     {
-        $inputFieldsLoaded = $this->inputFieldsGroup->load($data);
-        $inputFilesLoaded  = $this->inputFilesGroup->load($data);
-        $inputImagesLoaded = $this->inputImagesGroup->load($data);
+        $inputFieldsLoaded     = $this->inputFieldsGroup->load($data);
+        $inputFilesLoaded      = $this->inputFilesGroup->load($data);
+        $inputImagesLoaded     = $this->inputImagesGroup->load($data);
+        $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
 
         return $inputFilesLoaded;
     }
@@ -424,14 +432,17 @@ class Feedback extends ActiveRecord implements
     {
         $inputFieldsValidated = $this->inputFieldsGroup->validate();
         $inputFilesValidated  = $this->inputFilesGroup->validate();
+        $inputImagesValidated = $this->inputImagesGroup->validate();
+        $inputConditionsValidated = $this->inputConditionsGroup->validate();
 
         return $inputFilesValidated;
     }
 
     /**
+     * Handle feedback form
      * @param bool|true $runValidation
      * @param null $attributeNames
-     * @throws FeedbackException
+     * @return bool
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
@@ -439,9 +450,12 @@ class Feedback extends ActiveRecord implements
         $this->currentState->feedback_id = $this->id;
         $this->currentState->save(false);
 
-        $this->inputFieldsGroup->save();
-        $this->inputFilesGroup->save();
+        $inputFieldsSaved = $this->inputFieldsGroup->save();
+        $inputFilesSaved = $this->inputFilesGroup->save();
+        $inputImagesSaved = $this->inputImagesGroup->save();
+        $inputConditionsSaved = $this->inputConditionsGroup->save();
 
+        return true;
     }
 
     /**
@@ -836,7 +850,10 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputConditionsHandler()
     {
-        // TODO: Implement getInputConditionsHandler() method.
+        if (!$this->conditionInputHandler)
+            $this->conditionInputHandler = new ConditionsInputHandler($this);
+
+        return $this->conditionInputHandler;
     }
 
     /**
@@ -844,7 +861,7 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputCondition($name)
     {
-        // TODO: Implement getInputCondition() method.
+        return $this->getInputConditionsHandler()->getInputCondition($name);
     }
 
     /**
@@ -866,15 +883,15 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputConditionReference()
     {
-        // TODO: Implement getInputConditionReference() method.
-    }
+        if (!$this->currentState)
+            throw new FeedbackException('This method actual only for concrete feedback state');
 
-    /**
-     * @inheritdoc
-     */
-    public function getConditionInputModel()
-    {
-        // TODO: Implement getConditionInputModel() method.
+        if (!$this->currentState->input_conditions_reference) {
+            $this->currentState->input_conditions_reference = InputCondition::generateReference();
+            $this->currentState->save(false);
+        }
+
+        return $this->currentState->input_conditions_reference;
     }
 
     /**

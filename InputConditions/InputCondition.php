@@ -4,6 +4,15 @@ namespace Iliich246\YicmsFeedback\InputConditions;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\validators\SafeValidator;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
+use Iliich246\YicmsCommon\Base\NonexistentInterface;
+use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
+use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
+use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
+use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
@@ -18,10 +27,28 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputCondition extends ActiveRecord
+class InputCondition extends ActiveRecord implements
+    ValidatorBuilderInterface,
+    ValidatorReferenceInterface,
+    FictiveInterface,
+    NonexistentInterface
 {
+    /** @var string value of condition */
+    public $value;
     /** @var InputConditionTemplate instance of input condition template */
-    private $template = null;
+    private $inputTemplate = null;
+    /** @var ValidatorBuilder instance */
+    private $validatorBuilder;
+    /** @var InputConditionsNamesTranslatesDb[] buffer for language */
+    private $inputConditionNamesTranslations = [];
+    /** @var bool if true condition will behaviour as nonexistent   */
+    private $isNonexistent = false;
+    /** @var string value for keep program name in nonexistent mode */
+    private $nonexistentProgramName;
+    /** @var bool keeps fictive state of this input field */
+    private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
 
     /**
      * @inheritdoc
@@ -84,6 +111,16 @@ class InputCondition extends ActiveRecord
     }
 
     /**
+     * Sets InputConditionTemplate for this input condition
+     * @param InputConditionTemplate $inputTemplate
+     */
+    public function setTemplate(InputConditionTemplate $inputTemplate)
+    {
+        $this->inputTemplate                        = $inputTemplate;
+        $this->input_condition_template_template_id = $inputTemplate->id;
+    }
+
+    /**
      * Generates reference key
      * @return string
      * @throws FeedbackException
@@ -107,5 +144,150 @@ class InputCondition extends ActiveRecord
         }
 
         throw new FeedbackException('Can`t reach there 0_0' . __METHOD__);
+    }
+
+    /**
+     * Returns key for working with form
+     * @return string
+     */
+    public function getKey()
+    {
+        return '[' . $this->getTemplate()->id . ']value';
+    }
+
+    /**
+     * Return instance of input field template object
+     * @return InputConditionTemplate
+     */
+    public function getTemplate()
+    {
+        if ($this->inputTemplate) return $this->inputTemplate;
+
+        return $this->inputTemplate = InputConditionTemplate::getInstanceById($this->input_condition_template_template_id);
+    }
+
+    /**
+     * Method configs validators for this model
+     * @return void
+     */
+    public function prepareValidators()
+    {
+        $validators = $this->getValidatorBuilder()->build();
+
+        if (!$validators) {
+
+            $safeValidator = new SafeValidator();
+            $safeValidator->attributes = ['value'];
+            $this->validators[] = $safeValidator;
+
+            return;
+        }
+
+        foreach ($validators as $validator)
+            $this->validators[] = $validator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getValidatorBuilder()
+    {
+        if ($this->validatorBuilder) return $this->validatorBuilder;
+
+        $this->validatorBuilder = new ValidatorBuilder();
+        $this->validatorBuilder->setReferenceAble($this);
+
+        return $this->validatorBuilder;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getValidatorReference()
+    {
+        $inputTemplate = $this->getTemplate();
+
+        if (!$inputTemplate->validator_reference) {
+            $inputTemplate->validator_reference = ValidatorBuilder::generateValidatorReference();
+            $inputTemplate->scenario = InputConditionTemplate::SCENARIO_UPDATE;
+            $inputTemplate->save(false);
+        }
+
+        return $inputTemplate->validator_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isNonexistent()
+    {
+        return $this->isNonexistent;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistent()
+    {
+        $this->isNonexistent = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getNonexistentName()
+    {
+        return $this->nonexistentProgramName;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setNonexistentName($name)
+    {
+        $this->nonexistentProgramName = $name;
+    }
+
+    /**
+     * Returns buffered name translate db
+     * @param LanguagesDb $language
+     * @return InputConditionsNamesTranslatesDb
+     */
+    public function getInputFieldNameTranslate(LanguagesDb $language)
+    {
+        if (!array_key_exists($language->id, $this->inputConditionNamesTranslations)) {
+            $this->inputConditionNamesTranslations[$language->id] =
+                InputConditionsNamesTranslatesDb::find()->where([
+                    'input_condition_template_template_id' => $this->getTemplate()->id,
+                    'common_language_id'                   => $language->id,
+                ])->one();
+        }
+
+        return $this->inputConditionNamesTranslations[$language->id];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }

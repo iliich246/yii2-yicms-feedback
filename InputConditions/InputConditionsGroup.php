@@ -33,7 +33,23 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function initialize()
     {
+        /** @var InputConditionTemplate[] $inputConditionsTemplates */
+        $inputConditionsTemplates = InputConditionTemplate::find()->where([
+            'input_condition_template_reference' => $this->conditionInputReference->getInputConditionTemplateReference(),
+            'active'                             => true,
+        ])->all();
 
+        foreach($inputConditionsTemplates as $inputConditionsTemplate) {
+            $inputConditions = $this
+                ->conditionInputReference
+                ->getInputConditionsHandler()
+                ->getInputCondition($inputConditionsTemplate->program_name);
+
+            $inputConditions->prepareValidators();
+            $this->inputConditions["$inputConditions->id"] = $inputConditions;
+        }
+
+        return $this->inputConditions;
     }
 
     /**

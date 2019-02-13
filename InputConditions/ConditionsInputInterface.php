@@ -2,9 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputConditions;
 
-use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
-use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
-
 /**
  * Interface ConditionsInputInterface
  *
@@ -15,14 +12,14 @@ use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
 interface ConditionsInputInterface
 {
     /**
-     * @return ConditionsHandler object, that aggregated in object with conditions functionality.
+     * @return ConditionsInputHandler object, that aggregated in object with conditions functionality.
      */
     public function getInputConditionsHandler();
 
     /**
-     * This method must proxy ConditionTemplate method for work with him directly from aggregator.
+     * This method must proxy InputConditionTemplate method for work with him directly from aggregator.
      * @param $name
-     * @return ConditionTemplate
+     * @return InputConditionTemplate
      */
     public function getInputCondition($name);
 }

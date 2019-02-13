@@ -55,7 +55,7 @@ class FilesInputHandler extends AbstractHandler
     {
         return $this->getOrSet($name, function() use($name) {
             /** @var InputFilesBlock $template */
-            $template =  InputFilesBlock::getInstance($this->aggregator->getInputFileTemplateReference(), $name);
+            $template = InputFilesBlock::getInstance($this->aggregator->getInputFileTemplateReference(), $name);
 
             if (!$template) {
                 $nonexistentInputFile = new InputFile();
