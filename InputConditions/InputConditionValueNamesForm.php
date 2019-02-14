@@ -81,7 +81,7 @@ class InputConditionValueNamesForm extends AbstractTranslateForm
     {
         $currentTranslate = $this->getCurrentTranslateDb();
 
-        $currentTranslate->name = $this->valueName;
+        $currentTranslate->name        = $this->valueName;
         $currentTranslate->description = $this->valueDescription;
 
         return $currentTranslate->save(false);

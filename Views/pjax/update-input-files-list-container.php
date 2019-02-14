@@ -186,7 +186,9 @@ $this->registerJs($js, $this::POS_READY);
             <?php Pjax::begin([
                 'options' => [
                     'id' => 'update-input-files-list-container'
-                ]
+                ],
+                'enablePushState'    => false,
+                'enableReplaceState' => false
             ]) ?>
 
             <div class="list-block">

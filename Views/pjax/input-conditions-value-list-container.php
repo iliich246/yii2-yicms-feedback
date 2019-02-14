@@ -37,8 +37,7 @@ $js = <<<JS
     }
 
     $(addNewInputValueButton).on('click', function() {
-
-        $(pjaxContainer).data('returnUrlConditionsValue', $(this).data('returnUrlConditionsValue'));
+        $(pjaxContainer).data('returnUrlInputConditionsValue', $(this).data('returnUrlInputConditionsValue'));
 
         $.pjax({
             url: createInputConditionValueUrl + '?inputConditionTemplateId=' + $(this).data('inputConditionTemplateId'),
@@ -63,11 +62,11 @@ $js = <<<JS
     });
 
     $('.input-condition-value-block-item').on('click', function() {
-        $(pjaxContainer).data('returnUrlConditionsValue', $(this).data('returnUrlConditionsValue'));
+        $(pjaxContainer).data('returnUrlInputConditionsValue', $('.add-new-input-condition-value-button').data('returnUrlInputConditionsValue'));
 
         $.pjax({
-            url: conditionValueDownUrl
-                 + '?conditionValueId=' + $(this).data('conditionValueId'),
+            url: updateConditionValueUrl
+                 + '?inputConditionValueId=' + $(this).data('inputConditionValueId'),
             container: pjaxContainerId,
             scrollTo: false,
             push: false,
@@ -97,15 +96,15 @@ $this->registerJs($js);
             <span class="glyphicon glyphicon-arrow-left input-condition-values-list-back"
                   style="float: right;margin-right: 20px"></span>
         </h3>
-        <?php /*if ($inputConditionTemplate->type == \Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate::TYPE_CHECKBOX): ?>
-            <h4>For "checkbox" condition type used only first value, other values will be ignored</h4>
-        <?php endif; */?>
+        <?php if ($inputConditionTemplate->type == \Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate::TYPE_CHECKBOX): ?>
+            <h4>For "checkbox" condition type all this values will be ignored</h4>
+        <?php endif; ?>
     </div>
     <div class="modal-body">
         <button class="btn btn-primary add-new-input-condition-value-button"
                 data-input-condition-template-id="<?= $inputConditionTemplate->id ?>"
-                data-return-url-conditions-value="<?= \yii\helpers\Url::toRoute([
-                    '/common/dev-conditions/condition-values-list',
+                data-return-url-input-conditions-value="<?= \yii\helpers\Url::toRoute([
+                    '/feedback/dev-input-conditions/input-condition-values-list',
                     'inputConditionTemplateId' => $inputConditionTemplate->id,
                 ]) ?>"
             >
@@ -115,8 +114,8 @@ $this->registerJs($js);
         <?php foreach($inputConditionValues as $inputConditionValue): ?>
             <div class="row list-items">
                 <div class="col-xs-9 list-title">
-                    <p data-condition-value-id="<?= $inputConditionValue->id ?>"
-                       class="condition-value-block-item">
+                    <p data-input-condition-value-id="<?= $inputConditionValue->id ?>"
+                       class="input-condition-value-block-item">
                         <?= $inputConditionValue->value_name ?>
                     </p>
                 </div>

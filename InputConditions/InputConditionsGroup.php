@@ -40,6 +40,7 @@ class InputConditionsGroup extends AbstractGroup
         ])->all();
 
         foreach($inputConditionsTemplates as $inputConditionsTemplate) {
+            /** @var InputCondition $inputConditions */
             $inputConditions = $this
                 ->conditionInputReference
                 ->getInputConditionsHandler()

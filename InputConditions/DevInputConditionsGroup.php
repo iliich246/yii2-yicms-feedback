@@ -100,11 +100,19 @@ class DevInputConditionsGroup extends AbstractGroup
             $needSaveInputConditionTemplate = true;
 
         if (!$needSaveInputConditionTemplate &&
-            $this->inputConditionTemplate->getOldAttribute('visible') != $this->inputConditionTemplate->visible)
+            $this->inputConditionTemplate->getOldAttribute('active') != $this->inputConditionTemplate->active)
             $needSaveInputConditionTemplate = true;
 
         if (!$needSaveInputConditionTemplate &&
             $this->inputConditionTemplate->getOldAttribute('editable') != $this->inputConditionTemplate->editable)
+            $needSaveInputConditionTemplate = true;
+
+        if (!$needSaveInputConditionTemplate &&
+            $this->inputConditionTemplate->getOldAttribute('checkbox_state_default') != $this->inputConditionTemplate->checkbox_state_default)
+            $needSaveInputConditionTemplate = true;
+
+        if (!$needSaveInputConditionTemplate &&
+            $this->inputConditionTemplate->getOldAttribute('type') != $this->inputConditionTemplate->type)
             $needSaveInputConditionTemplate = true;
 
         if ($needSaveInputConditionTemplate)
@@ -113,6 +121,8 @@ class DevInputConditionsGroup extends AbstractGroup
         /** @var InputConditionNamesTranslatesForm $conditionsNameTranslate */
         foreach($this->conditionNameTranslates as $inputConditionsNameTranslate) {
             $needSaveInputConditionTemplateName = false;
+
+            \Yii::error(print_r($inputConditionsNameTranslate,true));
 
             if (!$needSaveInputConditionTemplateName &&
                 $inputConditionsNameTranslate->devName != $inputConditionsNameTranslate->getCurrentTranslateDb()->dev_name)

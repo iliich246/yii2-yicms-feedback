@@ -18,9 +18,11 @@ $js = <<<JS
     
     var pjaxContainer   = $(conditionValueModal).parent('.pjax-container');
     var pjaxContainerId = '#' + $(pjaxContainer).attr('id');
-    
+
     var homeUrl           = $(conditionValueModal).data('homeUrl');
     var returnUrl         = $(pjaxContainer).data('returnUrlInputConditionsValue');
+
+    console.log(returnUrl);
     var redirectUpdateUrl = $(conditionValueModal).data('redirectUpdateUrl');
     var deleteUrl         = homeUrl + '/feedback/dev-input-conditions/delete-input-condition-value';
         
@@ -205,6 +207,13 @@ $inputConditionValue->isNewRecord ? $inputConditionValueId = '0' : $inputConditi
             'translateModels' => $inputConditionValuesTranslates,
         ])
         ?>
+
+<!--        <pre>-->
+<!--            --><?php //print_r($_POST)?>
+<!--        </pre>-->
+<!--        <pre>-->
+<!--            --><?php //print_r($inputConditionValuesTranslates)?>
+<!--        </pre>-->
 
         <?php if ($inputConditionValue->scenario == InputConditionValues::SCENARIO_UPDATE): ?>
             <div class="row delete-button-row">

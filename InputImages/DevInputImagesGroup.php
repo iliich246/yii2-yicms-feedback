@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\InputImages;
 
+use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
@@ -100,7 +101,7 @@ class DevInputImagesGroup extends AbstractGroup
             $needSaveInputImageBlock = true;
 
         if (!$needSaveInputImageBlock &&
-            $this->inputImagesBlock->getOldAttribute('visible') != $this->inputImagesBlock->visible)
+            $this->inputImagesBlock->getOldAttribute('active') != $this->inputImagesBlock->active)
             $needSaveInputImageBlock = true;
 
         if (!$needSaveInputImageBlock &&

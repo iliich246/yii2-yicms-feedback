@@ -59,22 +59,6 @@ class InputField extends ActiveRecord implements
      */
     public function init()
     {
-        //if (defined('YICMS_ALERTS')) $this->setAlertMode();
-
-        //$this->unic = uniqid();
-
-        /*
-        $this->on(self::EVENT_AFTER_FIND, function() {
-
-            $validators = $this->getValidatorBuilder()->build();
-
-            if (!$validators) return;
-
-            foreach($validators as $validator)
-                $this->validators[] = $validator;
-        });
-        */
-
         parent::init();
     }
 
@@ -163,7 +147,7 @@ class InputField extends ActiveRecord implements
     }
 
     /**
-     * Returns name of field for form
+     * Returns name of input field for form
      * @return string
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
@@ -183,7 +167,7 @@ class InputField extends ActiveRecord implements
             return $inputFieldName->admin_name . ' (' . $this->getTemplate()->program_name . ')';
 
         if ((!$inputFieldName || !trim($inputFieldName->admin_name)) && CommonModule::isUnderDev())
-            return 'No translate for field \'' . $this->getTemplate()->program_name . '\'';
+            return 'No translate for input field \'' . $this->getTemplate()->program_name . '\'';
 
         return 'Can`t reach this place if all correct';
 

@@ -192,6 +192,56 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     }
 
     /**
+     * Returns true if input condition template has any values
+     * @return bool
+     */
+    public function isValues()
+    {
+        if (!is_null($this->values)) return !!count($this->values);
+
+        return !!count($this->getValuesList());
+    }
+
+    /**
+     * Returns buffered list of values of template
+     * @return InputConditionValues[]
+     */
+    public function getValuesList()
+    {
+        if (!is_null($this->values)) return $this->values;
+
+        $this->values = InputConditionValues::find()->where([
+            'input_condition_template_template_id' => $this->id,
+        ])->orderBy(['input_condition_value_order' =>SORT_ASC])
+          ->indexBy('id')
+          ->all();
+
+        return $this->values;
+    }
+
+    /**
+     * Returns id of default value
+     * @return int|null
+     */
+    public function defaultValueId()
+    {
+        foreach($this->getValuesList() as $value) {
+            if ($value->is_default) return $value->id;
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns default checkbox value for this template
+     * @return bool
+     */
+    public function defaultCheckboxValue()
+    {
+        return !!$this->checkbox_state_default;
+    }
+
+    /**
      * @inheritdoc
      */
     public static function generateTemplateReference()

@@ -49,8 +49,8 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
      */
     public function init()
     {
-        $this->active   = true;
-        $this->editable = true;
+        $this->active    = true;
+        $this->editable  = true;
         $this->max_images = 0;
         parent::init();
     }

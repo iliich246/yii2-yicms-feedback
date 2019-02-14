@@ -59,6 +59,16 @@ class InputCondition extends ActiveRecord implements
     }
 
     /**
+     * @inheritdoc
+     */
+    public function attributeLabels()
+    {
+        return [
+            'value' => $this->name(),
+        ];
+    }
+
+    /**
      * Returns fetch from db instance of condition
      * @param $inputConditionTemplateReference
      * @param $inputConditionReference
@@ -111,6 +121,39 @@ class InputCondition extends ActiveRecord implements
     }
 
     /**
+     * Returns true if condition has any values
+     * @return bool
+     */
+    public function isValues()
+    {
+        if ($this->isNonexistent)
+            return false;
+
+        return $this->getTemplate()->isValues();
+    }
+
+    /**
+     * Returns list of values for drop down lists
+     * @param LanguagesDb|null $language
+     * @return array
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getValuesTranslatedArray(LanguagesDb $language = null)
+    {
+        if (!$language) $language = Language::getInstance()->getCurrentLanguage();
+
+        $conditionValues = $this->getTemplate()->getValuesList();
+
+        $array = [];
+
+        foreach($conditionValues as $index => $value)
+            $array[$index] = $value->getName($language);
+
+        return $array;
+    }
+
+
+    /**
      * Sets InputConditionTemplate for this input condition
      * @param InputConditionTemplate $inputTemplate
      */
@@ -118,6 +161,80 @@ class InputCondition extends ActiveRecord implements
     {
         $this->inputTemplate                        = $inputTemplate;
         $this->input_condition_template_template_id = $inputTemplate->id;
+    }
+
+    /**
+     * Returns name of input condition for form
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputConditionName = $this->getInputConditionNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputConditionName && trim($inputConditionName->admin_name) && CommonModule::isUnderAdmin())
+            return $inputConditionName->admin_name;
+
+        if ((!$inputConditionName || !trim($inputConditionName->admin_name)) && CommonModule::isUnderAdmin())
+            return $this->getTemplate()->program_name;
+
+        if ($inputConditionName && trim($inputConditionName->admin_name) && CommonModule::isUnderDev())
+            return $inputConditionName->admin_name . ' (' . $this->getTemplate()->program_name . ')';
+
+        if ((!$inputConditionName || !trim($inputConditionName->admin_name)) && CommonModule::isUnderDev())
+            return 'No translate for input condition \'' . $this->getTemplate()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns description of field
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputConditionName = $this->getInputConditionNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputConditionName)
+            return $inputConditionName->admin_description;
+
+        return false;
+    }
+
+    /**
+     * @return string
+     */
+    public function devName()
+    {
+        if ($this->isNonexistent()) return '';
+
+        return '';//TODO: implement this method
+    }
+
+    /**
+     * @return string
+     */
+    public function devDescription()
+    {
+        if ($this->isNonexistent()) return '';
+
+        return '';//TODO: implement this method
+    }
+
+    /**
+     * Returns true, if field is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return !!$this->getTemplate()->active;
     }
 
     /**
@@ -254,7 +371,7 @@ class InputCondition extends ActiveRecord implements
      * @param LanguagesDb $language
      * @return InputConditionsNamesTranslatesDb
      */
-    public function getInputFieldNameTranslate(LanguagesDb $language)
+    public function getInputConditionNameTranslate(LanguagesDb $language)
     {
         if (!array_key_exists($language->id, $this->inputConditionNamesTranslations)) {
             $this->inputConditionNamesTranslations[$language->id] =

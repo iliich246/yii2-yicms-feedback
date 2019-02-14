@@ -133,10 +133,12 @@ else
     <div class="modal-dialog modal-lg">
         <?php Pjax::begin([
             'options' => [
-                'id'                         => InputConditionsDevModalWidget::getPjaxContainerId(),
-                'class'                      => 'pjax-container',
-                'data-return-url'            => '0',
-                'data-return-url-validators' => '0',
+                'id'                                     => InputConditionsDevModalWidget::getPjaxContainerId(),
+                'class'                                  => 'pjax-container',
+                'data-return-url'                        => '0',
+                'data-return-url-validators'             => '0',
+                'data-return-url-input-conditions-list'  => '0',
+                'data-return-url-input-conditions-value' => '0'
             ],
         ]); ?>
         <?php $form = ActiveForm::begin([
@@ -153,8 +155,8 @@ else
         ?>
 
         <?php if ($widget->devInputConditionsGroup->scenario == DevInputConditionsGroup::SCENARIO_UPDATE): ?>
-            <?= Html::hiddenInput('_inputConditionBlockId', $widget->devInputConditionsGroup->inputConditionTemplate->id, [
-                'id' => 'input-condition-block-id-hidden'
+            <?= Html::hiddenInput('_inputConditionTemplateId', $widget->devInputConditionsGroup->inputConditionTemplate->id, [
+                'id' => 'input-condition-template-id-hidden'
             ]) ?>
         <?php endif; ?>
 

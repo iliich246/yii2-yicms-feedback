@@ -331,11 +331,13 @@ class DeveloperInputConditionsController extends Controller
         if ($inputConditionValue->load(Yii::$app->request->post()) &&
             Model::loadMultiple($inputConditionValuesTranslates, Yii::$app->request->post())) {
 
+
             if ($inputConditionValue->validate() && Model::validateMultiple($inputConditionValuesTranslates)) {
                 $inputConditionValue->save();
 
                 /** @var InputConditionValueNamesForm $inputConditionValuesTranslate */
                 foreach ($inputConditionValuesTranslates as $inputConditionValuesTranslate) {
+                    Yii::error(print_r($inputConditionValuesTranslate,true));
                     $inputConditionValuesTranslate->save();
                 }
 

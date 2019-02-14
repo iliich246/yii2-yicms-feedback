@@ -5,7 +5,6 @@ namespace Iliich246\YicmsFeedback\InputConditions;
 use Iliich246\YicmsCommon\Base\AbstractHandler;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\NonexistentInterface;
-use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 
 /**
  * Class ConditionsInputHandler
@@ -70,6 +69,12 @@ class ConditionsInputHandler extends AbstractHandler
             $fictiveInputCondition = new InputCondition();
             $fictiveInputCondition->setFictive();
             $fictiveInputCondition->setTemplate($template);
+            $fictiveInputCondition->feedback_value_id = $template->defaultValueId();
+            $fictiveInputCondition->editable = true;
+            $fictiveInputCondition->checkbox_state = $template->defaultCheckboxValue();
+
+            if ($template->type == InputConditionTemplate::TYPE_CHECKBOX)
+                $fictiveInputCondition->value = (string)$fictiveInputCondition->checkbox_state;
 
             return $fictiveInputCondition;
         });
