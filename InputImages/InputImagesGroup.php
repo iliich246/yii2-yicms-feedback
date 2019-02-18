@@ -5,7 +5,9 @@ namespace Iliich246\YicmsFeedback\InputImages;
 use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
+use yii\helpers\FileHelper;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
@@ -40,7 +42,26 @@ class InputImagesGroup extends AbstractGroup
             'active'                         => true
         ])->all();
 
-        //foreach($inputImagesBlocks as $inputImagesBlock)
+        foreach($inputImagesBlocks as $inputImagesBlock) {
+            $inputImage = $this
+                ->imageInputReference
+                ->getInputImagesHandler()
+                ->getInputImageBlock($inputImagesBlock->program_name);
+
+            $inputImage->prepareValidators();
+            $this->inputImages["$inputImagesBlock->id"] = $inputImage;
+        }
+
+        return $this->inputImages;
+    }
+
+    /**
+     * Returns true if this group has active input images
+     * @return bool
+     */
+    public function isActiveInputImages()
+    {
+        return !!count($this->inputImages);
     }
 
     /**
@@ -48,7 +69,30 @@ class InputImagesGroup extends AbstractGroup
      */
     public function validate()
     {
+        if (!$this->inputImages) return true;
 
+        if (!InputImage::isLoadedMultiple($this->inputImages)) {
+            $result = '';
+
+            foreach($this->inputImages as $inputImages)
+                if (!$inputImages->isLoaded())
+                    $result .= '"' . $inputImages->getInputImagesBlock()->program_name . '", ';
+
+            $result = substr($result , 0, -2);
+
+            Yii::error(
+                'In feedback form don`t used next active input images: ' .
+                $result,  __METHOD__);
+
+            if (defined('YICMS_STRICT')) {
+                throw new FeedbackException('In feedback form don`t used next active input images: ' .
+                    $result);
+            }
+
+            return false;
+        }
+
+        return Model::validateMultiple($this->inputImages);
     }
 
     /**
@@ -56,7 +100,9 @@ class InputImagesGroup extends AbstractGroup
      */
     public function load($data)
     {
+        if (!$this->inputImages) return true;
 
+        return Model::loadMultiple($this->inputImages, $data);
     }
 
     /**
@@ -64,7 +110,23 @@ class InputImagesGroup extends AbstractGroup
      */
     public function save()
     {
+        if (!$this->inputImages) return false;
 
+        $path = FeedbackModule::getInstance()->inputImagesPath;
+
+        if (!is_dir($path))
+            FileHelper::createDirectory($path);
+
+        $success = true;
+
+        foreach($this->inputImages as $inputImage) {
+
+            $success = $inputImage->saveInputFile();
+
+            if (!$success) return false;
+        }
+
+        return $success;
     }
 
     /**

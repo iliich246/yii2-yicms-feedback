@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\InputConditions;
 
+use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
@@ -47,10 +48,19 @@ class InputConditionsGroup extends AbstractGroup
                 ->getInputCondition($inputConditionsTemplate->program_name);
 
             $inputConditions->prepareValidators();
-            $this->inputConditions["$inputConditions->id"] = $inputConditions;
+            $this->inputConditions["$inputConditionsTemplate->id"] = $inputConditions;
         }
 
         return $this->inputConditions;
+    }
+
+    /**
+     * Returns true if this group has active input images
+     * @return bool
+     */
+    public function isActiveInputConditions()
+    {
+        return !!count($this->inputConditions);
     }
 
     /**
@@ -58,6 +68,29 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function validate()
     {
+        if (!$this->inputConditions) return true;
+
+        if (!InputCondition::isLoadedMultiple($this->inputConditions)) {
+            $result = '';
+
+            foreach($this->inputConditions as $inputField)
+                if (!$inputField->isLoaded())
+                    $result .= '"' . $inputField->getTemplate()->program_name . '", ';
+
+            $result = substr($result , 0, -2);
+
+            Yii::error(
+                'In feedback form don`t used next active input conditions: ' .
+                $result,  __METHOD__);
+
+            if (defined('YICMS_STRICT')) {
+                throw new FeedbackException('In feedback form don`t used next active input conditions: ' .
+                    $result);
+            }
+
+            return false;
+        }
+
         return Model::validateMultiple($this->inputConditions);
     }
 
@@ -66,6 +99,8 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function load($data)
     {
+        if (!$this->inputConditions) return true;
+
         return Model::loadMultiple($this->inputConditions, $data);
     }
 
@@ -74,7 +109,17 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function save()
     {
+        if (!$this->inputConditions) return true;
 
+        $success = true;
+
+        foreach($this->inputConditions as $inputCondition) {
+            if (!$success) return false;
+            $inputCondition->input_condition_reference = $this->conditionInputReference->getInputConditionReference();
+            $success = $inputCondition->save();
+        }
+
+        return true;
     }
 
     /**

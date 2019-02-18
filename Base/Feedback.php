@@ -385,7 +385,8 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
-     *
+     * Initialize feedback
+     * @return void
      */
     public function initialize()
     {
@@ -407,19 +408,58 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
-     * Proxy load method to active stage
+     * Handle load method for this feedback
      * @param array $data
      * @param null $formName
      * @return bool|void
      */
     public function load($data, $formName = null)
     {
-        $inputFieldsLoaded     = $this->inputFieldsGroup->load($data);
-        $inputFilesLoaded      = $this->inputFilesGroup->load($data);
-        $inputImagesLoaded     = $this->inputImagesGroup->load($data);
-        $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
+        if (!$this->inputFieldsGroup->isActiveInputFields() &&
+            !$this->inputFilesGroup->isActiveInputFiles() &&
+            !$this->inputImagesGroup->isActiveInputImages() &&
+            !$this->inputConditionsGroup->isActiveInputConditions()
+        ) return false;
 
-        return $inputFilesLoaded;
+//        throw new \yii\base\Exception(print_r([
+//            $this->inputFieldsGroup->isActiveInputFields(),
+//            $this->inputFilesGroup->isActiveInputFiles(),
+//            $this->inputImagesGroup->isActiveInputImages(),
+//            $this->inputConditionsGroup->isActiveInputConditions()
+//        ], true));
+
+        if (!$this->inputFieldsGroup->isActiveInputFields())
+            $inputFieldsLoaded = true;
+        else
+            $inputFieldsLoaded = $this->inputFieldsGroup->load($data);
+
+        if (!$this->inputFilesGroup->isActiveInputFiles())
+            $inputFilesLoaded = true;
+        else
+            $inputFilesLoaded = $this->inputFilesGroup->load($data);
+
+        if (!$this->inputImagesGroup->isActiveInputImages())
+            $inputImagesLoaded = true;
+        else
+            $inputImagesLoaded = $this->inputImagesGroup->load($data);
+
+        if (!$this->inputConditionsGroup->isActiveInputConditions())
+            $inputConditionsLoaded = true;
+        else
+            $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
+
+//        if ($inputConditionsLoaded)
+//        throw new \yii\base\Exception(print_r([
+//            $inputFieldsLoaded,
+//            $inputFilesLoaded,
+//            $inputImagesLoaded,
+//            $inputConditionsLoaded
+//        ], true));
+
+        if ($inputFieldsLoaded && $inputFilesLoaded && $inputImagesLoaded && $inputConditionsLoaded)
+            return true;
+
+        return false;
     }
 
     /**
@@ -430,12 +470,39 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-        $inputFieldsValidated = $this->inputFieldsGroup->validate();
-        $inputFilesValidated  = $this->inputFilesGroup->validate();
-        $inputImagesValidated = $this->inputImagesGroup->validate();
-        $inputConditionsValidated = $this->inputConditionsGroup->validate();
+        if (!$this->inputFieldsGroup->isActiveInputFields() &&
+            !$this->inputFilesGroup->isActiveInputFiles() &&
+            !$this->inputImagesGroup->isActiveInputImages() &&
+            !$this->inputConditionsGroup->isActiveInputConditions()
+        ) return false;
 
-        return $inputFilesValidated;
+        if (!$this->inputFieldsGroup->isActiveInputFields())
+            $inputFieldsValidated = true;
+        else
+            $inputFieldsValidated = $this->inputFieldsGroup->validate();
+
+        if (!$this->inputFilesGroup->isActiveInputFiles())
+            $inputFilesValidated = true;
+        else
+            $inputFilesValidated = $this->inputFilesGroup->validate();
+
+        if (!$this->inputImagesGroup->isActiveInputImages())
+            $inputImagesValidated = true;
+        else
+            $inputImagesValidated = $this->inputImagesGroup->validate();
+
+        if (!$this->inputConditionsGroup->isActiveInputConditions())
+            $inputConditionsValidated = true;
+        else
+            $inputConditionsValidated = $this->inputConditionsGroup->validate();
+
+        if ($inputFieldsValidated &&
+            $inputFilesValidated &&
+            $inputImagesValidated &&
+            $inputConditionsValidated)
+            return true;
+
+        return false;
     }
 
     /**
@@ -450,9 +517,9 @@ class Feedback extends ActiveRecord implements
         $this->currentState->feedback_id = $this->id;
         $this->currentState->save(false);
 
-        $inputFieldsSaved = $this->inputFieldsGroup->save();
-        $inputFilesSaved = $this->inputFilesGroup->save();
-        $inputImagesSaved = $this->inputImagesGroup->save();
+        $inputFieldsSaved     = $this->inputFieldsGroup->save();
+        $inputFilesSaved      = $this->inputFilesGroup->save();
+        $inputImagesSaved     = $this->inputImagesGroup->save();
         $inputConditionsSaved = $this->inputConditionsGroup->save();
 
         return true;

@@ -15,14 +15,14 @@ use Iliich246\YicmsCommon\Images\ImagesHandler;
 interface ImageInputInterface
 {
     /**
-     * @return ImagesHandler object, that aggregated in object with input images functionality.
+     * @return ImagesInputHandler object, that aggregated in object with input images functionality.
      */
     public function getInputImagesHandler();
 
     /**
-     * This method must proxy ImagesHandler method for work with him directly from aggregator.
+     * This method must proxy InputImagesBlock method for work with him directly from aggregator.
      * @param $name
-     * @return ImagesBlock
+     * @return InputImagesBlock
      */
     public function getInputImage($name);
 }

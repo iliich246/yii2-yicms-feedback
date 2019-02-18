@@ -75,6 +75,8 @@ class ConditionsInputHandler extends AbstractHandler
 
             if ($template->type == InputConditionTemplate::TYPE_CHECKBOX)
                 $fictiveInputCondition->value = (string)$fictiveInputCondition->checkbox_state;
+            else
+                $fictiveInputCondition->value = $fictiveInputCondition->feedback_value_id;
 
             return $fictiveInputCondition;
         });

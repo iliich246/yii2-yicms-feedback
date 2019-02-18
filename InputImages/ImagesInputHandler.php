@@ -29,7 +29,7 @@ class ImagesInputHandler extends AbstractHandler
      * @param $name
      * @return InputImage
      */
-    public function getInputFileBlock($name)
+    public function getInputImageBlock($name)
     {
         if ($this->aggregator->isNonexistent()) {
             $nonexistentInputImage = new InputImage();

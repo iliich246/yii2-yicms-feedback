@@ -120,7 +120,6 @@ class InputField extends ActiveRecord implements
         /** @var InputField $model */
         foreach ($models as $model) {
             if (!$model->isLoaded()) return false;
-
         }
 
         return true;

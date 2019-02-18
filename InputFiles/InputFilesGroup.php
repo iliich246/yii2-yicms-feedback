@@ -2,12 +2,13 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsFeedback\FeedbackModule;
+
 use Yii;
 use yii\base\Model;
 use yii\helpers\FileHelper;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
@@ -57,10 +58,21 @@ class InputFilesGroup extends AbstractGroup
     }
 
     /**
+     * Returns true if this group has active input files
+     * @return bool
+     */
+    public function isActiveInputFiles()
+    {
+        return !!count($this->inputFiles);
+    }
+
+    /**
      * @inheritdoc
      */
     public function validate()
     {
+        if (!$this->inputFiles) return true;
+
         if (!InputFile::isLoadedMultiple($this->inputFiles)) {
             $result = '';
 
@@ -90,6 +102,8 @@ class InputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
+        if (!$this->inputFiles) return true;
+
         return Model::loadMultiple($this->inputFiles, $data);
     }
 

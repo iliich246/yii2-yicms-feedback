@@ -52,11 +52,22 @@ class InputFieldGroup extends AbstractGroup
     }
 
     /**
+     * Returns true if this group has active input fields
+     * @return bool
+     */
+    public function isActiveInputFields()
+    {
+        return !!count($this->inputFields);
+    }
+
+    /**
      * @inheritdoc
      * @throws FeedbackException
      */
     public function validate()
     {
+        if (!$this->inputFields) return true;
+
         if (!InputField::isLoadedMultiple($this->inputFields)) {
             $result = '';
 
@@ -86,6 +97,8 @@ class InputFieldGroup extends AbstractGroup
      */
     public function load($data)
     {
+        if (!$this->inputFields) return true;
+
         return Model::loadMultiple($this->inputFields, $data);
     }
 

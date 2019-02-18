@@ -53,6 +53,32 @@ class InputCondition extends ActiveRecord implements
     /**
      * @inheritdoc
      */
+    public function init()
+    {
+        $this->on(self::EVENT_AFTER_FIND, function() {
+
+            if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) {
+                $this->value = !!$this->checkbox_state;
+                return;
+            };
+
+            if (is_null($this->feedback_value_id)) {
+                $valueId = $this->getTemplate()->defaultValueId();
+
+                if (!is_null($valueId)) {
+
+                    $this->feedback_value_id = $valueId;
+                    $this->simpleSave();
+                }
+            }
+
+            $this->value = $this->feedback_value_id;
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     public static function tableName()
     {
         return '{{%feedback_input_conditions}}';
@@ -66,6 +92,48 @@ class InputCondition extends ActiveRecord implements
         return [
             'value' => $this->name(),
         ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            ['value', 'safe'],
+            ['value', 'validateValue'],
+            ['input_condition_reference', 'string', 'max' => '255'],
+            [['editable', 'checkbox_state'], 'boolean'],
+            [
+                ['feedback_value_id'], 'exist', 'skipOnError' => true,
+                'targetClass' => InputConditionValues::className(),
+                'targetAttribute' => ['feedback_value_id' => 'id']
+            ],
+            [
+                ['input_condition_template_template_id'], 'exist', 'skipOnError' => true,
+                'targetClass' => InputConditionValues::className(),
+                'targetAttribute' => ['input_condition_template_template_id' => 'id']
+            ],
+        ];
+    }
+
+    /**
+     * Validates value.
+     *
+     * @param string $attribute the attribute currently being validated
+     * @param array $params the additional name-value pairs given in the rule
+     */
+    public function validateValue($attribute, $params)
+    {
+        if (!$this->hasErrors()) {
+
+            if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) return;
+
+            $conditionValue = InputConditionValues::findOne($this->value);
+
+            if (!$conditionValue)
+                $this->addError($attribute, 'Wrong value');
+        }
     }
 
     /**
@@ -118,6 +186,73 @@ class InputCondition extends ActiveRecord implements
         }
 
         return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function load($data, $formName = null)
+    {
+        if ($this->isNonexistent()) return false;
+
+        if (parent::load($data, $formName)) {
+            $this->isLoaded = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if this model is loaded
+     * @return bool
+     */
+    public function isLoaded()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->isLoaded;
+    }
+
+    /**
+     * Makes is loaded method for group of models
+     * @param $models
+     * @return bool
+     */
+    public static function isLoadedMultiple($models)
+    {
+        /** @var InputCondition $model */
+        foreach ($models as $model) {
+            if (!$model->isLoaded()) return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) {
+            if (!$this->value)
+                $this->checkbox_state = false;
+            else
+                $this->checkbox_state = true;
+        }else {
+            $this->feedback_value_id = $this->value;
+        }
+
+        return parent::save($runValidation, $attributeNames);
+    }
+
+    /**
+     * Save action that just proxy parent method
+     * @return bool
+     */
+    public function simpleSave()
+    {
+        return parent::save(false);
     }
 
     /**
@@ -251,7 +386,7 @@ class InputCondition extends ActiveRecord implements
 
         while($coincidence) {
             if (!self::find()->where([
-                'condition_reference' => $value
+                'input_condition_reference' => $value
             ])->one()) return $value;
 
             if ($counter++ > 100) {
