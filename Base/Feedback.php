@@ -878,7 +878,7 @@ class Feedback extends ActiveRecord implements
      */
     public function getInputImage($name)
     {
-        return $this->getInputImagesHandler()->getImageBlock($name);
+        return $this->getInputImagesHandler()->getInputImageBlock($name);
     }
 
     /**

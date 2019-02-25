@@ -44,7 +44,10 @@ class DevInputFilesGroup extends AbstractGroup
             $this->inputFilesBlock                                = new InputFilesBlock();
             $this->inputFilesBlock->input_file_template_reference = $this->inputFileTemplateReference;
             $this->inputFilesBlock->scenario                      = InputFilesBlock::SCENARIO_CREATE;
+            $this->inputFilesBlock->type                          = InputFilesBlock::TYPE_ONE_FILE;
+            
             $this->scenario                                       = self::SCENARIO_CREATE;
+
         } else {
             $this->inputFilesBlock = InputFilesBlock::getInstanceById($inputFilesBlockId);
 
@@ -104,6 +107,10 @@ class DevInputFilesGroup extends AbstractGroup
 
         if (!$needSaveInputFileBlock &&
             $this->inputFilesBlock->getOldAttribute('editable') != $this->inputFilesBlock->editable)
+            $needSaveInputFileBlock = true;
+
+        if (!$needSaveInputFileBlock &&
+            $this->inputFilesBlock->getOldAttribute('type') != $this->inputFilesBlock->type)
             $needSaveInputFileBlock = true;
 
         if ($needSaveInputFileBlock)

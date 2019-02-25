@@ -45,6 +45,8 @@ class DevInputImagesGroup extends AbstractGroup
             $this->inputImagesBlock                                 = new InputImagesBlock();
             $this->inputImagesBlock->input_image_template_reference = $this->inputImageTemplateReference;
             $this->inputImagesBlock->scenario                       = InputImagesBlock::SCENARIO_CREATE;
+            $this->inputImagesBlock->type                           = InputImagesBlock::TYPE_ONE_IMAGE;
+
             $this->scenario                                         = self::SCENARIO_CREATE;
         } else {
             $this->inputImagesBlock = InputImagesBlock::getInstanceById($inputImagesBlockId);
@@ -70,7 +72,6 @@ class DevInputImagesGroup extends AbstractGroup
 
             $this->inputImagesNameTranslates[$key] = $inputFileNameTranslates;
         }
-
     }
 
     /**
@@ -106,6 +107,10 @@ class DevInputImagesGroup extends AbstractGroup
 
         if (!$needSaveInputImageBlock &&
             $this->inputImagesBlock->getOldAttribute('editable') != $this->inputImagesBlock->editable)
+            $needSaveInputImageBlock = true;
+
+        if (!$needSaveInputImageBlock &&
+            $this->inputImagesBlock->getOldAttribute('type') != $this->inputImagesBlock->type)
             $needSaveInputImageBlock = true;
 
         if ($needSaveInputImageBlock)

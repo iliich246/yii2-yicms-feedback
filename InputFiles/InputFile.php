@@ -169,15 +169,13 @@ class InputFile extends AbstractEntity implements
 
     /**
      * Save input file or group of input files
-     * @return bool|void
+     * @return bool
      */
     public function saveInputFile()
     {
         if (!is_array($this->inputFile)) {
             return $this->physicalSaveInputFile($this->inputFile);
         } else {
-            $success = true;
-
             /** @var UploadedFile $inputFile */
             foreach($this->inputFile as $inputFile)
                 if (!$this->physicalSaveInputFile($inputFile)) return false;

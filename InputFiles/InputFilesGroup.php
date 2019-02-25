@@ -123,6 +123,7 @@ class InputFilesGroup extends AbstractGroup
 
         foreach($this->inputFiles as $inputFile) {
 
+            $inputFile->input_file_reference = $this->fileInputReference->getInputFileReference();
             $success = $inputFile->saveInputFile();
 
             if (!$success) return false;

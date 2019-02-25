@@ -69,7 +69,7 @@ class InputImage extends AbstractEntity implements
     public function attributeLabels()
     {
         return [
-            'editable' => 'Editable(dev)'
+            'inputImage' => $this->name(),
         ];
     }
 
@@ -167,16 +167,14 @@ class InputImage extends AbstractEntity implements
      * Save input image or group of input files
      * @return bool|void
      */
-    public function saveInputFile()
+    public function saveInputImage()
     {
         if (!is_array($this->inputImage)) {
-            return $this->physicalSaveInputImage($this->inputFile);
+            return $this->physicalSaveInputImage($this->inputImage);
         } else {
-            $success = true;
-
-            /** @var UploadedFile $inputFile */
-            foreach($this->inputImage as $inputFile)
-                if (!$this->physicalSaveInputImage($inputFile)) return false;
+            /** @var UploadedFile $inputImage */
+            foreach($this->inputImage as $inputImage)
+                if (!$this->physicalSaveInputImage($inputImage)) return false;
 
             return true;
         }
@@ -238,6 +236,17 @@ class InputImage extends AbstractEntity implements
     protected static function getReferenceName()
     {
         return 'input_image_reference';
+    }
+
+    /**
+     * Returns true if input file is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return !!$this->getInputImagesBlock()->active;
     }
 
     /**

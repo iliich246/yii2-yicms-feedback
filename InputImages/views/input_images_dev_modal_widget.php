@@ -172,8 +172,20 @@ else
                     <div class="col-sm-6 col-xs-12">
                         <?= $form->field($widget->devInputImagesGroup->inputImagesBlock, 'program_name') ?>
                     </div>
+
+                    <div class="col-sm-6 col-xs-12">
+                        <?= $form->field($widget->devInputImagesGroup->inputImagesBlock, 'type')->dropDownList(
+                            \Iliich246\YicmsFeedback\InputImages\InputImagesBlock::getTypes()
+                        ) ?>
+                    </div>
+
                     <div class="col-sm-6 col-xs-12">
                         <?= $form->field($widget->devInputImagesGroup->inputImagesBlock, 'max_images') ?>
+                    </div>
+
+                    <div class="col-sm-6 col-xs-12">
+                        <br>
+                        <p>zero value - infinite count of images in block</p>
                     </div>
                 </div>
                 <div class="row">

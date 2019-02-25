@@ -99,6 +99,33 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     }
 
     /**
+     * Return array of input file types
+     * @return array|bool
+     */
+    public static function getTypes()
+    {
+        static $array = false;
+
+        if ($array) return $array;
+
+        $array = [
+            self::TYPE_ONE_IMAGE    => 'One image on input block',
+            self::TYPE_MULTIPLICITY => 'Multiple images on input block',
+        ];
+
+        return $array;
+    }
+
+    /**
+     * Return name of type of concrete field
+     * @return mixed
+     */
+    public function getTypeName()
+    {
+        return self::getTypes()[$this->type];
+    }
+
+    /**
      * @inheritdoc
      */
     public function save($runValidation = true, $attributes = null)

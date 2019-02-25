@@ -227,7 +227,6 @@ class m181025_181406_feedback_init extends Migration
             'input_file_reference'             => $this->string(),
             'system_name'                      => $this->string(),
             'original_name'                    => $this->string(),
-            'input_file_order'                 => $this->integer(),
             'size'                             => $this->integer(),
             'type'                             => $this->string(),
             'created_at'                       => $this->integer(),
@@ -307,10 +306,8 @@ class m181025_181406_feedback_init extends Migration
             'input_image_reference'             => $this->string(),
             'system_name'                       => $this->string(),
             'original_name'                     => $this->string(),
-            'input_image_order'                 => $this->integer(),
             'size'                              => $this->integer(),
-            'active'                            => $this->boolean(),
-            'editable'                          => $this->boolean(),
+            'type'                              => $this->string(),
             'created_at'                        => $this->integer(),
             'updated_at'                        => $this->integer(),
         ]);
@@ -387,8 +384,6 @@ class m181025_181406_feedback_init extends Migration
             'input_condition_template_template_id' => $this->integer(),
             'input_condition_reference'            => $this->string(),
             'feedback_value_id'                    => $this->integer(),
-            'active'                               => $this->boolean(),
-            'editable'                             => $this->boolean(),
             'checkbox_state'                       => $this->boolean(),
         ]);
 

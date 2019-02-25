@@ -121,7 +121,8 @@ class InputImagesGroup extends AbstractGroup
 
         foreach($this->inputImages as $inputImage) {
 
-            $success = $inputImage->saveInputFile();
+            $inputImage->input_image_reference = $this->imageInputReference->getInputImageReference();
+            $success = $inputImage->saveInputImage();
 
             if (!$success) return false;
         }
