@@ -14,6 +14,7 @@ use yii\behaviors\TimestampBehavior;
  * @property string $input_files_reference
  * @property string $input_images_reference
  * @property string $input_conditions_reference
+ * @property integer $is_handled
  * @property integer $created_at
  * @property integer $updated_at
  *

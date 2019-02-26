@@ -515,6 +515,7 @@ class Feedback extends ActiveRecord implements
     {
         $this->currentState = new FeedbackState();
         $this->currentState->feedback_id = $this->id;
+        $this->currentState->is_handled = false;
         $this->currentState->save(false);
 
         $inputFieldsSaved     = $this->inputFieldsGroup->save();

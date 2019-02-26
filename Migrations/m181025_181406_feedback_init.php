@@ -84,6 +84,7 @@ class m181025_181406_feedback_init extends Migration
             'input_files_reference'      => $this->string(),
             'input_images_reference'     => $this->string(),
             'input_conditions_reference' => $this->string(),
+            'is_handled'                 => $this->smallInteger(),
             'created_at'                 => $this->integer(),
             'updated_at'                 => $this->integer(),
         ]);
