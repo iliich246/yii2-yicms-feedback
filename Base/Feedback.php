@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\Base;
 
 use Yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -137,6 +138,10 @@ class Feedback extends ActiveRecord implements
     private $isFictive = true;
     /** @var FeedbackState|null current state of this feedback */
     private $currentState = null;
+    /** @var null|integer count of states for this feedback  */
+    private $countStates = null;
+    /** @var null|integer count of new states of this feedback  */
+    private $countNewStates = null;
 
     /**
      * @inheritdoc
@@ -256,7 +261,7 @@ class Feedback extends ActiveRecord implements
     /**
      * Returns instance of feedback by her id
      * @param $id
-     * @return Feedback|null
+     * @return null|Feedback
      * @throws FeedbackException
      */
     public static function getInstance($id)
@@ -344,7 +349,6 @@ class Feedback extends ActiveRecord implements
         if (!FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)) return $this->program_name;
 
         return FeedbackNamesTranslatesDb::getTranslate($this->id, $language->id)->description;
-
     }
 
     /**
@@ -382,6 +386,58 @@ class Feedback extends ActiveRecord implements
     public function validateDev()
     {
         return parent::validate();
+    }
+
+    /**
+     * Return count of states for this feedback
+     * @return int|null|string
+     */
+    public function countStates()
+    {
+        if ($this->isNonexistent) return 0;
+
+        if (!is_null($this->countStates)) return $this->countStates;
+
+        return $this->countStates = FeedbackState::find()->where([
+            'feedback_id' => $this->id,
+        ])->count();
+    }
+
+    /**
+     * Return true if feedback has new states
+     * @return bool
+     */
+    public function isNewStates()
+    {
+        if ($this->isNonexistent) return false;
+
+        return !!$this->countNewStates();
+    }
+
+    /**
+     * Return count of new states of this feedback
+     * @return int|null|string
+     */
+    public function countNewStates()
+    {
+        if ($this->isNonexistent) return 0;
+
+        if (!is_null($this->countNewStates)) return $this->countNewStates;
+
+        return $this->countNewStates = FeedbackState::find()->where([
+            'feedback_id' => $this->id,
+            'is_handled'  => false
+        ])->count();
+    }
+
+    /**
+     * @return ActiveQuery
+     */
+    public function statesQuery()
+    {
+        return FeedbackState::find()->where([
+            'feedback_id' => $this->id,
+        ]);
     }
 
     /**
@@ -524,6 +580,24 @@ class Feedback extends ActiveRecord implements
         $inputConditionsSaved = $this->inputConditionsGroup->save();
 
         return true;
+    }
+
+    /**
+     * FeedbackState getter
+     * @return FeedbackState|null
+     */
+    public function getActiveState()
+    {
+        return $this->currentState;
+    }
+
+    /**
+     * FeedbackState setter
+     * @param FeedbackState $state
+     */
+    public function setActiveState(FeedbackState $state)
+    {
+        $this->currentState = $state;
     }
 
     /**

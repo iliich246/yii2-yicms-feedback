@@ -32,7 +32,7 @@ class InputFieldGroup extends AbstractGroup
     /**
      * @inheritdoc
      */
-    public function initialize($inputFieldTemplateId = null)
+    public function initialize()
     {
         /** @var InputFieldTemplate[] $inputFieldTemplates */
         $inputFieldTemplates = InputFieldTemplate::find()->where([

@@ -2,8 +2,10 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
+use Iliich246\YicmsFeedback\InputFields\InputField;
 
 /**
  * Class FeedbackState
@@ -22,6 +24,46 @@ use yii\behaviors\TimestampBehavior;
  */
 class FeedbackState extends ActiveRecord
 {
+    /** @var Feedback instance associated with this state */
+    private $feedback;
+    /** @var InputField[] for working with forms */
+    public $inputFields;
+
+    /**
+     * Feedback getter
+     * @return Feedback|null
+     * @throws FeedbackException
+     */
+    public function getFeedback()
+    {
+//        if ($this->isNewRecord)
+//            return false;
+
+        if (!$this->feedback) return $this->feedback;
+
+        return $this->feedback = Feedback::getInstance($this->feedback_id);
+    }
+
+    /**
+     * Feedback setter
+     * @param Feedback $feedback
+     * @throws FeedbackException
+     */
+    public function setFeedback(Feedback $feedback)
+    {
+        if ($this->feedback_id != $feedback->id)
+            throw new FeedbackException('Try to set wrong feedback for this state');
+
+        $this->feedback = $feedback;
+    }
+
+    public function isActiveInputFields()
+    {
+        //$this->getFeedback()->is
+    }
+
+    //public function
+
     /**
      * @inheritdoc
      */
