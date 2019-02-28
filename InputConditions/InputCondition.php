@@ -299,6 +299,15 @@ class InputCondition extends ActiveRecord implements
     }
 
     /**
+     * @inheritdoc
+     * @return string
+     */
+    public function __toString()
+    {
+        return 'PENIS';
+    }
+
+    /**
      * Returns name of input condition for form
      * @return string
      * @throws \Iliich246\YicmsCommon\Base\CommonException
@@ -342,23 +351,44 @@ class InputCondition extends ActiveRecord implements
     }
 
     /**
+     * Returns dev name of input condition
      * @return string
      */
     public function devName()
     {
         if ($this->isNonexistent()) return '';
 
-        return '';//TODO: implement this method
+        $inputConditionName = $this->getInputConditionNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputConditionName && trim($inputConditionName->dev_name) && CommonModule::isUnderAdmin())
+            return $inputConditionName->dev_name;
+
+        if ((!$inputConditionName || !trim($inputConditionName->dev_name)) && CommonModule::isUnderAdmin())
+            return $this->getTemplate()->program_name;
+
+        if ($inputConditionName && trim($inputConditionName->dev_name) && CommonModule::isUnderDev())
+            return $inputConditionName->dev_name . ' (' . $this->getTemplate()->program_name . ')';
+
+        if ((!$inputConditionName || !trim($inputConditionName->dev_name)) && CommonModule::isUnderDev())
+            return 'No translate for input condition \'' . $this->getTemplate()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
     }
 
     /**
+     * Returns dev description of input condition
      * @return string
      */
     public function devDescription()
     {
         if ($this->isNonexistent()) return '';
 
-        return '';//TODO: implement this method
+        $inputConditionName = $this->getInputConditionNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputConditionName)
+            return $inputConditionName->dev_description;
+
+        return false;
     }
 
     /**

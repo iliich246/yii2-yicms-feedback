@@ -30,10 +30,10 @@ class InputImageNamesTranslatesForm extends AbstractTranslateForm
     public function attributeLabels()
     {
         return [
-            'devName'          => 'Image name on language "' . $this->language->name . '"',
-            'devDescription'   => 'Description of image on language "' . $this->language->name . '"',
-            'adminName'        => 'Image name on language "' . $this->language->name . '"',
-            'adminDescription' => 'Description of image on language "' . $this->language->name . '"',
+            'devName'          => 'Admin input image name on language "' . $this->language->name . '"',
+            'devDescription'   => 'Admin description of input image on language "' . $this->language->name . '"',
+            'adminName'        => 'User input image name on language "' . $this->language->name . '"',
+            'adminDescription' => 'User description of input image on language "' . $this->language->name . '"',
         ];
     }
 

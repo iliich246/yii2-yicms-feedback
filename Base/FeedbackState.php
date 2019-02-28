@@ -36,9 +36,6 @@ class FeedbackState extends ActiveRecord
      */
     public function getFeedback()
     {
-//        if ($this->isNewRecord)
-//            return false;
-
         if (!$this->feedback) return $this->feedback;
 
         return $this->feedback = Feedback::getInstance($this->feedback_id);
@@ -56,13 +53,6 @@ class FeedbackState extends ActiveRecord
 
         $this->feedback = $feedback;
     }
-
-    public function isActiveInputFields()
-    {
-        //$this->getFeedback()->is
-    }
-
-    //public function
 
     /**
      * @inheritdoc

@@ -30,10 +30,10 @@ class InputConditionNamesTranslatesForm extends AbstractTranslateForm
     public function attributeLabels()
     {
         return [
-            'devName'          => 'Condition name on language "' . $this->language->name . '"',
-            'devDescription'   => 'Description of condition on language "' . $this->language->name . '"',
-            'adminName'        => 'Condition name on language "' . $this->language->name . '"',
-            'adminDescription' => 'Description of condition on language "' . $this->language->name . '"',
+            'devName'          => 'Admin input condition name on language "' . $this->language->name . '"',
+            'devDescription'   => 'Admin description of input condition on language "' . $this->language->name . '"',
+            'adminName'        => 'User input condition name on language "' . $this->language->name . '"',
+            'adminDescription' => 'User description of input condition on language "' . $this->language->name . '"',
         ];
     }
 

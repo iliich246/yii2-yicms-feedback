@@ -37,7 +37,7 @@ class InputField extends ActiveRecord implements
     private $validatorBuilder;
     /** @var InputFieldsNamesTranslatesDb[] buffer for language */
     private $inputFieldNamesTranslations = [];
-    /** @var bool if true field will behaviour as nonexistent   */
+    /** @var bool if true field will behaviour as nonexistent */
     private $isNonexistent = false;
     /** @var string value for keep program name in nonexistent mode */
     private $nonexistentProgramName;
@@ -141,9 +141,21 @@ class InputField extends ActiveRecord implements
      */
     public function setTemplate(InputFieldTemplate $inputTemplate)
     {
-        $this->inputTemplate                     = $inputTemplate;
+        $this->inputTemplate = $inputTemplate;
         $this->feedback_input_fields_template_id = $inputTemplate->id;
     }
+
+    /**
+     * @inheritdoc
+     * @return string
+     */
+    public function __toString()
+    {
+        if ($this->isNonexistent()) return '';
+
+        return (string)$this->value;
+    }
+
 
     /**
      * Returns name of input field for form
@@ -190,23 +202,44 @@ class InputField extends ActiveRecord implements
     }
 
     /**
+     * Returns dev name of input field
      * @return string
      */
     public function devName()
     {
         if ($this->isNonexistent()) return '';
 
-        return '';//TODO: implement this method
+        $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFieldName && trim($inputFieldName->dev_name) && CommonModule::isUnderAdmin())
+            return $inputFieldName->dev_name;
+
+        if ((!$inputFieldName || !trim($inputFieldName->dev_name)) && CommonModule::isUnderAdmin())
+            return $this->getTemplate()->program_name;
+
+        if ($inputFieldName && trim($inputFieldName->dev_name) && CommonModule::isUnderDev())
+            return $inputFieldName->dev_name . ' (' . $this->getTemplate()->program_name . ')';
+
+        if ((!$inputFieldName || !trim($inputFieldName->dev_name)) && CommonModule::isUnderDev())
+            return 'No translate for input field \'' . $this->getTemplate()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
     }
 
     /**
+     * Returns dev description of input field
      * @return string
      */
     public function devDescription()
     {
         if ($this->isNonexistent()) return '';
 
-        return '';//TODO: implement this method
+        $inputFieldName = $this->getInputFieldNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFieldName)
+            return $inputFieldName->dev_description;
+
+        return false;
     }
 
     /**

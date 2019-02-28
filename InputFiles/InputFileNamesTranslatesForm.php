@@ -30,10 +30,10 @@ class InputFileNamesTranslatesForm extends AbstractTranslateForm
     public function attributeLabels()
     {
         return [
-            'devName'          => 'File name on language "' . $this->language->name . '"',
-            'devDescription'   => 'Description of file on language "' . $this->language->name . '"',
-            'adminName'        => 'File name on language "' . $this->language->name . '"',
-            'adminDescription' => 'Description of file on language "' . $this->language->name . '"',
+            'devName'          => 'Admin input file name on language "' . $this->language->name . '"',
+            'devDescription'   => 'Admin description of input file on language "' . $this->language->name . '"',
+            'adminName'        => 'User input file name on language "' . $this->language->name . '"',
+            'adminDescription' => 'User description of input file on language "' . $this->language->name . '"',
         ];
     }
 

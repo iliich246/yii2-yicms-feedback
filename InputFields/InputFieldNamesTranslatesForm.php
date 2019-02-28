@@ -30,10 +30,10 @@ class InputFieldNamesTranslatesForm extends AbstractTranslateForm
     public function attributeLabels()
     {
         return [
-            'devName'          => 'Field name on language "' . $this->language->name . '"',
-            'devDescription'   => 'Description of field on language "' . $this->language->name . '"',
-            'adminName'        => 'Field name on language "' . $this->language->name . '"',
-            'adminDescription' => 'Description of field on language "' . $this->language->name . '"',
+            'devName'          => 'Admin input field name on language "' . $this->language->name . '"',
+            'devDescription'   => 'Admin description of input field on language "' . $this->language->name . '"',
+            'adminName'        => 'User input field name on language "' . $this->language->name . '"',
+            'adminDescription' => 'User description of field on language "' . $this->language->name . '"',
         ];
     }
 

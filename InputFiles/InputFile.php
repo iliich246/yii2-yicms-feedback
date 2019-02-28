@@ -335,6 +335,47 @@ class InputFile extends AbstractEntity implements
     }
 
     /**
+     * Returns dev name of input field
+     * @return string
+     */
+    public function devName()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderAdmin())
+            return $inputFileName->dev_name;
+
+        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderAdmin())
+            return $this->getInputFileBlock()->program_name;
+
+        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderDev())
+            return $inputFileName->dev_name . ' (' . $this->getInputFileBlock()->program_name . ')';
+
+        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderDev())
+            return 'No translate for input file \'' . $this->getInputFileBlock()->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns dev description of input field
+     * @return string
+     */
+    public function devDescription()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName)
+            return $inputFileName->dev_description;
+
+        return false;
+    }
+
+    /**
      * @inheritdoc
      */
     public function entityBlockQuery()
