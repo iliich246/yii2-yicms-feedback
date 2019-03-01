@@ -3,22 +3,14 @@
 namespace Iliich246\YicmsFeedback\InputFiles;
 
 use Yii;
-use yii\helpers\FileHelper;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
+use yii\helpers\FileHelper;
 use yii\behaviors\TimestampBehavior;
-use yii\validators\SafeValidator;
-use yii\validators\RequiredValidator;
-use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\AbstractEntity;
-use Iliich246\YicmsCommon\Base\SortOrderTrait;
-use Iliich246\YicmsCommon\Base\FictiveInterface;
-use Iliich246\YicmsCommon\Base\SortOrderInterface;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
-use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
-use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 use Iliich246\YicmsFeedback\FeedbackModule;
 
 /**
@@ -38,24 +30,11 @@ use Iliich246\YicmsFeedback\FeedbackModule;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputFile extends AbstractEntity implements
-    SortOrderInterface,
-    ValidatorBuilderInterface,
-    ValidatorReferenceInterface,
-    FictiveInterface
+class InputFile extends AbstractEntity
 {
-    use SortOrderTrait;
-
-    /** @var UploadedFile loaded input file */
-    public $inputFile;
-    /** @var ValidatorBuilder instance */
-    private $validatorBuilder;
-    /** @var InputFilesNamesTranslatesDb[] buffer for language */
-    private $inputFilesNamesTranslations = [];
     /** @var bool keeps fictive state of this input file */
     private $isFictive = false;
-    /** @var bool keep state of load */
-    private $isLoaded = false;
+
     /**
      * @inheritdoc
      */
@@ -70,7 +49,7 @@ class InputFile extends AbstractEntity implements
     public function attributeLabels()
     {
         return [
-            'inputFile' => $this->name(),
+            //'inputFile' => $this->name(),
         ];
     }
 
@@ -91,13 +70,13 @@ class InputFile extends AbstractEntity implements
     {
         return [
             self::SCENARIO_DEFAULT => [
-                'inputFile'
+                //'inputFile'
             ],
             self::SCENARIO_CREATE => [
-                'inputFile'
+                //'inputFile'
             ],
             self::SCENARIO_UPDATE => [
-                'inputFile'
+                //'inputFile'
             ]
         ];
     }
@@ -291,89 +270,6 @@ class InputFile extends AbstractEntity implements
         ]);
     }
 
-    /**
-     * Returns name of file for form
-     * @return string
-     * @throws \Iliich246\YicmsCommon\Base\CommonException
-     */
-    public function name()
-    {
-        if ($this->isNonexistent()) return '';
-
-        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
-
-        if ($inputFileName && trim($inputFileName->admin_name) && CommonModule::isUnderAdmin())
-            return $inputFileName->admin_name;
-
-        if ((!$inputFileName || !trim($inputFileName->admin_name)) && CommonModule::isUnderAdmin())
-            return $this->getInputFileBlock()->program_name;
-
-        if ($inputFileName && trim($inputFileName->admin_name) && CommonModule::isUnderDev())
-            return $inputFileName->admin_name . ' (' . $this->getInputFileBlock()->program_name . ')';
-
-        if ((!$inputFileName || !trim($inputFileName->admin_name)) && CommonModule::isUnderDev())
-            return 'No translate for input file \'' . $this->getInputFileBlock()->program_name . '\'';
-
-        return 'Can`t reach this place if all correct';
-    }
-
-    /**
-     * Returns description of input file
-     * @return bool|string
-     * @throws \Iliich246\YicmsCommon\Base\CommonException
-     */
-    public function description()
-    {
-        if ($this->isNonexistent()) return '';
-
-        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
-
-        if ($inputFileName)
-            return $inputFileName->admin_description;
-
-        return false;
-    }
-
-    /**
-     * Returns dev name of input field
-     * @return string
-     */
-    public function devName()
-    {
-        if ($this->isNonexistent()) return '';
-
-        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
-
-        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderAdmin())
-            return $inputFileName->dev_name;
-
-        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderAdmin())
-            return $this->getInputFileBlock()->program_name;
-
-        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderDev())
-            return $inputFileName->dev_name . ' (' . $this->getInputFileBlock()->program_name . ')';
-
-        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderDev())
-            return 'No translate for input file \'' . $this->getInputFileBlock()->program_name . '\'';
-
-        return 'Can`t reach this place if all correct';
-    }
-
-    /**
-     * Returns dev description of input field
-     * @return string
-     */
-    public function devDescription()
-    {
-        if ($this->isNonexistent()) return '';
-
-        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
-
-        if ($inputFileName)
-            return $inputFileName->dev_description;
-
-        return false;
-    }
 
     /**
      * @inheritdoc
@@ -402,44 +298,6 @@ class InputFile extends AbstractEntity implements
 
     }
 
-    /**
-     * Method config validators for this model
-     * @throws \Iliich246\YicmsCommon\Base\CommonException
-     */
-    public function prepareValidators()
-    {
-        $validators = $this->getValidatorBuilder()->build();
-
-        if (!$validators) {
-
-            $safeValidator = new SafeValidator();
-            $safeValidator->attributes = ['inputFile'];
-            $this->validators[] = $safeValidator;
-
-            return;
-        }
-
-        foreach ($validators as $validator) {
-
-            if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
-
-            $validator->attributes = ['inputFile'];
-            $this->validators[] = $validator;
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getValidatorBuilder()
-    {
-        if ($this->validatorBuilder) return $this->validatorBuilder;
-
-        $this->validatorBuilder = new ValidatorBuilder();
-        $this->validatorBuilder->setReferenceAble($this);
-
-        return $this->validatorBuilder;
-    }
 
     /**
      * @inheritdoc
@@ -509,23 +367,7 @@ class InputFile extends AbstractEntity implements
         return $this;
     }
 
-    /**
-     * Returns buffered name translate db
-     * @param LanguagesDb $language
-     * @return InputFilesNamesTranslatesDb
-     */
-    public function getInputFileNameTranslate(LanguagesDb $language)
-    {
-        if (!array_key_exists($language->id, $this->inputFilesNamesTranslations)) {
-            $this->inputFilesNamesTranslations[$language->id] =
-                InputFilesNamesTranslatesDb::find()->where([
-                    'feedback_input_files_template_id'  => $this->getInputFileBlock()->id,
-                    'common_language_id'                => $language->id,
-                ])->one();
-        }
 
-        return $this->inputFilesNamesTranslations[$language->id];
-    }
 
     /**
      * @inheritdoc

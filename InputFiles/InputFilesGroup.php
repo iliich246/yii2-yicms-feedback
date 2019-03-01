@@ -44,14 +44,8 @@ class InputFilesGroup extends AbstractGroup
         ])->all();
 
         foreach($inputFilesBlocks as $inputFilesBlock) {
-            $inputFile = $this
-                ->fileInputReference
-                ->getInputFileHandler()
-                ->getInputFileBlock($inputFilesBlock->program_name);
-
-            //$inputFile->setEntityBlock($inputFilesBlock);
-            $inputFile->prepareValidators();
-            $this->inputFiles["$inputFilesBlock->id"] = $inputFile;
+            $inputFilesBlock->prepareValidators();
+            $this->inputFiles["$inputFilesBlock->id"] = $inputFilesBlock;
         }
 
         return $this->inputFiles;

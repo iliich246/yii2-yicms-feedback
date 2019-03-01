@@ -2,12 +2,19 @@
 
 namespace Iliich246\YicmsFeedback\InputImages;
 
+use Yii;
 use yii\db\ActiveQuery;
+use yii\validators\RequiredValidator;
+use yii\validators\SafeValidator;
+use yii\web\UploadedFile;
 use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\CommonException;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
-use Iliich246\YicmsCommon\Validators\ValidatorDb;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
+use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 
 /**
@@ -23,7 +30,10 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputImagesBlock extends AbstractEntityBlock implements ValidatorReferenceInterface
+class InputImagesBlock extends AbstractEntityBlock implements
+    ValidatorBuilderInterface,
+    ValidatorReferenceInterface,
+    FictiveInterface
 {
     /**
      * Input files types
@@ -31,10 +41,20 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     const TYPE_ONE_IMAGE    = 0;
     const TYPE_MULTIPLICITY = 1;
 
+    /** @var UploadedFile[]|UploadedFile loaded input image */
+    public $inputImage;
+    /** @var ValidatorBuilder instance */
+    private $validatorBuilder;
     /** @var string inputImageReference for what images group must be fetched */
     private $currentInputImageReference;
     /** @inheritdoc */
     protected static $buffer = [];
+    /** @var InputImagesNamesTranslatesDb[] buffer for language */
+    private $inputImagesNamesTranslations = [];
+    /** @var bool keeps fictive state of this input image block */
+    private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
 
     /**
      * @inheritdoc
@@ -61,7 +81,8 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(), [
-            'max_images'           => 'Maximum images in block',
+            'max_images' => 'Maximum images in block',
+            'inputImage' => $this->name(),
         ]);
     }
 
@@ -153,6 +174,29 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     }
 
     /**
+     * Returns true if input file is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return !!$this->active;
+    }
+
+    /**
+     * Returns key for working with form
+     * @return string
+     */
+    public function getKey()
+    {
+        if ($this->type == InputImagesBlock::TYPE_ONE_IMAGE)
+            return '[' . $this->id . ']inputImage';
+
+        return '[' . $this->id . ']inputImage[]';
+    }
+
+    /**
      * @return bool
      */
     public function isInputImages()
@@ -195,6 +239,110 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
         ])->one()) return true;
 
         return false;
+    }
+
+    /**
+     * Returns name of image block for form
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName && trim($inputImageName->admin_name) && CommonModule::isUnderAdmin())
+            return $inputImageName->admin_name;
+
+        if ((!$inputImageName || !trim($inputImageName->admin_name)) && CommonModule::isUnderAdmin())
+            return $this->program_name;
+
+        if ($inputImageName && trim($inputImageName->admin_name) && CommonModule::isUnderDev())
+            return $inputImageName->admin_name . ' (' . $this->program_name . ')';
+
+        if ((!$inputImageName || !trim($inputImageName->admin_name)) && CommonModule::isUnderDev())
+            return 'No translate for input image \'' . $this->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns description of input image block
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName)
+            return $inputImageName->admin_description;
+
+        return false;
+    }
+
+    /**
+     * Returns dev name of input image block for form
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function devName()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName && trim($inputImageName->dev_name) && CommonModule::isUnderAdmin())
+            return $inputImageName->dev_name;
+
+        if ((!$inputImageName || !trim($inputImageName->dev_name)) && CommonModule::isUnderAdmin())
+            return $this->program_name;
+
+        if ($inputImageName && trim($inputImageName->dev_name) && CommonModule::isUnderDev())
+            return $inputImageName->dev_name . ' (' . $this->program_name . ')';
+
+        if ((!$inputImageName || !trim($inputImageName->dev_name)) && CommonModule::isUnderDev())
+            return 'No translate for input image \'' . $this->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns dev description of input image block
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function devDescription()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputImageName = $this->getInputImageNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputImageName)
+            return $inputImageName->dev_description;
+
+        return false;
+    }
+
+    /**
+     * Returns buffered name translate db
+     * @param LanguagesDb $language
+     * @return InputImagesNamesTranslatesDb
+     */
+    public function getInputImageNameTranslate(LanguagesDb $language)
+    {
+        if (!array_key_exists($language->id, $this->inputImagesNamesTranslations)) {
+            $this->inputImagesNamesTranslations[$language->id] =
+                InputImagesNamesTranslatesDb::find()->where([
+                    'feedback_input_images_template_id' => $this->id,
+                    'common_language_id'                => $language->id,
+                ])->one();
+        }
+
+        return $this->inputImagesNamesTranslations[$language->id];
     }
 
     /**
@@ -324,6 +472,45 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
     }
 
     /**
+     * Method config validators for this model
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function prepareValidators()
+    {
+        $validators = $this->getValidatorBuilder()->build();
+
+        if (!$validators) {
+
+            $safeValidator = new SafeValidator();
+            $safeValidator->attributes = ['inputImage'];
+            $this->validators[] = $safeValidator;
+
+            return;
+        }
+
+        foreach ($validators as $validator) {
+
+            if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
+
+            $validator->attributes = ['inputImage'];
+            $this->validators[] = $validator;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     * @return ValidatorBuilder
+     */
+    public function getValidatorBuilder()
+    {
+        if ($this->validatorBuilder) return $this->validatorBuilder;
+
+        $this->validatorBuilder = new ValidatorBuilder();
+        $this->validatorBuilder->setReferenceAble($this);
+
+        return $this->validatorBuilder;
+    }
+    /**
      * @inheritdoc
      * @throws CommonException
      */
@@ -336,5 +523,29 @@ class InputImagesBlock extends AbstractEntityBlock implements ValidatorReference
         }
 
         return $this->validator_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }

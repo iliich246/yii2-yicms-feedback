@@ -21,5 +21,5 @@ interface FileInputInterface
      * @param $name
      * @return InputFile
      */
-    public function getInputFile($name);
+    public function getInputFileBlock($name);
 }

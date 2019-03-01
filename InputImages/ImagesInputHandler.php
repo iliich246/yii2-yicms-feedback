@@ -32,63 +32,61 @@ class ImagesInputHandler extends AbstractHandler
     public function getInputImageBlock($name)
     {
         if ($this->aggregator->isNonexistent()) {
-            $nonexistentInputImage = new InputImage();
+            $nonexistentInputImage = new InputImagesBlock();
             $nonexistentInputImage->setNonexistent();
             $nonexistentInputImage->setNonexistentName($name);
 
             return $nonexistentInputImage;
         }
 
-        if (!$this->aggregator->isFictive()) return $this->forRealImage($name);
+        if (!$this->aggregator->isFictive()) return $this->forRealImageBlock($name);
 
-        return $this->forFictiveImage($name);
+        return $this->forFictiveImageBlock($name);
     }
 
     /**
-     * Makes fictive input image
+     * Makes fictive input image block
      * @param $name
      * @return bool|object
      */
-    private function forFictiveImage($name)
+    private function forFictiveImageBlock($name)
     {
         return $this->getOrSet($name, function() use($name) {
             /** @var InputImagesBlock $template */
             $template =  InputImagesBlock::getInstance($this->aggregator->getInputImageTemplateReference(), $name);
 
             if (!$template) {
-                $nonexistentInputImage = new InputImage();
+                $nonexistentInputImage = new InputImagesBlock();
                 $nonexistentInputImage->setNonexistent();
                 $nonexistentInputImage->setNonexistentName($name);
 
                 return $nonexistentInputImage;
             }
 
-            $fictiveImage = new InputImage();
-            $fictiveImage->setFictive();
-            $fictiveImage->setEntityBlock($template);
-            $fictiveImage->scenario = InputImage::SCENARIO_CREATE;
+            $template->setFictive();
+            $template->scenario = InputImage::SCENARIO_CREATE;
 
-            return $fictiveImage;
+            return $template;
         });
     }
 
     /**
-     * Return instance of input image for real image
+     * Return instance of input image for real image block
      * @param $name
      * @return bool|object
      */
-    private function forRealImage($name)
+    private function forRealImageBlock($name)
     {
         return $this->getOrSet($name, function() use($name) {
-            $inputImage = InputImagesBlock::getInstance(
+            $inputImageBlock = InputImagesBlock::getInstance(
                 $this->aggregator->getInputImageTemplateReference(),
                 $name,
                 $this->aggregator->getInputImageReference()
             );
 
-            $inputImage->scenario = InputImage::SCENARIO_UPDATE;
+            $inputImageBlock->scenario = InputImage::SCENARIO_UPDATE;
 
-            return $inputImage;
+            return $inputImageBlock;
         });
     }
 }

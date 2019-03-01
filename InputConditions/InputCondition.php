@@ -13,6 +13,7 @@ use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
 
 /**
@@ -304,7 +305,15 @@ class InputCondition extends ActiveRecord implements
      */
     public function __toString()
     {
-        return 'PENIS';
+        if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) {
+            if ($this->checkbox_state) return FeedbackModule::t('app', 'True');
+            return FeedbackModule::t('app', 'False');
+        } else {
+            $conditionValue = InputConditionValues::findOne($this->feedback_value_id);
+
+            if (!$conditionValue) return '';
+            return $conditionValue->name();
+        }
     }
 
     /**

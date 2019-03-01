@@ -103,6 +103,10 @@ class Feedback extends ActiveRecord implements
     const SCENARIO_CREATE = 0;
     const SCENARIO_UPDATE = 1;
 
+    const EVENT_BEFORE_HANDLE = 'beforeHandle';
+
+    const EVENT_AFTER_HANDLE = 'afterHandle';
+
     /** @var self[] buffer array */
     private static $feedbackBuffer = [];
 
@@ -569,6 +573,8 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
+        $this->trigger(self::EVENT_BEFORE_HANDLE);
+
         $this->currentState = new FeedbackState();
         $this->currentState->feedback_id = $this->id;
         $this->currentState->is_handled = false;
@@ -578,6 +584,8 @@ class Feedback extends ActiveRecord implements
         $inputFilesSaved      = $this->inputFilesGroup->save();
         $inputImagesSaved     = $this->inputImagesGroup->save();
         $inputConditionsSaved = $this->inputConditionsGroup->save();
+
+        $this->trigger(self::EVENT_AFTER_HANDLE);
 
         return true;
     }
@@ -901,7 +909,7 @@ class Feedback extends ActiveRecord implements
     /**
      * @inheritdoc
      */
-    public function getInputFile($name)
+    public function getInputFileBlock($name)
     {
         return $this->getInputFileHandler()->getInputFileBlock($name);
     }
@@ -951,7 +959,7 @@ class Feedback extends ActiveRecord implements
     /**
      * @inheritdoc
      */
-    public function getInputImage($name)
+    public function getInputImageBlock($name)
     {
         return $this->getInputImagesHandler()->getInputImageBlock($name);
     }

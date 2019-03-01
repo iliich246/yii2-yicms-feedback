@@ -34,16 +34,16 @@ class FilesInputHandler extends AbstractHandler
     public function getInputFileBlock($name)
     {
         if ($this->aggregator->isNonexistent()) {
-            $nonexistentInputFile = new InputFile();
-            $nonexistentInputFile->setNonexistent();
-            $nonexistentInputFile->setNonexistentName($name);
+            $nonexistentInputFileBlock = new InputFilesBlock();
+            $nonexistentInputFileBlock->setNonexistent();
+            $nonexistentInputFileBlock->setNonexistentName($name);
 
-            return $nonexistentInputFile;
+            return $nonexistentInputFileBlock;
         }
 
-        if (!$this->aggregator->isFictive()) return $this->forRealFile($name);
+        if (!$this->aggregator->isFictive()) return $this->forRealFileBlock($name);
 
-        return $this->forFictiveFile($name);
+        return $this->forFictiveFileBlock($name);
     }
 
     /**
@@ -51,26 +51,25 @@ class FilesInputHandler extends AbstractHandler
      * @param $name
      * @return bool|object
      */
-    private function forFictiveFile($name)
+    private function forFictiveFileBlock($name)
     {
         return $this->getOrSet($name, function() use($name) {
             /** @var InputFilesBlock $template */
             $template = InputFilesBlock::getInstance($this->aggregator->getInputFileTemplateReference(), $name);
 
             if (!$template) {
-                $nonexistentInputFile = new InputFile();
-                $nonexistentInputFile->setNonexistent();
-                $nonexistentInputFile->setNonexistentName($name);
+                $nonexistentInputFileBlock = new InputFilesBlock();
+                $nonexistentInputFileBlock->setNonexistent();
+                $nonexistentInputFileBlock->setNonexistentName($name);
 
-                return $nonexistentInputFile;
+                return $nonexistentInputFileBlock;
             }
 
-            $fictiveFile = new InputFile();
-            $fictiveFile->setFictive();
-            $fictiveFile->setEntityBlock($template);
-            $fictiveFile->scenario = InputFile::SCENARIO_CREATE;
+            //$fictiveFileBlock = new InputFilesBlock();
+            $template->setFictive();
+            $template->scenario = InputFile::SCENARIO_CREATE;
 
-            return $fictiveFile;
+            return $template;
         });
     }
 
@@ -79,18 +78,18 @@ class FilesInputHandler extends AbstractHandler
      * @param $name
      * @return bool|object
      */
-    private function forRealFile($name)
+    private function forRealFileBlock($name)
     {
         return $this->getOrSet($name, function() use($name) {
-            $inputFile = InputFilesBlock::getInstance(
+            $inputFileBlock = InputFilesBlock::getInstance(
                 $this->aggregator->getInputFileTemplateReference(),
                 $name,
                 $this->aggregator->getInputFileReference()
             );
 
-            $inputFile->scenario = InputFile::SCENARIO_UPDATE;
+            $inputFileBlock->scenario = InputFile::SCENARIO_UPDATE;
 
-            return $inputFile;
+            return $inputFileBlock;
         });
     }
 }

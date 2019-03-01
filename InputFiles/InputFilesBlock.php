@@ -2,13 +2,20 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use yii\db\ActiveQuery;
-use Iliich246\YicmsCommon\CommonModule;
-use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
+use Yii;
+use yii\db\ActiveQuery;
+use yii\validators\RequiredValidator;
+use yii\validators\SafeValidator;
+use yii\web\UploadedFile;
+use yii\helpers\FileHelper;
+use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
+use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
+use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
 
 /**
@@ -24,7 +31,10 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceInterface
+class InputFilesBlock extends AbstractEntityBlock implements
+    ValidatorBuilderInterface,
+    ValidatorReferenceInterface,
+    FictiveInterface
 {
     /**
      * Input files types
@@ -32,11 +42,20 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     const TYPE_ONE_FILE     = 0;
     const TYPE_MULTIPLICITY = 1;
 
-
+    /** @var UploadedFile[] loaded input file */
+    public $inputFile;
     /** @var string inputFileReference for what files group must be fetched */
     private $currentInputFileReference;
     /** @inheritdoc */
     protected static $buffer = [];
+    /** @var ValidatorBuilder instance */
+    private $validatorBuilder;
+    /** @var InputFilesNamesTranslatesDb[] buffer for language */
+    private $inputFilesNamesTranslations = [];
+    /** @var bool keeps fictive state of this input file */
+    private $isFictive = false;
+    /** @var bool keep state of load */
+    private $isLoaded = false;
 
     /**
      * @inheritdoc
@@ -62,6 +81,7 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     public function attributeLabels()
     {
         return array_merge(parent::attributeLabels(),[
+            'inputFile' => $this->name(),
             'max_files' => 'Maximum files in block'
         ]);
     }
@@ -130,6 +150,91 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
 
         return parent::save($runValidation, $attributes);
     }
+
+    /**
+     * Returns name of input file block for form
+     * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function name()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName && trim($inputFileName->admin_name) && CommonModule::isUnderAdmin())
+            return $inputFileName->admin_name;
+
+        if ((!$inputFileName || !trim($inputFileName->admin_name)) && CommonModule::isUnderAdmin())
+            return $this->program_name;
+
+        if ($inputFileName && trim($inputFileName->admin_name) && CommonModule::isUnderDev())
+            return $inputFileName->admin_name . ' (' . $this->program_name . ')';
+
+        if ((!$inputFileName || !trim($inputFileName->admin_name)) && CommonModule::isUnderDev())
+            return 'No translate for input file block \'' . $this->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns description of input file block
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function description()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName)
+            return $inputFileName->admin_description;
+
+        return false;
+    }
+
+    /**
+     * Returns dev name of input file block
+     * @return string
+     */
+    public function devName()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderAdmin())
+            return $inputFileName->dev_name;
+
+        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderAdmin())
+            return $this->program_name;
+
+        if ($inputFileName && trim($inputFileName->dev_name) && CommonModule::isUnderDev())
+            return $inputFileName->dev_name . ' (' . $this->program_name . ')';
+
+        if ((!$inputFileName || !trim($inputFileName->dev_name)) && CommonModule::isUnderDev())
+            return 'No translate for input file \'' . $this->program_name . '\'';
+
+        return 'Can`t reach this place if all correct';
+    }
+
+    /**
+     * Returns dev description of input file block
+     * @return string
+     */
+    public function devDescription()
+    {
+        if ($this->isNonexistent()) return '';
+
+        $inputFileName = $this->getInputFileNameTranslate(Language::getInstance()->getCurrentLanguage());
+
+        if ($inputFileName)
+            return $inputFileName->dev_description;
+
+        return false;
+    }
+
 
     /**
      * @inheritdoc
@@ -245,6 +350,47 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     }
 
     /**
+     * Returns buffered name translate db
+     * @param LanguagesDb $language
+     * @return InputFilesNamesTranslatesDb
+     */
+    public function getInputFileNameTranslate(LanguagesDb $language)
+    {
+        if (!array_key_exists($language->id, $this->inputFilesNamesTranslations)) {
+            $this->inputFilesNamesTranslations[$language->id] =
+                InputFilesNamesTranslatesDb::find()->where([
+                    'feedback_input_files_template_id'  => $this->id,
+                    'common_language_id'                => $language->id,
+                ])->one();
+        }
+
+        return $this->inputFilesNamesTranslations[$language->id];
+    }
+
+    /**
+     * Returns true if input file is active
+     * @return bool
+     */
+    public function isActive()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->active;
+    }
+
+    /**
+     * Returns key for working with form
+     * @return string
+     */
+    public function getKey()
+    {
+        if ($this->type == InputFilesBlock::TYPE_ONE_FILE)
+            return '[' . $this->id . ']inputFile';
+
+        return '[' . $this->id . ']inputFile[]';
+    }
+
+    /**
      * @inheritdoc
      */
     protected function getNoExistentEntity()
@@ -314,6 +460,46 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
     }
 
     /**
+     * Method config validators for this model
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function prepareValidators()
+    {
+        $validators = $this->getValidatorBuilder()->build();
+
+        if (!$validators) {
+
+            $safeValidator = new SafeValidator();
+            $safeValidator->attributes = ['inputFile'];
+            $this->validators[] = $safeValidator;
+
+            return;
+        }
+
+        foreach ($validators as $validator) {
+
+            if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
+
+            $validator->attributes = ['inputFile'];
+            $this->validators[] = $validator;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getValidatorBuilder()
+    {
+        if ($this->validatorBuilder) return $this->validatorBuilder;
+
+        $this->validatorBuilder = new ValidatorBuilder();
+        $this->validatorBuilder->setReferenceAble($this);
+
+        return $this->validatorBuilder;
+    }
+
+
+    /**
      * @inheritdoc
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
@@ -326,5 +512,29 @@ class InputFilesBlock extends AbstractEntityBlock implements ValidatorReferenceI
         }
 
         return $this->validator_reference;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setFictive()
+    {
+        $this->isFictive = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function clearFictive()
+    {
+        $this->isFictive = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isFictive()
+    {
+        return $this->isFictive;
     }
 }
