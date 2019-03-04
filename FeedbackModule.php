@@ -31,7 +31,7 @@ class FeedbackModule extends AbstractConfigurableModule implements
     /**
      * Block of variables with images web paths
      */
-    public $imagesOriginalsWebPath  = 'input_images/orig/';
+    public $inputImagesWebPath  = 'input_images/';
 
     /** @inheritdoc */
     public $controllerMap = [
@@ -53,6 +53,8 @@ class FeedbackModule extends AbstractConfigurableModule implements
 
         $this->inputFilesPatch = Yii::$app->basePath . $this->inputFilesPatch;
         $this->inputImagesPath = Yii::$app->basePath . $this->inputImagesPath;
+
+        $this->inputImagesWebPath = Yii::$app->homeUrl . $this->inputImagesWebPath;
 
         parent::init();
     }

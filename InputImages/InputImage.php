@@ -93,103 +93,6 @@ class InputImage extends AbstractEntity
     }
 
     /**
-     * @inheritdoc
-     */
-    public function load($data, $formName = null)
-    {
-        if ($this->isNonexistent()) return false;
-
-        if ($this->getInputImagesBlock()->type == InputImagesBlock::TYPE_ONE_IMAGE) {
-            $this->inputImage =
-                UploadedFile::getInstance($this, '[' . $this->getInputImagesBlock()->id . ']inputImage');
-        } else {
-            $this->inputImage =
-                UploadedFile::getInstances($this, '[' . $this->getInputImagesBlock()->id . ']inputImage');
-        }
-
-        if ($this->inputImage) {
-            $this->isLoaded = true;
-            return true;
-        }
-
-        return false;
-    }
-
-
-
-    /**
-     * Returns true if this model is loaded
-     * @return bool
-     */
-    public function isLoaded()
-    {
-        if ($this->isNonexistent()) return false;
-
-        return $this->isLoaded;
-    }
-
-
-    /**
-     * Makes is loaded method for group of models
-     * @param $models
-     * @return bool
-     */
-    public static function isLoadedMultiple($models)
-    {
-        /** @var InputImage $model */
-        foreach ($models as $model)
-            if (!$model->isLoaded()) return false;
-
-        return true;
-    }
-
-    /**
-     * Save input image or group of input files
-     * @return bool|void
-     */
-    public function saveInputImage()
-    {
-        if (!is_array($this->inputImage)) {
-            return $this->physicalSaveInputImage($this->inputImage);
-        } else {
-            /** @var UploadedFile $inputImage */
-            foreach($this->inputImage as $inputImage)
-                if (!$this->physicalSaveInputImage($inputImage)) return false;
-
-            return true;
-        }
-    }
-
-    /**
-     * Inner mechanism of input image saving
-     * @param UploadedFile $inputImage
-     * @return bool
-     */
-    private function physicalSaveInputImage(UploadedFile $inputImage)
-    {
-        $path = FeedbackModule::getInstance()->inputImagesPath;
-
-        if ($this->scenario == self::SCENARIO_UPDATE) {
-            if (file_exists($path . $this->system_name) &&
-                !is_dir($path . $this->system_name))
-                unlink($path . $this->system_name);
-        }
-
-        $name = uniqid() . '.' . $inputImage->extension;
-        $inputImage->saveAs($path . $name);
-
-        $inputImageRecord = new self();
-        $inputImageRecord->feedback_input_images_template_id = $this->getInputImagesBlock()->id;
-        $inputImageRecord->input_image_reference = $this->input_image_reference;
-        $inputImageRecord->system_name = $name;
-        $inputImageRecord->original_name =  $inputImage->baseName;
-        $inputImageRecord->size =  $inputImage->size;
-        $inputImageRecord->type = FileHelper::getMimeType($path . $name);
-
-        return $inputImageRecord->save(false);
-    }
-
-    /**
      * Returns key for working with form
      * @return string
      */
@@ -232,24 +135,24 @@ class InputImage extends AbstractEntity
     /**
      * @inheritdoc
      */
-
     public function getPath()
-    {/*
+    {
         if ($this->isNonexistent) return false;
 
-        $systemName = $this->system_name;
-
-        $path = FeedbackModule::getInstance()->imagesOriginalsPath . $systemName;
+        $path = FeedbackModule::getInstance()->inputImagesPath . $this->system_name;
 
         if (!file_exists($path) || is_dir($path)) return false;
 
         return $path;
-*/
     }
 
+    /**
+     * Return src param for img tag
+     * @return string
+     */
     public function getSrc()
     {
-
+        return FeedbackModule::getInstance()->inputImagesWebPath . $this->system_name;
     }
 
 

@@ -2,8 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-use Iliich246\YicmsCommon\Languages\Language;
-use Iliich246\YicmsCommon\Languages\LanguagesDb;
+
 use Yii;
 use yii\db\ActiveQuery;
 use yii\validators\RequiredValidator;
@@ -13,10 +12,13 @@ use yii\helpers\FileHelper;
 use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
+use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsCommon\Languages\LanguagesDb;
 use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
+use Iliich246\YicmsFeedback\FeedbackModule;
 
 /**
  * Class InputFilesBlock
@@ -42,10 +44,10 @@ class InputFilesBlock extends AbstractEntityBlock implements
     const TYPE_ONE_FILE     = 0;
     const TYPE_MULTIPLICITY = 1;
 
-    /** @var UploadedFile[] loaded input file */
+    /** @var UploadedFile[]|UploadedFile loaded input file */
     public $inputFile;
     /** @var string inputFileReference for what files group must be fetched */
-    private $currentInputFileReference;
+    public $currentInputFileReference;
     /** @inheritdoc */
     protected static $buffer = [];
     /** @var ValidatorBuilder instance */
@@ -104,10 +106,11 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public function scenarios()
     {
         $prevScenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_DEFAULT] = ['inputFile'];
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
-            ['active', 'editable', 'max_files']);
+            ['active', 'editable', 'max_files', 'inputFile']);
         $scenarios[self::SCENARIO_UPDATE] = array_merge($prevScenarios[self::SCENARIO_UPDATE],
-            ['active', 'editable', 'max_files']);
+            ['active', 'editable', 'max_files', 'inputFile']);
 
         return $scenarios;
     }
@@ -137,6 +140,96 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public function getTypeName()
     {
         return self::getTypes()[$this->type];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function load($data, $formName = null)
+    {
+        if ($this->isNonexistent()) return false;
+
+        if ($this->type == InputFilesBlock::TYPE_ONE_FILE) {
+            $this->inputFile =
+                UploadedFile::getInstance($this, '[' . $this->id . ']inputFile');
+        } else {
+            $this->inputFile =
+                UploadedFile::getInstances($this, '[' . $this->id . ']inputFile');
+        }
+
+        if ($this->inputFile) {
+            $this->isLoaded = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if this model is loaded
+     * @return bool
+     */
+    public function isLoaded()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->isLoaded;
+    }
+
+    /**
+     * Makes is loaded method for group of models
+     * @param $models
+     * @return bool
+     */
+    public static function isLoadedMultiple($models)
+    {
+        /** @var InputFilesBlock $model */
+        foreach ($models as $model) {
+            if (!$model->isLoaded()) return false;
+
+        }
+
+        return true;
+    }
+
+    /**
+     * Save input file or group of input files
+     * @return bool
+     */
+    public function saveInputFile()
+    {
+        if (!is_array($this->inputFile)) {
+            return $this->physicalSaveInputFile($this->inputFile);
+        } else {
+            /** @var UploadedFile $inputFile */
+            foreach($this->inputFile as $inputFile)
+                if (!$this->physicalSaveInputFile($inputFile)) return false;
+
+            return true;
+        }
+    }
+
+    /**
+     * Inner mechanism of input file saving
+     * @param UploadedFile $inputFile
+     * @return bool
+     */
+    private function physicalSaveInputFile(UploadedFile $inputFile)
+    {
+        $path = FeedbackModule::getInstance()->inputFilesPatch;
+
+        $name = uniqid() . '.' . $inputFile->extension;
+        $inputFile->saveAs($path . $name);
+
+        $inputFileRecord = new InputFile();
+        $inputFileRecord->feedback_input_files_template_id = $this->id;
+        $inputFileRecord->input_file_reference = $this->currentInputFileReference;
+        $inputFileRecord->system_name = $name;
+        $inputFileRecord->original_name =  $inputFile->baseName;
+        $inputFileRecord->size =  $inputFile->size;
+        $inputFileRecord->type = FileHelper::getMimeType($path . $name);
+
+        return $inputFileRecord->save(false);
     }
 
     /**

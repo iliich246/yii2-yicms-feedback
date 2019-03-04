@@ -19,7 +19,7 @@ class InputImagesGroup extends AbstractGroup
 {
     /** @var ImageInputReferenceInterface|ImageInputInterface inputImageTemplateReference value for current group */
     protected $imageInputReference;
-    /** @var InputImage[] for working with forms */
+    /** @var InputImagesBlock[] for working with forms */
     public $inputImages;
 
     /**
@@ -43,13 +43,8 @@ class InputImagesGroup extends AbstractGroup
         ])->all();
 
         foreach($inputImagesBlocks as $inputImagesBlock) {
-            $inputImage = $this
-                ->imageInputReference
-                ->getInputImagesHandler()
-                ->getInputImageBlock($inputImagesBlock->program_name);
-
-            $inputImage->prepareValidators();
-            $this->inputImages["$inputImagesBlock->id"] = $inputImage;
+            $inputImagesBlock->prepareValidators();
+            $this->inputImages["$inputImagesBlock->id"] = $inputImagesBlock;
         }
 
         return $this->inputImages;
@@ -71,12 +66,12 @@ class InputImagesGroup extends AbstractGroup
     {
         if (!$this->inputImages) return true;
 
-        if (!InputImage::isLoadedMultiple($this->inputImages)) {
+        if (!InputImagesBlock::isLoadedMultiple($this->inputImages)) {
             $result = '';
 
             foreach($this->inputImages as $inputImages)
                 if (!$inputImages->isLoaded())
-                    $result .= '"' . $inputImages->getInputImagesBlock()->program_name . '", ';
+                    $result .= '"' . $inputImages->program_name . '", ';
 
             $result = substr($result , 0, -2);
 
@@ -121,7 +116,7 @@ class InputImagesGroup extends AbstractGroup
 
         foreach($this->inputImages as $inputImage) {
 
-            $inputImage->input_image_reference = $this->imageInputReference->getInputImageReference();
+            $inputImage->currentInputImageReference = $this->imageInputReference->getInputImageReference();
             $success = $inputImage->saveInputImage();
 
             if (!$success) return false;

@@ -20,7 +20,7 @@ class InputFilesGroup extends AbstractGroup
 {
     /** @var FileInputReferenceInterface|FileInputInterface inputFileTemplateReference value for current group */
     protected $fileInputReference;
-    /** @var InputFile[] for working with forms */
+    /** @var InputFilesBlock[] for working with forms */
     public $inputFiles;
 
     /**
@@ -67,12 +67,12 @@ class InputFilesGroup extends AbstractGroup
     {
         if (!$this->inputFiles) return true;
 
-        if (!InputFile::isLoadedMultiple($this->inputFiles)) {
+        if (!InputFilesBlock::isLoadedMultiple($this->inputFiles)) {
             $result = '';
 
             foreach($this->inputFiles as $inputFile)
                 if (!$inputFile->isLoaded())
-                    $result .= '"' . $inputFile->getInputFileBlock()->program_name . '", ';
+                    $result .= '"' . $inputFile->program_name . '", ';
 
             $result = substr($result , 0, -2);
 
@@ -117,7 +117,7 @@ class InputFilesGroup extends AbstractGroup
 
         foreach($this->inputFiles as $inputFile) {
 
-            $inputFile->input_file_reference = $this->fileInputReference->getInputFileReference();
+            $inputFile->currentInputFileReference = $this->fileInputReference->getInputFileReference();
             $success = $inputFile->saveInputFile();
 
             if (!$success) return false;

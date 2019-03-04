@@ -2,8 +2,10 @@
 
 namespace Iliich246\YicmsFeedback\InputImages;
 
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Yii;
 use yii\db\ActiveQuery;
+use yii\helpers\FileHelper;
 use yii\validators\RequiredValidator;
 use yii\validators\SafeValidator;
 use yii\web\UploadedFile;
@@ -46,7 +48,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
     /** @var string inputImageReference for what images group must be fetched */
-    private $currentInputImageReference;
+    public $currentInputImageReference;
     /** @inheritdoc */
     protected static $buffer = [];
     /** @var InputImagesNamesTranslatesDb[] buffer for language */
@@ -103,6 +105,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
     public function scenarios()
     {
         $prevScenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_DEFAULT] = ['inputImage'];
         $scenarios[self::SCENARIO_CREATE] = array_merge($prevScenarios[self::SCENARIO_CREATE],
             [
                 'editable',
@@ -144,6 +147,94 @@ class InputImagesBlock extends AbstractEntityBlock implements
     public function getTypeName()
     {
         return self::getTypes()[$this->type];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function load($data, $formName = null)
+    {
+        if ($this->isNonexistent()) return false;
+
+        if ($this->type == InputImagesBlock::TYPE_ONE_IMAGE) {
+            $this->inputImage =
+                UploadedFile::getInstance($this, '[' . $this->id . ']inputImage');
+        } else {
+            $this->inputImage =
+                UploadedFile::getInstances($this, '[' . $this->id . ']inputImage');
+        }
+
+        if ($this->inputImage) {
+            $this->isLoaded = true;
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if this model is loaded
+     * @return bool
+     */
+    public function isLoaded()
+    {
+        if ($this->isNonexistent()) return false;
+
+        return $this->isLoaded;
+    }
+
+    /**
+     * Makes is loaded method for group of models
+     * @param $models
+     * @return bool
+     */
+    public static function isLoadedMultiple($models)
+    {
+        /** @var InputImagesBlock $model */
+        foreach ($models as $model)
+            if (!$model->isLoaded()) return false;
+
+        return true;
+    }
+
+    /**
+     * Save input image or group of input files
+     * @return bool|void
+     */
+    public function saveInputImage()
+    {
+        if (!is_array($this->inputImage)) {
+            return $this->physicalSaveInputImage($this->inputImage);
+        } else {
+            /** @var UploadedFile $inputImage */
+            foreach($this->inputImage as $inputImage)
+                if (!$this->physicalSaveInputImage($inputImage)) return false;
+
+            return true;
+        }
+    }
+
+    /**
+     * Inner mechanism of input image saving
+     * @param UploadedFile $inputImage
+     * @return bool
+     */
+    private function physicalSaveInputImage(UploadedFile $inputImage)
+    {
+        $path = FeedbackModule::getInstance()->inputImagesPath;
+
+        $name = uniqid() . '.' . $inputImage->extension;
+        $inputImage->saveAs($path . $name);
+
+        $inputImageRecord = new InputImage();
+        $inputImageRecord->feedback_input_images_template_id = $this->id;
+        $inputImageRecord->input_image_reference = $this->currentInputImageReference;
+        $inputImageRecord->system_name = $name;
+        $inputImageRecord->original_name =  $inputImage->baseName;
+        $inputImageRecord->size =  $inputImage->size;
+        $inputImageRecord->type = FileHelper::getMimeType($path . $name);
+
+        return $inputImageRecord->save(false);
     }
 
     /**
@@ -213,7 +304,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
     }
 
     /**
-     * @return \Iliich246\YicmsCommon\Base\AbstractEntity[]|Image[]
+     * @return \Iliich246\YicmsCommon\Base\AbstractEntity[]|InputImage[]
      */
     public function getInputImages()
     {
@@ -221,7 +312,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
     }
 
     /**
-     * @return bool|\Iliich246\YicmsCommon\Base\AbstractEntity|Image
+     * @return bool|\Iliich246\YicmsCommon\Base\AbstractEntity|InputImage
      */
     public function getInputImage()
     {
@@ -350,14 +441,22 @@ class InputImagesBlock extends AbstractEntityBlock implements
      */
     public function getEntityQuery()
     {
-        if (CommonModule::isUnderDev() || $this->editable)
-            return InputImage::find()
+        if (CommonModule::isUnderDev() || $this->editable) {
+            $imageQuery = InputImage::find()
                 ->where([
                     'feedback_input_images_template_id' => $this->id,
-                    'input_image_reference'             => $this->currentInputImageReference
+
                 ])
                 ->indexBy('id')
                 ->orderBy(['input_image_order' => SORT_ASC]);
+
+            if ($this->currentInputImageReference)
+                $imageQuery->andWhere([
+                    'input_image_reference' => $this->currentInputImageReference
+                ]);
+
+            return $imageQuery;
+        }
 
         return new ActiveQuery(InputImage::className());
     }

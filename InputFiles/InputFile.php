@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
+use Iliich246\YicmsCommon\CommonModule;
 use Yii;
 use yii\helpers\Url;
 use yii\web\UploadedFile;
@@ -93,118 +94,6 @@ class InputFile extends AbstractEntity
     }
 
     /**
-     * @inheritdoc
-     */
-    public function load($data, $formName = null)
-    {
-        if ($this->isNonexistent()) return false;
-
-        if ($this->getInputFileBlock()->type == InputFilesBlock::TYPE_ONE_FILE) {
-            $this->inputFile =
-                UploadedFile::getInstance($this, '[' . $this->getInputFileBlock()->id . ']inputFile');
-        } else {
-            $this->inputFile =
-                UploadedFile::getInstances($this, '[' . $this->getInputFileBlock()->id . ']inputFile');
-        }
-
-        Yii::error(print_r($this->inputFile, true));
-
-        if ($this->inputFile) {
-            $this->isLoaded = true;
-            return true;
-        }
-
-        return false;
-    }
-
-
-
-    /**
-     * Returns true if this model is loaded
-     * @return bool
-     */
-    public function isLoaded()
-    {
-        if ($this->isNonexistent()) return false;
-
-        return $this->isLoaded;
-    }
-
-    /**
-     * Makes is loaded method for group of models
-     * @param $models
-     * @return bool
-     */
-    public static function isLoadedMultiple($models)
-    {
-        /** @var InputFile $model */
-        foreach ($models as $model) {
-            if (!$model->isLoaded()) return false;
-
-        }
-
-        return true;
-    }
-
-    /**
-     * Save input file or group of input files
-     * @return bool
-     */
-    public function saveInputFile()
-    {
-        if (!is_array($this->inputFile)) {
-            return $this->physicalSaveInputFile($this->inputFile);
-        } else {
-            /** @var UploadedFile $inputFile */
-            foreach($this->inputFile as $inputFile)
-                if (!$this->physicalSaveInputFile($inputFile)) return false;
-
-            return true;
-        }
-    }
-
-    /**
-     * Inner mechanism of input file saving
-     * @param UploadedFile $inputFile
-     * @return bool
-     */
-    private function physicalSaveInputFile(UploadedFile $inputFile)
-    {
-        $path = FeedbackModule::getInstance()->inputFilesPatch;
-
-        if ($this->scenario == self::SCENARIO_UPDATE) {
-            if (file_exists($path . $this->system_name) &&
-                !is_dir($path . $this->system_name))
-                unlink($path . $this->system_name);
-        }
-
-        $name = uniqid() . '.' . $inputFile->extension;
-        $inputFile->saveAs($path . $name);
-
-        $inputFileRecord = new self();
-        $inputFileRecord->feedback_input_files_template_id = $this->getInputFileBlock()->id;
-        $inputFileRecord->input_file_reference = $this->input_file_reference;
-        $inputFileRecord->system_name = $name;
-        $inputFileRecord->original_name =  $inputFile->baseName;
-        $inputFileRecord->size =  $inputFile->size;
-        $inputFileRecord->type = FileHelper::getMimeType($path . $name);
-
-        return $inputFileRecord->save(false);
-    }
-
-    /**
-     * Returns key for working with form
-     * @return string
-     */
-    public function getKey()
-    {
-        if ($this->getInputFileBlock()->type == InputFilesBlock::TYPE_ONE_FILE)
-            return '[' . $this->getInputFileBlock()->id . ']inputFile';
-
-        return '[' . $this->getInputFileBlock()->id . ']inputFile[]';
-    }
-
-    /**
      * Return InputFilesBlock associated with this input file entity
      * @return InputFilesBlock
      */
@@ -241,7 +130,7 @@ class InputFile extends AbstractEntity
     {
         if ($this->isNonexistent) return false;
 
-        $path = FeedbackModule::getInstance()->filesPatch . $this->system_name;
+        $path = FeedbackModule::getInstance()->inputFilesPatch . $this->system_name;
 
         if (!file_exists($path) || is_dir($path)) return false;
 
@@ -250,24 +139,38 @@ class InputFile extends AbstractEntity
 
     /**
      * Returns link for upload this file entity
-     * @param LanguagesDb|null $language
      * @param bool|true $onlyPhysicalExistedFiles
      * @return bool|string
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
-    public function uploadUrl(LanguagesDb $language= null, $onlyPhysicalExistedFiles = true)
+    public function uploadUrl($onlyPhysicalExistedFiles = true)
     {
         if ($this->isNonexistent) return false;
-
-        if (!$language) $language = Language::getInstance()->getCurrentLanguage();
 
         if ($onlyPhysicalExistedFiles && !$this->getPath()) return false;
 
         return Url::toRoute([
-            '/feedback/input-files/upload-input-file',
+            '/feedback/admin/upload-input-file',
             'inputFileBlockId' => $this->getInputFileBlock()->id,
             'inputFileId'      => $this->id,
         ]);
+    }
+
+    /**
+     * Return translated file name
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     */
+    public function getFileName()
+    {
+        if ($this->isNonexistent()) {
+            if (CommonModule::isUnderDev()) return 'None existent file';
+            return false;
+        }
+
+        $extension = strrchr($this->system_name, '.');
+
+        return $this->original_name  . $extension;
     }
 
 
