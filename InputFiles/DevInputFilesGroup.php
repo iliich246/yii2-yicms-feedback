@@ -87,7 +87,7 @@ class DevInputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
-        return $this->inputFilesBlock->load($data) && Model::loadMultiple($this->inputFilesNameTranslates, $data);
+        return $this->inputFilesBlock->loadDev($data) && Model::loadMultiple($this->inputFilesNameTranslates, $data);
     }
 
     /**

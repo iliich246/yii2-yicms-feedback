@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputImages;
 
-use Iliich246\YicmsFeedback\FeedbackModule;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\helpers\FileHelper;
@@ -15,9 +14,11 @@ use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
 use Iliich246\YicmsCommon\Languages\Language;
 use Iliich246\YicmsCommon\Languages\LanguagesDb;
+use Iliich246\YicmsCommon\Validators\ValidatorDb;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilderInterface;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
+use Iliich246\YicmsFeedback\FeedbackModule;
 
 /**
  * Class InputImagesBlock
@@ -170,6 +171,17 @@ class InputImagesBlock extends AbstractEntityBlock implements
         }
 
         return false;
+    }
+
+    /**
+     * Load method for dev part
+     * @param $data
+     * @param null $formName
+     * @return bool
+     */
+    public function loadDev($data, $formName = null)
+    {
+        return parent::load($data, $formName);
     }
 
     /**

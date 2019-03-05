@@ -87,7 +87,7 @@ class DevInputImagesGroup extends AbstractGroup
      */
     public function load($data)
     {
-        return $this->inputImagesBlock->load($data) && Model::loadMultiple($this->inputImagesNameTranslates, $data);
+        return $this->inputImagesBlock->loadDev($data) && Model::loadMultiple($this->inputImagesNameTranslates, $data);
     }
 
     /**

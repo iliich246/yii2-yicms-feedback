@@ -62,6 +62,7 @@ use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
  * @property integer $type
  * @property bool $editable
  * @property bool $active
+ * @property bool $admin_can_edit_fields
  * @property string $stage_field_template_reference
  * @property string $stage_file_template_reference
  * @property string $stage_image_template_reference
@@ -160,8 +161,9 @@ class Feedback extends ActiveRecord implements
      */
     public function init()
     {
-        $this->active   = true;
-        $this->editable = true;
+        $this->active                = true;
+        $this->editable              = true;
+        $this->admin_can_edit_fields = false;
 
         parent::init();
     }
@@ -172,9 +174,10 @@ class Feedback extends ActiveRecord implements
     public function attributeLabels()
     {
         return [
-            'program_name'   => 'Program name',
-            'editable'       => 'Editable',
-            'active'         => 'Active',
+            'program_name'          => 'Program name',
+            'editable'              => 'Editable',
+            'active'                => 'Active',
+            'admin_can_edit_fields' => 'Admin can edit page fields'
         ];
     }
 
@@ -185,10 +188,10 @@ class Feedback extends ActiveRecord implements
     {
         return [
             self::SCENARIO_CREATE => [
-                'program_name', 'editable', 'active'
+                'program_name', 'editable', 'active', 'admin_can_edit_fields'
             ],
             self::SCENARIO_UPDATE => [
-                'program_name', 'editable', 'active'
+                'program_name', 'editable', 'active', 'admin_can_edit_fields'
             ],
         ];
     }
@@ -202,7 +205,7 @@ class Feedback extends ActiveRecord implements
             ['program_name', 'required', 'message' => 'Obligatory input field'],
             ['program_name', 'string', 'max' => '50', 'tooLong' => 'Program name must be less than 50 symbols'],
             ['program_name', 'validateProgramName'],
-            [['active', 'editable'], 'boolean']
+            [['active', 'editable', 'admin_can_edit_fields'], 'boolean']
         ];
     }
 
@@ -246,6 +249,7 @@ class Feedback extends ActiveRecord implements
 
         if ($feedback) {
             self::$feedbackBuffer[$feedback->id] = $feedback;
+            $feedback->clearFictive();
             return $feedback;
         }
 
@@ -509,12 +513,12 @@ class Feedback extends ActiveRecord implements
             $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
 
 //        if ($inputConditionsLoaded)
-//        throw new \yii\base\Exception(print_r([
-//            $inputFieldsLoaded,
-//            $inputFilesLoaded,
-//            $inputImagesLoaded,
-//            $inputConditionsLoaded
-//        ], true));
+//            throw new \yii\base\Exception(print_r([
+//                $inputFieldsLoaded,
+//                $inputFilesLoaded,
+//                $inputImagesLoaded,
+//                $inputConditionsLoaded
+//            ], true));
 
         if ($inputFieldsLoaded && $inputFilesLoaded && $inputImagesLoaded && $inputConditionsLoaded)
             return true;
@@ -536,6 +540,8 @@ class Feedback extends ActiveRecord implements
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
+        //throw new \yii\base\Exception('There');
+
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsValidated = true;
         else
@@ -555,6 +561,8 @@ class Feedback extends ActiveRecord implements
             $inputConditionsValidated = true;
         else
             $inputConditionsValidated = $this->inputConditionsGroup->validate();
+
+
 
         if ($inputFieldsValidated &&
             $inputFilesValidated &&

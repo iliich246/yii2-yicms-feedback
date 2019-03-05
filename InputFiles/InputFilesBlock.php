@@ -166,6 +166,17 @@ class InputFilesBlock extends AbstractEntityBlock implements
     }
 
     /**
+     * Load method for dev part
+     * @param $data
+     * @param null $formName
+     * @return bool
+     */
+    public function loadDev($data, $formName = null)
+    {
+        return parent::load($data, $formName = null);
+    }
+
+    /**
      * Returns true if this model is loaded
      * @return bool
      */

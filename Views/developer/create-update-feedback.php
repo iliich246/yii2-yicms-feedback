@@ -194,6 +194,11 @@ $this->registerJs($js, $this::POS_READY);
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-xs-12">
+                    <?= $form->field($feedback, 'admin_can_edit_fields')->checkbox() ?>
+                </div>
+            </div>
 
             <?php if ($feedback->scenario == Feedback::SCENARIO_UPDATE): ?>
                 <div class="row delete-button-row">

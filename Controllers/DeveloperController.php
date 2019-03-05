@@ -432,7 +432,6 @@ class DeveloperController extends Controller
 
         //try to load validate and save field via pjax
         if ($devInputFilesGroup->load(Yii::$app->request->post()) && $devInputFilesGroup->validate()) {
-
             if (!$devInputFilesGroup->save()) {
                 //TODO: bootbox error
             }
