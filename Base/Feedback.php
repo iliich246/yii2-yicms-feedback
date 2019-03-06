@@ -249,7 +249,6 @@ class Feedback extends ActiveRecord implements
 
         if ($feedback) {
             self::$feedbackBuffer[$feedback->id] = $feedback;
-            $feedback->clearFictive();
             return $feedback;
         }
 
