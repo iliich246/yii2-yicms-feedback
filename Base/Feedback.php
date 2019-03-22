@@ -5,6 +5,9 @@ namespace Iliich246\YicmsFeedback\Base;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use Iliich246\YicmsCommon\Annotations\Annotator;
+use Iliich246\YicmsCommon\Annotations\AnnotateInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
 use Iliich246\YicmsCommon\Base\SortOrderTrait;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\SortOrderInterface;
@@ -147,6 +150,30 @@ class Feedback extends ActiveRecord implements
     private $countStates = null;
     /** @var null|integer count of new states of this feedback  */
     private $countNewStates = null;
+    /** @var Annotator instance */
+    private $annotator = null;
+    /** @var array of exception words for magical getter/setter */
+    protected static $annotationExceptionWords = [
+        'id',
+        'program_name',
+        'feedback_order',
+        'type',
+        'editable',
+        'active',
+        'admin_can_edit_fields',
+        'stage_field_template_reference',
+        'stage_file_template_reference',
+        'stage_image_template_reference',
+        'stage_condition_template_reference',
+        'stage_field_reference',
+        'stage_file_reference',
+        'stage_image_reference',
+        'stage_condition_reference',
+        'input_field_template_reference',
+        'input_file_template_reference',
+        'input_image_template_reference',
+        'input_condition_template_reference',
+    ];
 
     /**
      * @inheritdoc
@@ -685,6 +712,14 @@ class Feedback extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     */
+    public function isField($name)
+    {
+        return $this->getFieldHandler()->isField($name);
+    }
+
+    /**
+     * @inheritdoc
      * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function getFieldTemplateReference()
@@ -761,6 +796,14 @@ class Feedback extends ActiveRecord implements
     /**
      * @inheritdoc
      */
+    public function isFileBlock($name)
+    {
+        $this->getFileHandler()->isFileBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getImagesHandler()
     {
         if (!$this->imageHandler)
@@ -775,6 +818,14 @@ class Feedback extends ActiveRecord implements
     public function getImageBlock($name)
     {
         return $this->getImagesHandler()->getImageBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isImageBlock($name)
+    {
+        return $this->getImagesHandler()->isImageBlock($name);
     }
 
     /**
@@ -822,6 +873,14 @@ class Feedback extends ActiveRecord implements
     public function getCondition($name)
     {
         return $this->getConditionsHandler()->getCondition($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isCondition($name)
+    {
+        return $this->getConditionsHandler()->isCondition($name);
     }
 
     /**
