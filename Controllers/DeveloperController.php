@@ -115,7 +115,7 @@ class DeveloperController extends Controller
      */
     public function actionUpdateFeedback($id)
     {
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
@@ -150,7 +150,7 @@ class DeveloperController extends Controller
      */
     public function actionFeedbackTranslates($id)
     {
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
@@ -203,7 +203,7 @@ class DeveloperController extends Controller
     {
         if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
 
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback)
             throw new NotFoundHttpException('Wrong feedback id');
@@ -230,7 +230,7 @@ class DeveloperController extends Controller
     {
         if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
 
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
@@ -258,7 +258,7 @@ class DeveloperController extends Controller
     {
         if (!Yii::$app->request->isPjax) throw new BadRequestHttpException();
 
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
@@ -286,7 +286,7 @@ class DeveloperController extends Controller
      */
     public function actionFeedbackPageTemplates($id)
     {
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
@@ -404,7 +404,7 @@ class DeveloperController extends Controller
      */
     public function actionFeedbackInputTemplates($id)
     {
-        $feedback = Feedback::getInstance($id);
+        $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
