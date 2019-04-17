@@ -5,6 +5,7 @@ namespace Iliich246\YicmsFeedback\Base;
 use Yii;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Annotations\Annotator;
 use Iliich246\YicmsCommon\Annotations\AnnotateInterface;
 use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
@@ -34,6 +35,7 @@ use Iliich246\YicmsCommon\Conditions\ConditionTemplate;
 use Iliich246\YicmsCommon\Conditions\ConditionsHandler;
 use Iliich246\YicmsCommon\Conditions\ConditionsInterface;
 use Iliich246\YicmsCommon\Conditions\ConditionsReferenceInterface;
+use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\InputFields\InputField;
 use Iliich246\YicmsFeedback\InputFields\InputFieldGroup;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
@@ -100,7 +102,9 @@ class Feedback extends ActiveRecord implements
     ImageInputReferenceInterface,
     ImageInputInterface,
     ConditionsInputReferenceInterface,
-    ConditionsInputInterface
+    ConditionsInputInterface,
+    AnnotateInterface,
+    AnnotatorFileInterface
 {
     use SortOrderTrait;
 
@@ -150,6 +154,8 @@ class Feedback extends ActiveRecord implements
     private $countStates = null;
     /** @var null|integer count of new states of this feedback  */
     private $countNewStates = null;
+    /** @var bool state of annotation necessity */
+    private $needToAnnotate = true;
     /** @var Annotator instance */
     private $annotator = null;
     /** @var array of exception words for magical getter/setter */
@@ -298,7 +304,7 @@ class Feedback extends ActiveRecord implements
      * @return null|Feedback
      * @throws FeedbackException
      */
-    public static function getInstance($id)
+    public static function getInstanceById($id)
     {
         if (isset(self::$feedbackBuffer[$id]))
             return self::$feedbackBuffer[$id];
@@ -1164,5 +1170,132 @@ class Feedback extends ActiveRecord implements
     public function isFictive()
     {
         return $this->isFictive;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offAnnotation()
+    {
+        $this->needToAnnotate = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function annotate()
+    {
+        FieldTemplate::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            FieldTemplate::getAnnotationsStringArray($this->getFieldTemplateReference())
+        );
+
+        FilesBlock::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            FilesBlock::getAnnotationsStringArray($this->getFileTemplateReference())
+        );
+
+        ImagesBlock::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            ImagesBlock::getAnnotationsStringArray($this->getImageTemplateReference())
+        );
+
+        ConditionTemplate::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            ConditionTemplate::getAnnotationsStringArray($this->getConditionTemplateReference())
+        );
+
+        $this->getAnnotator()->finish();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAnnotation()
+    {
+        $this->needToAnnotate = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAnnotationActive()
+    {
+        return $this->needToAnnotate;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public function getAnnotator()
+    {
+        if (!is_null($this->annotator)) return $this->annotator;
+
+        $this->annotator = new Annotator();
+        $this->annotator->setAnnotatorFileObject($this);
+        $this->annotator->prepare();
+
+        return $this->annotator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFileName()
+    {
+        return ucfirst(mb_strtolower($this->program_name));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFilePath()
+    {
+        $path = Yii::getAlias(CommonModule::getInstance()->yicmsLocation);
+        $path .= '/' . FeedbackModule::getInstance()->getModuleName();
+        $path .= '/' . CommonModule::getInstance()->annotationsDirectory;
+
+        return $path;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsUseClass()
+    {
+        return 'Iliich246\YicmsFeedback\Base\Feedback';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsClassName()
+    {
+        return 'Feedback';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationTemplateFile()
+    {
+        $class = new \ReflectionClass(self::class);
+        return dirname($class->getFileName())  . '/annotations/feedback.php';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAnnotationFileNamespace()
+    {
+        return CommonModule::getInstance()->yicmsNamespace . '\\' .
+               FeedbackModule::getInstance()->getModuleName() . '\\' .
+               CommonModule::getInstance()->annotationsDirectory;
     }
 }
