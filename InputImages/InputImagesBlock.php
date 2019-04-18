@@ -9,6 +9,10 @@ use yii\validators\RequiredValidator;
 use yii\validators\SafeValidator;
 use yii\web\UploadedFile;
 use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Annotations\Annotator;
+use Iliich246\YicmsCommon\Annotations\AnnotateInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorStringInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
 use Iliich246\YicmsCommon\Base\CommonException;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
@@ -36,7 +40,10 @@ use Iliich246\YicmsFeedback\FeedbackModule;
 class InputImagesBlock extends AbstractEntityBlock implements
     ValidatorBuilderInterface,
     ValidatorReferenceInterface,
-    FictiveInterface
+    FictiveInterface,
+    AnnotateInterface,
+    AnnotatorFileInterface,
+    AnnotatorStringInterface
 {
     /**
      * Input files types
@@ -58,6 +65,26 @@ class InputImagesBlock extends AbstractEntityBlock implements
     private $isFictive = false;
     /** @var bool keep state of load */
     private $isLoaded = false;
+    /** @var bool state of annotation necessity */
+    private $needToAnnotate = true;
+    /** @var Annotator instance */
+    private $annotator = null;
+    /** @var AnnotatorFileInterface instance */
+    private static $parentFileAnnotator;
+    /** @var array of exception words for magical getter/setter */
+    protected static $annotationExceptionWords = [
+        'id',
+        'isNewRecord',
+        'scenario',
+        'program_name',
+        'input_image_template_reference',
+        'validator_reference',
+        'type',
+        'input_image_order',
+        'editable',
+        'active',
+        'max_files',
+    ];
 
     /**
      * @inheritdoc
@@ -658,5 +685,157 @@ class InputImagesBlock extends AbstractEntityBlock implements
     public function isFictive()
     {
         return $this->isFictive;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public function annotate()
+    {
+        $this->getAnnotator()->finish();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offAnnotation()
+    {
+        $this->needToAnnotate = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAnnotation()
+    {
+        $this->needToAnnotate = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAnnotationActive()
+    {
+        return $this->needToAnnotate;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public function getAnnotator()
+    {
+        if (!is_null($this->annotator)) return $this->annotator;
+
+        $this->annotator = new Annotator();
+        $this->annotator->setAnnotatorFileObject($this);
+        $this->annotator->prepare();
+
+        return $this->annotator;
+    }
+
+    /**
+     * Sets parent file annotator
+     * @param AnnotatorFileInterface $fileAnnotator
+     */
+    public static function setParentFileAnnotator(AnnotatorFileInterface $fileAnnotator)
+    {
+        self::$parentFileAnnotator = $fileAnnotator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFileName()
+    {
+        return ucfirst(mb_strtolower($this->program_name)) . 'InputImagesBlock';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFilePath()
+    {
+        if (!is_dir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+            self::$parentFileAnnotator->getAnnotationFileName()))
+            mkdir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+                self::$parentFileAnnotator->getAnnotationFileName());
+
+        return self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+        self::$parentFileAnnotator->getAnnotationFileName() . '/InputImages';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsUseClass()
+    {
+        return 'Iliich246\YicmsFeedback\InputImages\InputImagesBlock;';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsClassName()
+    {
+        return 'InputImagesBlock';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationTemplateFile()
+    {
+        $class = new \ReflectionClass(self::class);
+        return dirname($class->getFileName())  . '/annotations/input_images_block.php';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAnnotationFileNamespace()
+    {
+        return self::$parentFileAnnotator->getAnnotationFileNamespace() . '\\'
+        . self::$parentFileAnnotator->getAnnotationFileName() . '\\'
+        . 'InputImages';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationsStringArray($searchData)
+    {
+        /** @var self[] $templates */
+        $templates = self::find()->where([
+            'input_image_template_reference' => $searchData
+        ])->orderBy([
+            'input_image_order' => SORT_ASC
+        ])->all();
+
+        if (!$templates) return [];
+
+        $result = [
+            ' *' . PHP_EOL,
+            ' * INPUT_IMAGES' . PHP_EOL,
+        ];
+
+        foreach ($templates as $template) {
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_' . $template->program_name . ' ' . PHP_EOL;
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_file_' . $template->program_name . ' ' . PHP_EOL;
+            $template->annotate();
+        }
+
+        return $result;
     }
 }

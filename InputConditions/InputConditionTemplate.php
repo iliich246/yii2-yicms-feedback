@@ -2,6 +2,10 @@
 
 namespace Iliich246\YicmsFeedback\InputConditions;
 
+use Iliich246\YicmsCommon\Annotations\Annotator;
+use Iliich246\YicmsCommon\Annotations\AnnotateInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorStringInterface;
 use Iliich246\YicmsCommon\Base\AbstractTemplate;
 use Iliich246\YicmsCommon\Validators\ValidatorBuilder;
 use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
@@ -19,7 +23,11 @@ use Iliich246\YicmsCommon\Validators\ValidatorReferenceInterface;
  *
  * @author iliich246 <iliich246@gmail.com>
  */
-class InputConditionTemplate extends AbstractTemplate implements ValidatorReferenceInterface
+class InputConditionTemplate extends AbstractTemplate implements
+    ValidatorReferenceInterface,
+    AnnotateInterface,
+    AnnotatorFileInterface,
+    AnnotatorStringInterface
 {
     const TYPE_CHECKBOX = 0;
     const TYPE_RADIO    = 1;
@@ -32,6 +40,12 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
     protected static $buffer = [];
     /** @var InputConditionValues[] */
     private $values = null;
+    /** @var bool state of annotation necessity */
+    private $needToAnnotate = true;
+    /** @var Annotator instance */
+    private $annotator = null;
+    /** @var AnnotatorFileInterface instance */
+    private static $parentFileAnnotator;
 
     /**
      * @inheritdoc
@@ -321,5 +335,161 @@ class InputConditionTemplate extends AbstractTemplate implements ValidatorRefere
         }
 
         return $this->validator_reference;
+    }
+
+    /**
+     * Sets parent file annotator
+     * @param AnnotatorFileInterface $fileAnnotator
+     */
+    public static function setParentFileAnnotator(AnnotatorFileInterface $fileAnnotator)
+    {
+        self::$parentFileAnnotator = $fileAnnotator;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public function annotate()
+    {
+        $annotationArray = InputConditionTemplateAnnotatorString::getAnnotationsStringArray($this);
+
+        $this->getAnnotator()->addAnnotationArray($annotationArray);
+
+        $this->getAnnotator()->finish(false);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offAnnotation()
+    {
+        $this->needToAnnotate = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAnnotation()
+    {
+        $this->needToAnnotate = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAnnotationActive()
+    {
+        return $this->needToAnnotate;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public function getAnnotator()
+    {
+        if (!is_null($this->annotator)) return $this->annotator;
+
+        $this->annotator = new Annotator();
+        $this->annotator->setAnnotatorFileObject($this);
+        $this->annotator->prepare();
+
+        return $this->annotator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFilePath()
+    {
+        if (!is_dir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+            self::$parentFileAnnotator->getAnnotationFileName()))
+            mkdir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+                self::$parentFileAnnotator->getAnnotationFileName());
+
+        return self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+        self::$parentFileAnnotator->getAnnotationFileName() . '/InputConditions';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsUseClass()
+    {
+        return 'Iliich246\YicmsFeedback\InputConditions\InputCondition';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsClassName()
+    {
+        return 'InputCondition';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationTemplateFile()
+    {
+        $class = new \ReflectionClass(self::class);
+        return dirname($class->getFileName())  . '/annotations/input-condition.php';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAnnotationFileNamespace()
+    {
+        return self::$parentFileAnnotator->getAnnotationFileNamespace() . '\\'
+        . self::$parentFileAnnotator->getAnnotationFileName() . '\\'
+        . 'InputConditions';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFileName()
+    {
+        return ucfirst(mb_strtolower($this->program_name));
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationsStringArray($searchData)
+    {
+        /** @var self[] $templates */
+        $templates = self::find()->where([
+            'input_condition_template_reference' => $searchData
+        ])->orderBy([
+            'input_condition_order' => SORT_ASC
+        ])->all();
+
+        if (!$templates) return [];
+
+        $result = [
+            ' *' . PHP_EOL,
+            ' * INPUT_CONDITIONS' . PHP_EOL,
+        ];
+
+        foreach ($templates as $template) {
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_' . $template->program_name . ' ' . PHP_EOL;
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_condition_' . $template->program_name . ' ' . PHP_EOL;
+            $template->annotate();
+        }
+
+        return $result;
     }
 }

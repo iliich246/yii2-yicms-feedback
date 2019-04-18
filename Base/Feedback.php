@@ -43,11 +43,13 @@ use Iliich246\YicmsFeedback\InputFields\FieldsInputHandler;
 use Iliich246\YicmsFeedback\InputFields\FieldInputInterface;
 use Iliich246\YicmsFeedback\InputFields\FieldInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputFiles\InputFile;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesGroup;
 use Iliich246\YicmsFeedback\InputFiles\FilesInputHandler;
 use Iliich246\YicmsFeedback\InputFiles\FileInputInterface;
 use Iliich246\YicmsFeedback\InputFiles\FileInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputImages\InputImage;
+use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
 use Iliich246\YicmsFeedback\InputImages\InputImagesGroup;
 use Iliich246\YicmsFeedback\InputImages\ImagesInputHandler;
 use Iliich246\YicmsFeedback\InputImages\ImageInputInterface;
@@ -55,6 +57,7 @@ use Iliich246\YicmsFeedback\InputImages\ImageInputReferenceInterface;
 use Iliich246\YicmsFeedback\InputConditions\InputCondition;
 use Iliich246\YicmsFeedback\InputConditions\InputConditionsGroup;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputHandler;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputInterface;
 use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
 
@@ -1207,6 +1210,30 @@ class Feedback extends ActiveRecord implements
 
         $this->getAnnotator()->addAnnotationArray(
             ConditionTemplate::getAnnotationsStringArray($this->getConditionTemplateReference())
+        );
+
+        InputFieldTemplate::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            InputFieldTemplate::getAnnotationsStringArray($this->getFileTemplateReference())
+        );
+
+        InputFilesBlock::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            InputFilesBlock::getAnnotationsStringArray($this->getFileTemplateReference())
+        );
+
+        InputImagesBlock::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            InputImagesBlock::getAnnotationsStringArray($this->getFileTemplateReference())
+        );
+
+        InputConditionTemplate::setParentFileAnnotator($this);
+
+        $this->getAnnotator()->addAnnotationArray(
+            InputConditionTemplate::getAnnotationsStringArray($this->getFileTemplateReference())
         );
 
         $this->getAnnotator()->finish();

@@ -2,7 +2,6 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-
 use Yii;
 use yii\db\ActiveQuery;
 use yii\validators\RequiredValidator;
@@ -10,6 +9,10 @@ use yii\validators\SafeValidator;
 use yii\web\UploadedFile;
 use yii\helpers\FileHelper;
 use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Annotations\Annotator;
+use Iliich246\YicmsCommon\Annotations\AnnotateInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorStringInterface;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
 use Iliich246\YicmsCommon\Base\AbstractEntityBlock;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
 use Iliich246\YicmsCommon\Languages\Language;
@@ -36,7 +39,10 @@ use Iliich246\YicmsFeedback\FeedbackModule;
 class InputFilesBlock extends AbstractEntityBlock implements
     ValidatorBuilderInterface,
     ValidatorReferenceInterface,
-    FictiveInterface
+    FictiveInterface,
+    AnnotateInterface,
+    AnnotatorFileInterface,
+    AnnotatorStringInterface
 {
     /**
      * Input files types
@@ -58,6 +64,27 @@ class InputFilesBlock extends AbstractEntityBlock implements
     private $isFictive = false;
     /** @var bool keep state of load */
     private $isLoaded = false;
+    /** @var bool state of annotation necessity */
+    private $needToAnnotate = true;
+    /** @var Annotator instance */
+    private $annotator = null;
+    /** @var AnnotatorFileInterface instance */
+    private static $parentFileAnnotator;
+    /** @var array of exception words for magical getter/setter */
+    protected static $annotationExceptionWords = [
+        'id',
+        'isNewRecord',
+        'scenario',
+        'program_name',
+        'input_file_template_reference',
+        'validator_reference',
+        'type',
+        'input_file_order',
+        'editable',
+        'visible',
+        'active',
+        'max_files',
+    ];
 
     /**
      * @inheritdoc
@@ -640,5 +667,71 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public function isFictive()
     {
         return $this->isFictive;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public function annotate()
+    {
+        $this->getAnnotator()->finish();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function offAnnotation()
+    {
+        $this->needToAnnotate = false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function onAnnotation()
+    {
+        $this->needToAnnotate = true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAnnotationActive()
+    {
+        return $this->needToAnnotate;
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public function getAnnotator()
+    {
+        if (!is_null($this->annotator)) return $this->annotator;
+
+        $this->annotator = new Annotator();
+        $this->annotator->setAnnotatorFileObject($this);
+        $this->annotator->prepare();
+
+        return $this->annotator;
+    }
+
+    /**
+     * Sets parent file annotator
+     * @param AnnotatorFileInterface $fileAnnotator
+     */
+    public static function setParentFileAnnotator(AnnotatorFileInterface $fileAnnotator)
+    {
+        self::$parentFileAnnotator = $fileAnnotator;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFileName()
+    {
+        return ucfirst(mb_strtolower($this->program_name)) . 'InputFileBlock';
     }
 }
