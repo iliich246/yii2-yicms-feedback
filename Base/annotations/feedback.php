@@ -34,6 +34,6 @@ class <?= $annotator->getClassName() ?> extends <?= $annotator->getExtendsClassN
     */
     public static function getInstance()
     {
-        return self::getByName('<?= $pageInstance->program_name ?>');
+        return self::getByName('<?= $feedbackInstance->program_name ?>');
     }
 }

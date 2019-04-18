@@ -119,6 +119,8 @@ class DeveloperController extends Controller
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
+        $feedback->annotate();
+
         $feedback->scenario = Feedback::SCENARIO_UPDATE;
 
         if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
@@ -290,6 +292,8 @@ class DeveloperController extends Controller
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
+        $feedback->annotate();
+
         //initialize fields group
         $devFieldGroup = new DevFieldsGroup();
         $devFieldGroup->setFieldTemplateReference($feedback->getFieldTemplateReference());
@@ -301,6 +305,8 @@ class DeveloperController extends Controller
             if (!$devFieldGroup->save()) {
                 //TODO: bootbox error
             }
+
+            $feedback->annotate();
 
             return FieldsDevModalWidget::widget([
                 'devFieldGroup' => $devFieldGroup,
@@ -319,6 +325,8 @@ class DeveloperController extends Controller
                 //TODO: bootbox error
             }
 
+            $feedback->annotate();
+
             return FilesDevModalWidget::widget([
                 'devFilesGroup' => $devFilesGroup,
                 'dataSaved'     => true,
@@ -336,6 +344,8 @@ class DeveloperController extends Controller
                 //TODO: bootbox error
             }
 
+            $feedback->annotate();
+
             return ImagesDevModalWidget::widget([
                 'devImagesGroup' => $devImagesGroup,
                 'dataSaved'      => true,
@@ -352,6 +362,8 @@ class DeveloperController extends Controller
             if (!$devConditionsGroup->save()) {
                 //TODO: bootbox error
             }
+
+            $feedback->annotate();
 
             return ConditionsDevModalWidget::widget([
                 'devConditionsGroup' => $devConditionsGroup,
@@ -408,6 +420,8 @@ class DeveloperController extends Controller
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
 
+        $feedback->annotate();
+
         //initialize fields group
         $devInputFieldGroup = new DevInputFieldsGroup();
         $devInputFieldGroup->setInputFieldTemplateReference($feedback->getInputFieldTemplateReference());
@@ -419,6 +433,8 @@ class DeveloperController extends Controller
             if (!$devInputFieldGroup->save()) {
                 //TODO: bootbox error
             }
+
+            $feedback->annotate();
 
             return InputFieldsDevModalWidget::widget([
                 'devInputFieldGroup' => $devInputFieldGroup,
@@ -436,6 +452,8 @@ class DeveloperController extends Controller
                 //TODO: bootbox error
             }
 
+            $feedback->annotate();
+
             return InputFilesDevModalWidget::widget([
                 'devInputFilesGroup' => $devInputFilesGroup,
                 'dataSaved'          => true,
@@ -451,6 +469,8 @@ class DeveloperController extends Controller
             if (!$devInputImagesGroup->save()) {
                 //TODO: bootbox error
             }
+
+            $feedback->annotate();
 
             return InputImagesDevModalWidget::widget([
                 'devInputImagesGroup' => $devInputImagesGroup,
@@ -468,6 +488,8 @@ class DeveloperController extends Controller
             if (!$devInputConditionsGroup->save()) {
                 //TODO: bootbox error
             }
+
+            $feedback->annotate();
 
             return InputConditionsDevModalWidget::widget([
                 'devInputConditionsGroup' => $devInputConditionsGroup,

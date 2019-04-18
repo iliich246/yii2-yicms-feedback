@@ -734,4 +734,94 @@ class InputFilesBlock extends AbstractEntityBlock implements
     {
         return ucfirst(mb_strtolower($this->program_name)) . 'InputFileBlock';
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAnnotationFilePath()
+    {
+        if (!is_dir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+            self::$parentFileAnnotator->getAnnotationFileName()))
+            mkdir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+                self::$parentFileAnnotator->getAnnotationFileName());
+
+        return self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
+            self::$parentFileAnnotator->getAnnotationFileName() . '/InputFiles';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsUseClass()
+    {
+        return 'Iliich246\YicmsFeedback\InputFiles\InputFilesBlock';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getExtendsClassName()
+    {
+        return 'InputFilesBlock';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationTemplateFile()
+    {
+        $class = new \ReflectionClass(self::class);
+        return dirname($class->getFileName())  . '/annotations/input_file_block.php';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public static function getAnnotationFileNamespace()
+    {
+        return self::$parentFileAnnotator->getAnnotationFileNamespace() . '\\'
+            . self::$parentFileAnnotator->getAnnotationFileName() . '\\'
+            . 'InputFiles';
+    }
+
+    /**
+     * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
+     */
+    public static function getAnnotationsStringArray($searchData)
+    {
+        /** @var self[] $templates */
+        $templates = self::find()->where([
+            'input_file_template_reference' => $searchData
+        ])->orderBy([
+            'input_file_order' => SORT_ASC
+        ])->all();
+
+        if (!$templates) return [];
+
+        $self = new self();
+        if (!is_dir($self->getAnnotationFilePath()))
+            mkdir($self->getAnnotationFilePath());
+
+        $result = [
+            ' *' . PHP_EOL,
+            ' * INPUT_FILES' . PHP_EOL,
+        ];
+
+        foreach ($templates as $template) {
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_' . $template->program_name . ' ' . PHP_EOL;
+            $result[] = ' * @property ' . '\\' .
+                $template->getAnnotationFileNamespace() . '\\' .
+                $template->getAnnotationFileName() .
+                ' $input_file_' . $template->program_name . ' ' . PHP_EOL;
+            $template->annotate();
+        }
+
+        return $result;
+    }
 }

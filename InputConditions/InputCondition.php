@@ -23,7 +23,6 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  * @property integer $input_condition_template_template_id
  * @property string $input_condition_reference
  * @property integer $feedback_value_id
- * @property integer $editable
  * @property integer $checkbox_state
  *
  * @author iliich246 <iliich246@gmail.com>

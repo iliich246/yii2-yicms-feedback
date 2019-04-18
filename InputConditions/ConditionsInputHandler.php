@@ -70,7 +70,6 @@ class ConditionsInputHandler extends AbstractHandler
             $fictiveInputCondition->setFictive();
             $fictiveInputCondition->setTemplate($template);
             $fictiveInputCondition->feedback_value_id = $template->defaultValueId();
-            $fictiveInputCondition->editable = true;
             $fictiveInputCondition->checkbox_state = $template->defaultCheckboxValue();
 
             if ($template->type == InputConditionTemplate::TYPE_CHECKBOX)

@@ -436,7 +436,7 @@ class InputConditionTemplate extends AbstractTemplate implements
     public static function getAnnotationTemplateFile()
     {
         $class = new \ReflectionClass(self::class);
-        return dirname($class->getFileName())  . '/annotations/input-condition.php';
+        return dirname($class->getFileName())  . '/annotations/input_condition.php';
     }
 
     /**

@@ -1104,7 +1104,8 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
-     * @inheritdoc
+     * @return string
+     * @throws FeedbackException
      */
     public function getInputConditionReference()
     {
@@ -1185,6 +1186,8 @@ class Feedback extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
      */
     public function annotate()
     {
@@ -1215,25 +1218,25 @@ class Feedback extends ActiveRecord implements
         InputFieldTemplate::setParentFileAnnotator($this);
 
         $this->getAnnotator()->addAnnotationArray(
-            InputFieldTemplate::getAnnotationsStringArray($this->getFileTemplateReference())
+            InputFieldTemplate::getAnnotationsStringArray($this->getInputFieldTemplateReference())
         );
 
         InputFilesBlock::setParentFileAnnotator($this);
 
         $this->getAnnotator()->addAnnotationArray(
-            InputFilesBlock::getAnnotationsStringArray($this->getFileTemplateReference())
+            InputFilesBlock::getAnnotationsStringArray($this->getInputFileTemplateReference())
         );
 
         InputImagesBlock::setParentFileAnnotator($this);
 
         $this->getAnnotator()->addAnnotationArray(
-            InputImagesBlock::getAnnotationsStringArray($this->getFileTemplateReference())
+            InputImagesBlock::getAnnotationsStringArray($this->getInputImageTemplateReference())
         );
 
         InputConditionTemplate::setParentFileAnnotator($this);
 
         $this->getAnnotator()->addAnnotationArray(
-            InputConditionTemplate::getAnnotationsStringArray($this->getFileTemplateReference())
+            InputConditionTemplate::getAnnotationsStringArray($this->getInputConditionTemplateReference())
         );
 
         $this->getAnnotator()->finish();
