@@ -22,4 +22,11 @@ interface ConditionsInputInterface
      * @return InputConditionTemplate
      */
     public function getInputCondition($name);
+
+    /**
+     * Returns true if aggregator has input condition with name
+     * @param $name
+     * @return bool
+     */
+    public function isInputCondition($name);
 }

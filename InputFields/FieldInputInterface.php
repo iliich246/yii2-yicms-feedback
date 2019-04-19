@@ -23,4 +23,11 @@ interface FieldInputInterface
      * @return InputField
      */
     public function getInputField($name);
+
+    /**
+     * Returns true if aggregator has input field with name
+     * @param $name
+     * @return bool
+     */
+    public function isInputField($name);
 }

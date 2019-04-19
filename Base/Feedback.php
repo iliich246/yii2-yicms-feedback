@@ -164,6 +164,8 @@ class Feedback extends ActiveRecord implements
     /** @var array of exception words for magical getter/setter */
     protected static $annotationExceptionWords = [
         'id',
+        'isNewRecord',
+        'scenario',
         'program_name',
         'feedback_order',
         'type',
@@ -329,6 +331,95 @@ class Feedback extends ActiveRecord implements
         $nonexistentFeedback->setNonexistent();
 
         return $nonexistentFeedback;
+    }
+
+    /**
+     * Magical get method for use object annotations
+     * @param string $name
+     * @return bool|Condition|FilesBlock|ImagesBlock|mixed|object
+     */
+    public function __get($name)
+    {
+        if (in_array($name, self::$annotationExceptionWords))
+            return parent::__get($name);
+
+        if (strpos($name, 'input_field_' === 0)) {
+            if ($this->isInputField(substr($name, 12)))
+                return $this->getInputFieldHandler()->getInputField(substr($name, 12));
+        }
+
+        if (strpos($name, 'input_file_') === 0) {
+            if ($this->isInputFileBlock(substr($name, 11)))
+                return $this->getInputFileHandler()->getInputFileBlock(substr($name, 11));
+        }
+
+        if (strpos($name, 'input_image_') === 0) {
+            if ($this->isInputImageBlock(substr($name, 12)))
+                return $this->getInputImagesHandler()->getInputImageBlock(substr($name, 12));
+        }
+
+        if (strpos($name, 'input_condition_') === 0) {
+            if ($this->isInputCondition(substr($name, 16)))
+                return $this->getInputConditionsHandler()->getInputCondition(substr($name, 16));
+        }
+
+        if (strpos($name, 'input_' === 0)) {
+            $realName = substr($name, 6);
+
+            if ($this->isInputField($realName))
+                return $this->getInputFieldHandler()->getInputField($realName);
+
+            if ($this->isInputFileBlock($realName))
+                return $this->getInputFileHandler()->getInputFileBlock($realName);
+
+            if ($this->isInputImageBlock($realName))
+                return $this->getInputImagesHandler()->getInputImageBlock($realName);
+
+            if ($this->isInputCondition($realName))
+                return $this->getInputConditionsHandler()->getInputCondition($realName);
+        }
+
+        if (strpos($name, 'field_') === 0) {
+            if ($this->isField(substr($name, 6)))
+                return $this->getFieldHandler()->getField(substr($name, 6));
+
+            return parent::__get($name);
+        }
+
+        if (strpos($name, 'file_') === 0) {
+            if ($this->isFileBlock(substr($name, 5)))
+                return $this->getFileHandler()->getFileBlock(substr($name, 5));
+
+            return parent::__get($name);
+        }
+
+        if (strpos($name, 'image_') === 0) {
+            if ($this->isImageBlock(substr($name, 6)))
+                return $this->getImagesHandler()->getImageBlock(substr($name, 6));
+
+            return parent::__get($name);
+        }
+
+        if (strpos($name, 'condition_') === 0) {
+            if ($this->isCondition(substr($name, 10)))
+                return $this->getConditionsHandler()->getCondition(substr($name, 10));
+
+            return parent::__get($name);
+        }
+
+        if ($this->getFieldHandler()->isField($name))
+            return $this->getFieldHandler()->getField($name);
+
+        if ($this->getFileHandler()->isFileBlock($name))
+            return $this->getFileHandler()->getFileBlock($name);
+
+        if ($this->getImagesHandler()->isImageBlock($name))
+            return $this->getImagesHandler()->getImageBlock($name);
+
+        if ($this->getConditionsHandler()->isCondition($name))
+            return $this->getConditionsHandler()->getCondition($name);
+
+        return parent::__get($name);
     }
 
     /**
@@ -920,6 +1011,7 @@ class Feedback extends ActiveRecord implements
         return $this->stage_condition_reference;
     }
 
+    //////input field
     /**
      * @inheritdoc
      */
@@ -937,6 +1029,14 @@ class Feedback extends ActiveRecord implements
     public function getInputField($name)
     {
         return $this->getInputFieldHandler()->getInputField($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isInputField($name)
+    {
+        return $this->getInputFieldHandler()->isInputField($name);
     }
 
     /**
@@ -969,7 +1069,7 @@ class Feedback extends ActiveRecord implements
         return $this->currentState->input_fields_reference;
     }
 
-    ////file
+    ////input file
     /**
      * @inheritdoc
      */
@@ -987,6 +1087,14 @@ class Feedback extends ActiveRecord implements
     public function getInputFileBlock($name)
     {
         return $this->getInputFileHandler()->getInputFileBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isInputFileBlock($name)
+    {
+       return $this->getInputFileHandler()->isInputFileBlock($name);
     }
 
     /**
@@ -1019,7 +1127,7 @@ class Feedback extends ActiveRecord implements
         return $this->currentState->input_files_reference;
     }
 
-    ////image
+    ////input image
     /**
      * @inheritdoc
      */
@@ -1037,6 +1145,14 @@ class Feedback extends ActiveRecord implements
     public function getInputImageBlock($name)
     {
         return $this->getInputImagesHandler()->getInputImageBlock($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isInputImageBlock($name)
+    {
+        return $this->getInputImagesHandler()->isInputImageBlock($name);
     }
 
     /**
@@ -1069,7 +1185,7 @@ class Feedback extends ActiveRecord implements
         return $this->currentState->input_images_reference;
     }
 
-    /////condition
+    /////input condition
     /**
      * @inheritdoc
      */
@@ -1087,6 +1203,14 @@ class Feedback extends ActiveRecord implements
     public function getInputCondition($name)
     {
         return $this->getInputConditionsHandler()->getInputCondition($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isInputCondition($name)
+    {
+        return $this->getInputConditionsHandler()->isInputCondition($name);
     }
 
     /**
@@ -1238,6 +1362,8 @@ class Feedback extends ActiveRecord implements
         $this->getAnnotator()->addAnnotationArray(
             InputConditionTemplate::getAnnotationsStringArray($this->getInputConditionTemplateReference())
         );
+
+        //throw new \yii\base\Exception('There');
 
         $this->getAnnotator()->finish();
     }

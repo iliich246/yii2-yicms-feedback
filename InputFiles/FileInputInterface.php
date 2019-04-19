@@ -22,4 +22,11 @@ interface FileInputInterface
      * @return InputFile
      */
     public function getInputFileBlock($name);
+
+    /**
+     * Returns true if aggregator has input file block with name
+     * @param $name
+     * @return bool
+     */
+    public function isInputFileBlock($name);
 }

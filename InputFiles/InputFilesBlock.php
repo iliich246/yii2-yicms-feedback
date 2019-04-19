@@ -732,7 +732,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     public function getAnnotationFileName()
     {
-        return ucfirst(mb_strtolower($this->program_name)) . 'InputFileBlock';
+        return ucfirst(mb_strtolower($this->program_name)) . 'InputFilesBlock';
     }
 
     /**

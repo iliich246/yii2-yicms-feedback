@@ -25,4 +25,11 @@ interface ImageInputInterface
      * @return InputImagesBlock
      */
     public function getInputImageBlock($name);
+
+    /**
+     * Returns true if aggregator has image block with name
+     * @param $name
+     * @return bool
+     */
+    public function isInputImageBlock($name);
 }
