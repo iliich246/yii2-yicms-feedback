@@ -25,6 +25,9 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  * @property integer $feedback_value_id
  * @property integer $checkbox_state
  *
+ * @property bool $isActive
+ * @property string $key
+ *
  * @author iliich246 <iliich246@gmail.com>
  */
 class InputCondition extends ActiveRecord implements
@@ -103,7 +106,7 @@ class InputCondition extends ActiveRecord implements
             ['value', 'safe'],
             ['value', 'validateValue'],
             ['input_condition_reference', 'string', 'max' => '255'],
-            [['editable', 'checkbox_state'], 'boolean'],
+            [['checkbox_state'], 'boolean'],
             [
                 ['feedback_value_id'], 'exist', 'skipOnError' => true,
                 'targetClass' => InputConditionValues::className(),
@@ -408,6 +411,15 @@ class InputCondition extends ActiveRecord implements
         if ($this->isNonexistent()) return false;
 
         return !!$this->getTemplate()->active;
+    }
+
+    /**
+     * Alias of method isActive() for use it via getter like $message->input_name->isActive
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive();
     }
 
     /**

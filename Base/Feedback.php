@@ -363,7 +363,7 @@ class Feedback extends ActiveRecord implements
                 return $this->getInputConditionsHandler()->getInputCondition(substr($name, 16));
         }
 
-        if (strpos($name, 'input_' === 0)) {
+        if (strpos($name, 'input_') === 0) {
             $realName = substr($name, 6);
 
             if ($this->isInputField($realName))
@@ -618,6 +618,8 @@ class Feedback extends ActiveRecord implements
 //            $this->inputConditionsGroup->isActiveInputConditions()
 //        ], true));
 
+        //throw new \yii\base\Exception(print_r($data, true));
+
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsLoaded = true;
         else
@@ -666,8 +668,6 @@ class Feedback extends ActiveRecord implements
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
-        //throw new \yii\base\Exception('There');
-
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsValidated = true;
         else
@@ -688,7 +688,13 @@ class Feedback extends ActiveRecord implements
         else
             $inputConditionsValidated = $this->inputConditionsGroup->validate();
 
+        throw new \yii\base\Exception(print_r([
+            $inputFieldsValidated,
+            $inputFilesValidated,
+            $inputImagesValidated,
+            $inputConditionsValidated
 
+        ], true));
 
         if ($inputFieldsValidated &&
             $inputFilesValidated &&
@@ -718,6 +724,14 @@ class Feedback extends ActiveRecord implements
         $inputFilesSaved      = $this->inputFilesGroup->save();
         $inputImagesSaved     = $this->inputImagesGroup->save();
         $inputConditionsSaved = $this->inputConditionsGroup->save();
+
+        throw new \yii\base\Exception(print_r([
+            $inputFieldsSaved,
+            $inputFilesSaved,
+            $inputImagesSaved,
+            $inputConditionsSaved
+
+        ], true));
 
         $this->trigger(self::EVENT_AFTER_HANDLE);
 

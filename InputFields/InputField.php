@@ -23,6 +23,9 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  * @property integer $input_field_reference
  * @property string $value
  *
+ * @property bool $isActive
+ * @property string $key
+ *
  * @author iliich246 <iliich246@gmail.com>
  */
 class InputField extends ActiveRecord implements
@@ -91,8 +94,11 @@ class InputField extends ActiveRecord implements
     {
         if ($this->isNonexistent()) return false;
 
+        //throw new \yii\base\Exception(print_r($this->getKey(), true));
+
         if (parent::load($data, $formName)) {
             $this->isLoaded = true;
+
             return true;
         }
 
@@ -251,6 +257,15 @@ class InputField extends ActiveRecord implements
         if ($this->isNonexistent()) return false;
 
         return !!$this->getTemplate()->active;
+    }
+
+    /**
+     * Alias of method isActive() for use it via getter like $message->input_name->isActive
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive();
     }
 
     /**

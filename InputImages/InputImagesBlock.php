@@ -35,6 +35,9 @@ use Iliich246\YicmsFeedback\FeedbackModule;
  * @property bool $active
  * @property integer $max_images
  *
+ * @property bool $isActive
+ * @property string $key
+ *
  * @author iliich246 <iliich246@gmail.com>
  */
 class InputImagesBlock extends AbstractEntityBlock implements
@@ -315,6 +318,15 @@ class InputImagesBlock extends AbstractEntityBlock implements
     }
 
     /**
+     * Alias of method isActive() for use it via getter like $message->input_name->isActive
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive();
+    }
+
+    /**
      * Returns key for working with form
      * @return string
      */
@@ -486,8 +498,8 @@ class InputImagesBlock extends AbstractEntityBlock implements
                     'feedback_input_images_template_id' => $this->id,
 
                 ])
-                ->indexBy('id')
-                ->orderBy(['input_image_order' => SORT_ASC]);
+                ->indexBy('id');
+                //->orderBy(['input_image_order' => SORT_ASC]);
 
             if ($this->currentInputImageReference)
                 $imageQuery->andWhere([

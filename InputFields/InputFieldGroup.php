@@ -68,6 +68,8 @@ class InputFieldGroup extends AbstractGroup
     {
         if (!$this->inputFields) return true;
 
+        //throw new \yii\base\Exception(print_r($this->inputFields, true));
+
         if (!InputField::isLoadedMultiple($this->inputFields)) {
             $result = '';
 
@@ -85,7 +87,7 @@ class InputFieldGroup extends AbstractGroup
                 throw new FeedbackException('In feedback form don`t used next active input fields: ' .
                     $result);
             }
-
+            throw new \yii\base\Exception(print_r($this->inputFields, true));
             return false;
         }
 
@@ -99,7 +101,11 @@ class InputFieldGroup extends AbstractGroup
     {
         if (!$this->inputFields) return true;
 
-        return Model::loadMultiple($this->inputFields, $data);
+        foreach($this->inputFields as $inputField) {
+            if (!$inputField->load($data)) return false;
+        }
+
+        return true;
     }
 
     /**

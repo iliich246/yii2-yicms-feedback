@@ -2,11 +2,11 @@
 
 namespace Iliich246\YicmsFeedback\InputFiles;
 
-
 use Yii;
 use yii\base\Model;
 use yii\helpers\FileHelper;
 use yii\widgets\ActiveForm;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
@@ -18,7 +18,7 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  */
 class InputFilesGroup extends AbstractGroup
 {
-    /** @var FileInputReferenceInterface|FileInputInterface inputFileTemplateReference value for current group */
+    /** @var FileInputReferenceInterface|FileInputInterface|AnnotatorFileInterface inputFileTemplateReference value for current group */
     protected $fileInputReference;
     /** @var InputFilesBlock[] for working with forms */
     public $inputFiles;
@@ -43,7 +43,25 @@ class InputFilesGroup extends AbstractGroup
             'active'                        => true,
         ])->all();
 
+        /** @var InputFilesBlock[] $annotatedFilesBlocks */
+        $annotatedFilesBlocks = [];
+
         foreach($inputFilesBlocks as $inputFilesBlock) {
+            $className = $this->fileInputReference->getAnnotationFileNamespace() . '\\' .
+                $this->fileInputReference->getAnnotationFileName() . '\\InputFiles\\' .
+                ucfirst(mb_strtolower($inputFilesBlock->program_name)) . 'InputFilesBlock';
+
+            if (class_exists($className)) {
+                $annotatedFilesBlock = $this->fileInputReference
+                                            ->getInputFileHandler()
+                                            ->getInputFileBlock($inputFilesBlock->program_name);
+                $annotatedFilesBlocks[] = $annotatedFilesBlock;
+            } else {
+                $annotatedFilesBlocks[] = $inputFilesBlock;
+            }
+        }
+
+        foreach($annotatedFilesBlocks as $inputFilesBlock) {
             $inputFilesBlock->prepareValidators();
             $this->inputFiles["$inputFilesBlock->id"] = $inputFilesBlock;
         }

@@ -200,7 +200,7 @@ class FilesInputHandler extends AbstractHandler
     private function getClassName($name)
     {
         return $this->aggregator->getAnnotationFileNamespace() . '\\' .
-        $this->aggregator->getAnnotationFileName() . '\\InputFiles\\' .
-        ucfirst(mb_strtolower($name)) . 'InputFilesBlock';
+               $this->aggregator->getAnnotationFileName() . '\\InputFiles\\' .
+               ucfirst(mb_strtolower($name)) . 'InputFilesBlock';
     }
 }

@@ -149,12 +149,13 @@ class ConditionsInputHandler extends AbstractHandler
                 /** @var InputCondition $className */
                 $className = $this->getInputConditionClassName($name);
 
-                if (class_exists($className))
-                    return $className::getInstance(
+                if (class_exists($className)) {
+                    return  $className::getInstance(
                         $this->aggregator->getInputConditionTemplateReference(),
                         $this->aggregator->getInputConditionReference(),
                         $name
                     );
+                }
             }
 
             return InputCondition::getInstance(

@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Model;
 use yii\widgets\ActiveForm;
 use yii\helpers\FileHelper;
+use Iliich246\YicmsCommon\Annotations\AnnotatorFileInterface;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsFeedback\FeedbackModule;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
@@ -17,7 +18,7 @@ use Iliich246\YicmsFeedback\Base\FeedbackException;
  */
 class InputImagesGroup extends AbstractGroup
 {
-    /** @var ImageInputReferenceInterface|ImageInputInterface inputImageTemplateReference value for current group */
+    /** @var ImageInputReferenceInterface|ImageInputInterface|AnnotatorFileInterface inputImageTemplateReference value for current group */
     protected $imageInputReference;
     /** @var InputImagesBlock[] for working with forms */
     public $inputImages;
@@ -42,7 +43,25 @@ class InputImagesGroup extends AbstractGroup
             'active'                         => true
         ])->all();
 
+        /** @var InputImagesBlock[] $annotatedImagesBlocks */
+        $annotatedImagesBlocks = [];
+
         foreach($inputImagesBlocks as $inputImagesBlock) {
+            $className = $this->imageInputReference->getAnnotationFileNamespace() . '\\' .
+                $this->imageInputReference->getAnnotationFileName() . '\\InputImages\\' .
+                ucfirst(mb_strtolower($inputImagesBlock->program_name)) . 'InputImagesBlock';
+
+            if (class_exists($className)) {
+                $annotatedImagesBlock = $this->imageInputReference
+                                            ->getInputImagesHandler()
+                                            ->getInputImageBlock($inputImagesBlock->program_name);
+                $annotatedImagesBlocks[] = $annotatedImagesBlock;
+            } else {
+                $annotatedImagesBlocks[] = $inputImagesBlock;
+            }
+        }
+
+        foreach($annotatedImagesBlocks as $inputImagesBlock) {
             $inputImagesBlock->prepareValidators();
             $this->inputImages["$inputImagesBlock->id"] = $inputImagesBlock;
         }

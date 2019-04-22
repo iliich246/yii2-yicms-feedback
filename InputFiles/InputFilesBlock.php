@@ -34,6 +34,9 @@ use Iliich246\YicmsFeedback\FeedbackModule;
  * @property bool $editable
  * @property bool $max_files
  *
+ * @property bool $isActive
+ * @property string $key
+ *
  * @author iliich246 <iliich246@gmail.com>
  */
 class InputFilesBlock extends AbstractEntityBlock implements
@@ -183,6 +186,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
             $this->inputFile =
                 UploadedFile::getInstances($this, '[' . $this->id . ']inputFile');
         }
+
 
         if ($this->inputFile) {
             $this->isLoaded = true;
@@ -430,8 +434,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
                 ->where([
                     'feedback_input_files_template_id' => $this->id,
                 ])
-                ->indexBy('id')
-                ->orderBy(['input_file_order' => SORT_ASC]);
+                ->indexBy('id');
+                //->orderBy(['input_file_order' => SORT_ASC]);
 
             if ($this->currentInputFileReference)
                 $fileQuery->andWhere([
@@ -507,6 +511,15 @@ class InputFilesBlock extends AbstractEntityBlock implements
         if ($this->isNonexistent()) return false;
 
         return $this->active;
+    }
+
+    /**
+     * Alias of method isActive() for use it via getter like $message->input_name->isActive
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive();
     }
 
     /**
