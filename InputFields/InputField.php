@@ -210,6 +210,7 @@ class InputField extends ActiveRecord implements
     /**
      * Returns dev name of input field
      * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function devName()
     {
@@ -234,7 +235,8 @@ class InputField extends ActiveRecord implements
 
     /**
      * Returns dev description of input field
-     * @return string
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function devDescription()
     {
@@ -366,7 +368,7 @@ class InputField extends ActiveRecord implements
 
     /**
      * Method configs validators for this model
-     * @return void
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function prepareValidators()
     {

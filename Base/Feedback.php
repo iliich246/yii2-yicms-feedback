@@ -601,7 +601,7 @@ class Feedback extends ActiveRecord implements
      * Handle load method for this feedback
      * @param array $data
      * @param null $formName
-     * @return bool|void
+     * @return bool
      */
     public function load($data, $formName = null)
     {
@@ -657,8 +657,9 @@ class Feedback extends ActiveRecord implements
     /**
      * Proxy validate method to active stage
      * @param null $attributeNames
-     * @param bool|true $clearErrors
-     * @return bool|void
+     * @param bool $clearErrors
+     * @return bool
+     * @throws FeedbackException
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
@@ -688,13 +689,15 @@ class Feedback extends ActiveRecord implements
         else
             $inputConditionsValidated = $this->inputConditionsGroup->validate();
 
-        throw new \yii\base\Exception(print_r([
-            $inputFieldsValidated,
-            $inputFilesValidated,
-            $inputImagesValidated,
-            $inputConditionsValidated
+//        throw new \yii\base\Exception(print_r([
+//            $inputFieldsValidated,
+//            $inputFilesValidated,
+//            $inputImagesValidated,
+//            $inputConditionsValidated
+//
+//        ], true));
 
-        ], true));
+        //Yii::error(`111`);
 
         if ($inputFieldsValidated &&
             $inputFilesValidated &&
@@ -725,13 +728,13 @@ class Feedback extends ActiveRecord implements
         $inputImagesSaved     = $this->inputImagesGroup->save();
         $inputConditionsSaved = $this->inputConditionsGroup->save();
 
-        throw new \yii\base\Exception(print_r([
-            $inputFieldsSaved,
-            $inputFilesSaved,
-            $inputImagesSaved,
-            $inputConditionsSaved
-
-        ], true));
+//        throw new \yii\base\Exception(print_r([
+//            $inputFieldsSaved,
+//            $inputFilesSaved,
+//            $inputImagesSaved,
+//            $inputConditionsSaved
+//
+//        ], true));
 
         $this->trigger(self::EVENT_AFTER_HANDLE);
 

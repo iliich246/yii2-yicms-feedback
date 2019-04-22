@@ -34,6 +34,9 @@ class InputFilesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @param null $inputFieldTemplateId
+     * @return InputFilesBlock[]
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function initialize($inputFieldTemplateId = null)
     {
