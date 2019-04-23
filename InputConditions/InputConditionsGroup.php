@@ -3,7 +3,6 @@
 namespace Iliich246\YicmsFeedback\InputConditions;
 
 use Yii;
-use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
@@ -47,6 +46,7 @@ class InputConditionsGroup extends AbstractGroup
                 ->getInputConditionsHandler()
                 ->getInputCondition($inputConditionsTemplate->program_name);
 
+            $inputConditions->scenario = InputCondition::SCENARIO_INPUT;
             $inputConditions->prepareValidators();
             $this->inputConditions["$inputConditionsTemplate->id"] = $inputConditions;
         }
@@ -91,7 +91,11 @@ class InputConditionsGroup extends AbstractGroup
             return false;
         }
 
-        return Model::validateMultiple($this->inputConditions);
+        $success = true;
+        foreach ($this->inputConditions as $inputCondition)
+            if (!$inputCondition->validate()) $success = false;
+
+        return $success;
     }
 
     /**
@@ -101,7 +105,7 @@ class InputConditionsGroup extends AbstractGroup
     {
         if (!$this->inputConditions) return true;
 
-        return Model::loadMultiple($this->inputConditions, $data);
+        return InputCondition::loadMultipleAnnotated($this->inputConditions, $data);
     }
 
     /**

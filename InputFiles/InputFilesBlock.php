@@ -187,7 +187,6 @@ class InputFilesBlock extends AbstractEntityBlock implements
                 UploadedFile::getInstances($this, '[' . $this->id . ']inputFile');
         }
 
-
         if ($this->inputFile) {
             $this->isLoaded = true;
             return true;
@@ -204,7 +203,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     public function loadDev($data, $formName = null)
     {
-        return parent::load($data, $formName = null);
+        return parent::load($data, $formName);
     }
 
     /**

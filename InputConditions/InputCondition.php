@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputConditions;
 
 use Yii;
+use yii\base\Model;
 use yii\db\ActiveRecord;
 use yii\validators\SafeValidator;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -36,6 +37,8 @@ class InputCondition extends ActiveRecord implements
     FictiveInterface,
     NonexistentInterface
 {
+    const SCENARIO_INPUT = 0x01;
+
     /** @var string value of condition */
     public $value;
     /** @var InputConditionTemplate instance of input condition template */
@@ -117,6 +120,25 @@ class InputCondition extends ActiveRecord implements
                 'targetClass' => InputConditionValues::className(),
                 'targetAttribute' => ['input_condition_template_template_id' => 'id']
             ],
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function scenarios()
+    {
+        return [
+            self::SCENARIO_DEFAULT => [
+                'value',
+                'input_condition_reference',
+                'checkbox_state',
+                'feedback_value_id',
+                'input_condition_template_template_id'
+            ],
+            self::SCENARIO_INPUT => [
+                'value'
+            ]
         ];
     }
 
@@ -230,6 +252,32 @@ class InputCondition extends ActiveRecord implements
         }
 
         return true;
+    }
+
+    /**
+     * Method for using instead standard loadMultiple for annotated input conditions
+     * Standard Model::loadMultiple not work because he find $formName only once
+     * @param Model[] $models
+     * @param $data
+     * @return bool
+     */
+    public static function loadMultipleAnnotated($models, $data)
+    {
+        $success = false;
+
+        foreach ($models as $i => $model) {
+            $formName = $model->formName();
+
+            if ($formName == '') {
+                if (!empty($data[$i]) && $model->load($data[$i], '')) {
+                    $success = true;
+                }
+            } elseif (!empty($data[$formName][$i]) && $model->load($data[$formName][$i], '')) {
+                $success = true;
+            }
+        }
+
+        return $success;
     }
 
     /**

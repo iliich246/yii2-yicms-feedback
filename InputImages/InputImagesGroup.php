@@ -62,6 +62,7 @@ class InputImagesGroup extends AbstractGroup
         }
 
         foreach($annotatedImagesBlocks as $inputImagesBlock) {
+            $inputImagesBlock->scenario = InputImagesBlock::SCENARIO_DEFAULT;
             $inputImagesBlock->prepareValidators();
             $this->inputImages["$inputImagesBlock->id"] = $inputImagesBlock;
         }
@@ -106,7 +107,11 @@ class InputImagesGroup extends AbstractGroup
             return false;
         }
 
-        return Model::validateMultiple($this->inputImages);
+        $success = true;
+        foreach ($this->inputImages as $inputImage)
+            if (!$inputImage->validate()) $success = false;
+
+        return $success;
     }
 
     /**
@@ -134,7 +139,6 @@ class InputImagesGroup extends AbstractGroup
         $success = true;
 
         foreach($this->inputImages as $inputImage) {
-
             $inputImage->currentInputImageReference = $this->imageInputReference->getInputImageReference();
             $success = $inputImage->saveInputImage();
 

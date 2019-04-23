@@ -65,6 +65,7 @@ class InputFilesGroup extends AbstractGroup
         }
 
         foreach($annotatedFilesBlocks as $inputFilesBlock) {
+            $inputFilesBlock->scenario = InputFilesBlock::SCENARIO_DEFAULT;
             $inputFilesBlock->prepareValidators();
             $this->inputFiles["$inputFilesBlock->id"] = $inputFilesBlock;
         }
@@ -109,7 +110,17 @@ class InputFilesGroup extends AbstractGroup
             return false;
         }
 
-        return Model::validateMultiple($this->inputFiles);
+        $success = true;
+        foreach ($this->inputFiles as $inputFile)
+            if (!$inputFile->validate()) $success = false;
+
+        return $success;
+
+        Yii::error(print_r($this->inputFiles,true));
+
+        $a = Model::validateMultiple($this->inputFiles);
+
+
     }
 
     /**
@@ -119,7 +130,9 @@ class InputFilesGroup extends AbstractGroup
     {
         if (!$this->inputFiles) return true;
 
-        return Model::loadMultiple($this->inputFiles, $data);
+        $a =  Model::loadMultiple($this->inputFiles, $data);
+
+        return $a;
     }
 
     /**

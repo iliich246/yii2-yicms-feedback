@@ -38,7 +38,7 @@ class FeedbackState extends ActiveRecord
     {
         if (!$this->feedback) return $this->feedback;
 
-        return $this->feedback = Feedback::getInstance($this->feedback_id);
+        return $this->feedback = Feedback::getInstanceById($this->feedback_id);
     }
 
     /**
@@ -52,6 +52,14 @@ class FeedbackState extends ActiveRecord
             throw new FeedbackException('Try to set wrong feedback for this state');
 
         $this->feedback = $feedback;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function delete()
+    {
+        return parent::delete();
     }
 
     /**

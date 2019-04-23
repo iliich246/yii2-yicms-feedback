@@ -611,15 +611,6 @@ class Feedback extends ActiveRecord implements
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
-//        throw new \yii\base\Exception(print_r([
-//            $this->inputFieldsGroup->isActiveInputFields(),
-//            $this->inputFilesGroup->isActiveInputFiles(),
-//            $this->inputImagesGroup->isActiveInputImages(),
-//            $this->inputConditionsGroup->isActiveInputConditions()
-//        ], true));
-
-        //throw new \yii\base\Exception(print_r($data, true));
-
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsLoaded = true;
         else
@@ -697,8 +688,6 @@ class Feedback extends ActiveRecord implements
 //
 //        ], true));
 
-        //Yii::error(`111`);
-
         if ($inputFieldsValidated &&
             $inputFilesValidated &&
             $inputImagesValidated &&
@@ -739,6 +728,15 @@ class Feedback extends ActiveRecord implements
         $this->trigger(self::EVENT_AFTER_HANDLE);
 
         return true;
+    }
+
+    /**
+     * This method clear feedback after handle it
+     * @return void
+     */
+    public function clear()
+    {
+        $this->inputFieldsGroup->clear();
     }
 
     /**

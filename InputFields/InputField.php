@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputFields;
 
 use Yii;
+use yii\base\Model;
 use yii\db\ActiveRecord;
 use yii\validators\SafeValidator;
 use Iliich246\YicmsCommon\Base\FictiveInterface;
@@ -94,15 +95,38 @@ class InputField extends ActiveRecord implements
     {
         if ($this->isNonexistent()) return false;
 
-        //throw new \yii\base\Exception(print_r($this->getKey(), true));
-
         if (parent::load($data, $formName)) {
             $this->isLoaded = true;
-
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * Method for using instead standard loadMultiple for annotated input fields
+     * Standard Model::loadMultiple not work because he find $formName only once
+     * @param Model[] $models
+     * @param $data
+     * @return bool
+     */
+    public static function loadMultipleAnnotated($models, $data)
+    {
+        $success = false;
+
+        foreach ($models as $i => $model) {
+            $formName = $model->formName();
+
+            if ($formName == '') {
+                if (!empty($data[$i]) && $model->load($data[$i], '')) {
+                    $success = true;
+                }
+            } elseif (!empty($data[$formName][$i]) && $model->load($data[$formName][$i], '')) {
+                $success = true;
+            }
+        }
+
+        return $success;
     }
 
     /**

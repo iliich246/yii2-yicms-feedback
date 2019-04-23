@@ -3,7 +3,6 @@
 namespace Iliich246\YicmsFeedback\InputFields;
 
 use Yii;
-use yii\base\Model;
 use yii\widgets\ActiveForm;
 use Iliich246\YicmsCommon\Base\AbstractGroup;
 use Iliich246\YicmsFeedback\Base\FeedbackException;
@@ -43,7 +42,10 @@ class InputFieldGroup extends AbstractGroup
 
         foreach($inputFieldTemplates as $inputFieldTemplate) {
             /** @var InputField $inputField */
-            $inputField = $this->fieldInputReference->getInputFieldHandler()->getInputField($inputFieldTemplate->program_name);
+            $inputField = $this
+                ->fieldInputReference
+                ->getInputFieldHandler()
+                ->getInputField($inputFieldTemplate->program_name);
 
             $inputField->prepareValidators();
             $this->inputFields["$inputFieldTemplate->id"] = $inputField;
@@ -90,14 +92,11 @@ class InputFieldGroup extends AbstractGroup
             return false;
         }
 
-        foreach ($this->inputFields as $inputField) {
+        $success = true;
+        foreach ($this->inputFields as $inputField)
+            if (!$inputField->validate()) $success = false;
 
-            //if (!$inputField->validate()) return false;
-            $inputField->validate();
-            Yii::error(print_r([$inputField], true));
-        }
-
-        return true;
+        return $success;
     }
 
     /**
@@ -107,11 +106,7 @@ class InputFieldGroup extends AbstractGroup
     {
         if (!$this->inputFields) return true;
 
-        foreach($this->inputFields as $inputField) {
-            if (!$inputField->load($data)) return false;
-        }
-
-        return true;
+        return InputField::loadMultipleAnnotated($this->inputFields, $data);
     }
 
     /**
@@ -139,5 +134,16 @@ class InputFieldGroup extends AbstractGroup
     public function render(ActiveForm $form)
     {
         throw new FeedbackException('Not implemented for developer input fields group (not necessary)');
+    }
+
+    /**
+     * This method clear all input fields in group
+     * @return void
+     */
+    public function clear()
+    {
+        foreach($this->inputFields as $inputField) {
+            $inputField->value = null;
+        }
     }
 }
