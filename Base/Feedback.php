@@ -499,6 +499,14 @@ class Feedback extends ActiveRecord implements
         foreach($feedbackNames as $feedbackName)
             $feedbackName->delete();
 
+        /** @var FeedbackState[] $feedbackStates */
+        $feedbackStates = FeedbackState::find()->where([
+            'feedback_id' => $this->id,
+        ])->all();
+
+        foreach ($feedbackStates as $feedbackState)
+            $feedbackState->delete();
+
         return parent::delete();
     }
 
@@ -576,7 +584,7 @@ class Feedback extends ActiveRecord implements
 
     /**
      * Initialize feedback
-     * @return void
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function initialize()
     {
@@ -1070,6 +1078,7 @@ class Feedback extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
      */
     public function getInputFieldReference()
     {
@@ -1128,6 +1137,8 @@ class Feedback extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function getInputFileReference()
     {
@@ -1186,6 +1197,8 @@ class Feedback extends ActiveRecord implements
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function getInputImageReference()
     {

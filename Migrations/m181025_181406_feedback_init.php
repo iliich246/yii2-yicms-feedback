@@ -25,6 +25,7 @@ class m181025_181406_feedback_init extends Migration
             'editable'                           => $this->boolean(),
             'active'                             => $this->boolean(),
             'admin_can_edit_fields'              => $this->boolean(),
+            'admin_can_delete_stages'            => $this->boolean(),
             'stage_field_template_reference'     => $this->string(),
             'stage_file_template_reference'      => $this->string(),
             'stage_image_template_reference'     => $this->string(),

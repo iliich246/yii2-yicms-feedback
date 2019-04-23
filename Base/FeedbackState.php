@@ -2,6 +2,9 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
+use Iliich246\YicmsFeedback\InputFiles\InputFile;
+use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -59,6 +62,34 @@ class FeedbackState extends ActiveRecord
      */
     public function delete()
     {
+        /** @var InputFieldTemplate[] $inputFieldTemplates */
+        $inputFieldTemplates = InputFieldTemplate::find()->where([
+            'input_field_template_reference' => $this->getFeedback()->getInputFieldTemplateReference()
+        ])->all();
+
+        foreach ($inputFieldTemplates as $inputFieldTemplate) {
+            /** @var InputField[] $inputFields */
+            $inputFields = InputField::find()->where([
+                'feedback_input_fields_template_id' => $inputFieldTemplate->id,
+                'input_field_reference'             => $this->input_fields_reference,
+            ])->all();
+
+            foreach ($inputFields as $inputField)
+                $inputField->delete();
+        }
+
+        /** @var InputFilesBlock[] $inputFilesTemplates */
+        $inputFilesTemplates = InputFilesBlock::find()->where([
+            'input_file_template_reference' => $this->getFeedback()->getInputFileTemplateReference()
+        ])->all();
+
+        foreach ($inputFilesTemplates as $inputFilesBlock) {
+            $inputFiles = InputFile::find()->where([
+
+            ])->all();
+        }
+
+
         return parent::delete();
     }
 
