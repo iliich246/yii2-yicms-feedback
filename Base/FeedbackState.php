@@ -80,6 +80,16 @@ class FeedbackState extends ActiveRecord
     }
 
     /**
+     * Return state name for admin panel
+     * @return string
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function adminName()
+    {
+        return 'Message: ' . Yii::$app->formatter->asDatetime($this->created_at);
+    }
+
+    /**
      * @inheritdoc
      */
     public function delete()
