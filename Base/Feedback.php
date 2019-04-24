@@ -71,6 +71,8 @@ use Iliich246\YicmsFeedback\InputConditions\ConditionsInputReferenceInterface;
  * @property bool $editable
  * @property bool $active
  * @property bool $admin_can_edit_fields
+ * @property bool $admin_can_delete_states
+ * @property integer $count_states_on_page
  * @property string $stage_field_template_reference
  * @property string $stage_file_template_reference
  * @property string $stage_image_template_reference
@@ -199,9 +201,11 @@ class Feedback extends ActiveRecord implements
      */
     public function init()
     {
-        $this->active                = true;
-        $this->editable              = true;
-        $this->admin_can_edit_fields = false;
+        $this->active                  = true;
+        $this->editable                = true;
+        $this->admin_can_edit_fields   = false;
+        $this->admin_can_delete_states = true;
+        $this->count_states_on_page    = 50;
 
         parent::init();
     }
@@ -212,10 +216,12 @@ class Feedback extends ActiveRecord implements
     public function attributeLabels()
     {
         return [
-            'program_name'          => 'Program name',
-            'editable'              => 'Editable',
-            'active'                => 'Active',
-            'admin_can_edit_fields' => 'Admin can edit page fields'
+            'program_name'            => 'Program name',
+            'editable'                => 'Editable',
+            'active'                  => 'Active',
+            'admin_can_edit_fields'   => 'Admin can edit page fields',
+            'admin_can_delete_states' => 'Admin can delete states',
+            'count_states_on_page'    => 'Count states on feedback page'
         ];
     }
 
@@ -226,10 +232,20 @@ class Feedback extends ActiveRecord implements
     {
         return [
             self::SCENARIO_CREATE => [
-                'program_name', 'editable', 'active', 'admin_can_edit_fields'
+                'program_name',
+                'editable',
+                'active',
+                'admin_can_edit_fields',
+                'admin_can_delete_states',
+                'count_states_on_page'
             ],
             self::SCENARIO_UPDATE => [
-                'program_name', 'editable', 'active', 'admin_can_edit_fields'
+                'program_name',
+                'editable',
+                'active',
+                'admin_can_edit_fields',
+                'admin_can_delete_states',
+                'count_states_on_page'
             ],
         ];
     }
@@ -243,7 +259,8 @@ class Feedback extends ActiveRecord implements
             ['program_name', 'required', 'message' => 'Obligatory input field'],
             ['program_name', 'string', 'max' => '50', 'tooLong' => 'Program name must be less than 50 symbols'],
             ['program_name', 'validateProgramName'],
-            [['active', 'editable', 'admin_can_edit_fields'], 'boolean']
+            [['active', 'editable', 'admin_can_edit_fields', 'admin_can_delete_states'], 'boolean'],
+            ['count_states_on_page', 'integer'],
         ];
     }
 
@@ -506,6 +523,70 @@ class Feedback extends ActiveRecord implements
 
         foreach ($feedbackStates as $feedbackState)
             $feedbackState->delete();
+
+        /** @var InputFieldTemplate[] $inputFieldTemplates */
+        $inputFieldTemplates = InputFieldTemplate::find()->where([
+            'input_field_template_reference' => $this->getInputFieldTemplateReference()
+        ])->all();
+
+        foreach($inputFieldTemplates as $inputFieldTemplate)
+            $inputFieldTemplate->delete();
+
+        /** @var InputFilesBlock[] $inputFilesBlocks */
+        $inputFilesBlocks = InputFilesBlock::find()->where([
+            'input_file_template_reference' => $this->getInputFileTemplateReference()
+        ])->all();
+
+        foreach ($inputFilesBlocks as $inputFilesBlock)
+            $inputFilesBlock->delete();
+
+        /** @var InputImagesBlock[] $inputImagesBlocks */
+        $inputImagesBlocks = InputImagesBlock::find()->where([
+            'input_image_template_reference' => $this->getInputImageTemplateReference()
+        ])->all();
+
+        foreach($inputImagesBlocks as $inputImagesBlock)
+            $inputImagesBlock->delete();
+
+        /** @var InputConditionTemplate[] $inputConditionTemplates */
+        $inputConditionTemplates = InputConditionTemplate::find()->where([
+            'input_condition_template_reference' => $this->getInputConditionTemplateReference()
+        ])->all();
+
+        foreach($inputConditionTemplates as $inputConditionTemplate)
+            $inputConditionTemplate->delete();
+
+        /** @var FieldTemplate[] $fieldTemplates */
+        $fieldTemplates = FieldTemplate::find()->where([
+            'field_template_reference' => $this->getFieldTemplateReference(),
+        ])->all();
+
+        foreach($fieldTemplates as $fieldTemplate)
+            $fieldTemplate->delete();
+
+        /** @var FilesBlock[] $filesBlocks */
+        $filesBlocks = FilesBlock::find()->where([
+            'file_template_reference' => $this->getFileTemplateReference(),
+        ])->all();
+
+        foreach($filesBlocks as $fileBlock)
+            $fileBlock->delete();
+
+        /** @var ImagesBlock[] $imageBlocks */
+        $imageBlocks = ImagesBlock::find()->where([
+            'image_template_reference' => $this->getImageTemplateReference(),
+        ])->all();
+
+        foreach($imageBlocks as $imageBlock)
+            $imageBlock->delete();
+
+        /** @var ConditionTemplate[] $conditionTemplates */
+        $conditionTemplates = ConditionTemplate::find()->where([
+            'condition_template_reference' => $this->getConditionTemplateReference(),
+        ])->all();
+
+        foreach($conditionTemplates as $conditionTemplate)
+            $conditionTemplate->delete();
 
         return parent::delete();
     }

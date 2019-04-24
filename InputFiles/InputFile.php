@@ -198,9 +198,11 @@ class InputFile extends AbstractEntity
      */
     protected function deleteSequence()
     {
+        $path = FeedbackModule::getInstance()->inputFilesPatch . $this->system_name;
 
+        if (file_exists($path) && !is_dir($path))
+            unlink($path);
     }
-
 
     /**
      * @inheritdoc

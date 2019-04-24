@@ -120,28 +120,50 @@ class FieldsInputHandler extends AbstractHandler
         return $this->getOrSet($name, function() use($name) {
             if ($this->aggregator instanceof AnnotatorFileInterface) {
                 if (!$this->aggregator->isAnnotationActive()) {
-                    return InputField::getInstance(
+                    if ($inputField = InputField::getInstance(
                         $this->aggregator->getInputFieldTemplateReference(),
                         $this->aggregator->getInputFieldReference(),
-                        $name
-                    );
+                        $name))
+                        return $inputField;
+                    else {
+                        $nonexistentInputField = new InputField();
+                        $nonexistentInputField->setNonexistent();
+                        $nonexistentInputField->setNonexistentName($name);
+
+                        return $nonexistentInputField;
+                    }
                 }
 
                 /** @var InputField $className */
                 $className = $this->getInputFieldClassName($name);
 
                 if (class_exists($className))
-                    return $className::getInstance(
+                    if ($inputField = $className::getInstance(
                         $this->aggregator->getInputFieldTemplateReference(),
                         $this->aggregator->getInputFieldReference(),
-                        $name
-                    );
+                        $name))
+                        return $inputField;
+                    else {
+                        $nonexistentInputField = new InputField();
+                        $nonexistentInputField->setNonexistent();
+                        $nonexistentInputField->setNonexistentName($name);
+
+                        return $nonexistentInputField;
+                    }
             }
-            return InputField::getInstance(
+
+            if ($inputField = InputField::getInstance(
                 $this->aggregator->getInputFieldTemplateReference(),
                 $this->aggregator->getInputFieldReference(),
-                $name
-            );
+                $name))
+                return $inputField;
+            else {
+                $nonexistentInputField = new InputField();
+                $nonexistentInputField->setNonexistent();
+                $nonexistentInputField->setNonexistentName($name);
+
+                return $nonexistentInputField;
+            }
         });
     }
 

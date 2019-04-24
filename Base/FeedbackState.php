@@ -2,9 +2,13 @@
 
 namespace Iliich246\YicmsFeedback\Base;
 
+use Iliich246\YicmsFeedback\InputConditions\InputCondition;
+use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFiles\InputFile;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
+use Iliich246\YicmsFeedback\InputImages\InputImage;
+use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
 use Yii;
 use yii\db\ActiveRecord;
 use yii\behaviors\TimestampBehavior;
@@ -31,6 +35,24 @@ class FeedbackState extends ActiveRecord
     private $feedback;
     /** @var InputField[] for working with forms */
     public $inputFields;
+
+    /**
+     * @inheritdoc
+     */
+    public static function tableName()
+    {
+        return '{{%feedback_states}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+            TimestampBehavior::className(),
+        ];
+    }
 
     /**
      * Feedback getter
@@ -78,36 +100,83 @@ class FeedbackState extends ActiveRecord
                 $inputField->delete();
         }
 
-        /** @var InputFilesBlock[] $inputFilesTemplates */
-        $inputFilesTemplates = InputFilesBlock::find()->where([
+        /** @var InputFilesBlock[] $inputFilesBlocks */
+        $inputFilesBlocks = InputFilesBlock::find()->where([
             'input_file_template_reference' => $this->getFeedback()->getInputFileTemplateReference()
         ])->all();
 
-        foreach ($inputFilesTemplates as $inputFilesBlock) {
+        foreach ($inputFilesBlocks as $inputFilesBlock) {
+            /** @var InputFile[] $inputFiles */
             $inputFiles = InputFile::find()->where([
-
+                'feedback_input_files_template_id' => $inputFilesBlock->id,
+                'input_file_reference'             => $this->input_files_reference
             ])->all();
+
+            foreach($inputFiles as $inputFile)
+                $inputFile->delete();
         }
 
+        /** @var InputImagesBlock[] $inputImagesBlocks */
+        $inputImagesBlocks = InputImagesBlock::find()->where([
+            'input_image_template_reference' => $this->getFeedback()->getInputImageTemplateReference()
+        ])->all();
+
+        foreach($inputImagesBlocks as $inputImagesBlock) {
+            /** @var InputImage[] $inputImages */
+            $inputImages = InputImage::find()->where([
+                'feedback_input_images_template_id' => $inputImagesBlock->id,
+                'input_image_reference'             => $this->input_images_reference,
+            ])->all();
+
+            foreach($inputImages as $inputImage)
+                $inputImage->delete();
+        }
+
+        /** @var InputConditionTemplate[] $inputConditionTemplates */
+        $inputConditionTemplates = InputConditionTemplate::find()->where([
+            'input_condition_template_reference' => $this->getFeedback()->getInputConditionTemplateReference()
+        ])->all();
+
+        foreach($inputConditionTemplates as $inputConditionTemplate) {
+            /** @var InputCondition[] $inputConditions */
+            $inputConditions = InputCondition::find()->where([
+                'input_condition_template_template_id' => $inputConditionTemplate->id,
+                'input_condition_reference'            => $this->input_conditions_reference
+            ])->all();
+
+            foreach($inputConditions as $inputCondition)
+                $inputCondition->delete();
+        }
 
         return parent::delete();
     }
 
     /**
-     * @inheritdoc
+     * Return true if state viewed
+     * @return bool
      */
-    public static function tableName()
+    public function isViewed()
     {
-        return '{{%feedback_states}}';
+        return !!$this->is_handled;
     }
 
     /**
-     * @inheritdoc
+     * Marks state as viewed
+     * @return bool
      */
-    public function behaviors()
+    public function markAsViewed()
     {
-        return [
-            TimestampBehavior::className(),
-        ];
+        $this->is_handled = true;
+        return $this->save(false);
+    }
+
+    /**
+     * Marks state as not viewed
+     * @return bool
+     */
+    public function markAsNoneViewed()
+    {
+        $this->is_handled = false;
+        return $this->save(false);
     }
 }

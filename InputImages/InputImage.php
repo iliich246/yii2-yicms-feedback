@@ -169,11 +169,10 @@ class InputImage extends AbstractEntity
     /**
      * @inheritdoc
      */
-
     public function delete()
     {
         $this->deleteSequence();
-        //return parent::delete();
+        return parent::delete();
     }
 
     /**
@@ -181,7 +180,10 @@ class InputImage extends AbstractEntity
      */
     protected function deleteSequence()
     {
+        $path = FeedbackModule::getInstance()->inputImagesPath . $this->system_name;
 
+        if (file_exists($path) && !is_dir($path))
+            unlink($path);
     }
 
     /**

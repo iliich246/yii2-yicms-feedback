@@ -355,6 +355,11 @@ class InputCondition extends ActiveRecord implements
      */
     public function __toString()
     {
+        if ($this->isNonexistent() && CommonModule::isUnderDev() && defined('YICMS_ALERTS'))
+            return '(Dev)Nonexistent condition';
+
+        if ($this->isNonexistent()) return '';
+
         if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) {
             if ($this->checkbox_state) return FeedbackModule::t('app', 'True');
             return FeedbackModule::t('app', 'False');

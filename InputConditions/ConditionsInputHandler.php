@@ -139,30 +139,51 @@ class ConditionsInputHandler extends AbstractHandler
         return $this->getOrSet($name, function() use($name) {
             if ($this->aggregator instanceof AnnotatorFileInterface) {
                 if (!$this->aggregator->isAnnotationActive()) {
-                    return InputCondition::getInstance(
+                    if ($inputCondition = InputCondition::getInstance(
                         $this->aggregator->getInputConditionTemplateReference(),
                         $this->aggregator->getInputConditionReference(),
-                        $name
-                    );
+                        $name))
+                        return $inputCondition;
+                    else {
+                        $nonexistentInputCondition = new InputCondition();
+                        $nonexistentInputCondition->setNonexistent();
+                        $nonexistentInputCondition->setNonexistentName($name);
+
+                        return $nonexistentInputCondition;
+                    }
                 }
 
                 /** @var InputCondition $className */
                 $className = $this->getInputConditionClassName($name);
 
                 if (class_exists($className)) {
-                    return  $className::getInstance(
+                    if ($inputCondition = $className::getInstance(
                         $this->aggregator->getInputConditionTemplateReference(),
                         $this->aggregator->getInputConditionReference(),
-                        $name
-                    );
+                        $name))
+                        return $inputCondition;
+                    else {
+                        $nonexistentInputCondition = new InputCondition();
+                        $nonexistentInputCondition->setNonexistent();
+                        $nonexistentInputCondition->setNonexistentName($name);
+
+                        return $nonexistentInputCondition;
+                    }
                 }
             }
 
-            return InputCondition::getInstance(
+            if ($inputCondition = InputCondition::getInstance(
                 $this->aggregator->getInputConditionTemplateReference(),
                 $this->aggregator->getInputConditionReference(),
-                $name
-            );
+                $name))
+                return $inputCondition;
+            else {
+                $nonexistentInputCondition = new InputCondition();
+                $nonexistentInputCondition->setNonexistent();
+                $nonexistentInputCondition->setNonexistentName($name);
+
+                return $nonexistentInputCondition;
+            }
         });
     }
 

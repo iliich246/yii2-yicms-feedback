@@ -200,6 +200,18 @@ $this->registerJs($js, $this::POS_READY);
                 </div>
             </div>
 
+            <div class="row">
+                <div class="col-xs-12">
+                    <?= $form->field($feedback, 'admin_can_delete_states')->checkbox() ?>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <?= $form->field($feedback, 'count_states_on_page') ?>
+                </div>
+            </div>
+
             <?php if ($feedback->scenario == Feedback::SCENARIO_UPDATE): ?>
                 <div class="row delete-button-row">
                     <div class="col-xs-12">

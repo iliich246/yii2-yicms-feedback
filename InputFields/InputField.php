@@ -181,6 +181,9 @@ class InputField extends ActiveRecord implements
      */
     public function __toString()
     {
+        if ($this->isNonexistent() && CommonModule::isUnderDev() && defined('YICMS_ALERTS'))
+            return '(Dev)Nonexistent condition';
+
         if ($this->isNonexistent()) return '';
 
         return (string)$this->value;
