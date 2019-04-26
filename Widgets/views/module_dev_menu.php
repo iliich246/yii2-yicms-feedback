@@ -15,11 +15,11 @@ use yii\helpers\Url;
             List of feedback
         </a>
         <a <?php if (
-            ($widget->route == 'feedback/dev/create')
+            ($widget->route == 'feedback/dev/create-feedback')
             ||
-            ($widget->route == 'feedback/dev/update')
+            ($widget->route == 'feedback/dev/update-feedback')
         ):?> class="active" <?php endif; ?>
-            href="<?= Url::toRoute('/feedback/dev/create') ?>">
+            href="<?= Url::toRoute('/feedback/dev/create-feedback') ?>">
             Create/update feedback
         </a>
     </div>

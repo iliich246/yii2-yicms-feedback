@@ -35,6 +35,26 @@ class InputField extends ActiveRecord implements
     FictiveInterface,
     NonexistentInterface
 {
+    /**
+     * @event Event that is triggered before load input field value
+     */
+    const EVENT_BEFORE_LOAD = 'beforeLoad';
+
+    /**
+     * @event Event that is triggered after load input field value
+     */
+    const EVENT_AFTER_LOAD = 'afterLoad';
+
+    /**
+     * @event Event that is triggered before save input field value
+     */
+    const EVENT_BEFORE_SAVE = 'beforeSave';
+
+    /**
+     * @event Event that is triggered after save input field value
+     */
+    const EVENT_AFTER_SAVE = 'afterSave';
+
     /** @var InputFieldTemplate instance of field template */
     private $inputTemplate;
     /** @var ValidatorBuilder instance */
@@ -95,12 +115,33 @@ class InputField extends ActiveRecord implements
     {
         if ($this->isNonexistent()) return false;
 
+        $this->trigger(self::EVENT_BEFORE_LOAD);
+
         if (parent::load($data, $formName)) {
             $this->isLoaded = true;
+            $this->trigger(self::EVENT_AFTER_LOAD);
+
             return true;
         }
 
         return false;
+    }
+
+    /**
+     * @inheritdoc
+     * @param bool|true $runValidation
+     * @param null $attributeNames
+     * @return bool
+     */
+    public function save($runValidation = true, $attributeNames = null)
+    {
+        $this->trigger(self::EVENT_BEFORE_SAVE);
+
+        $success = parent::save($runValidation, $attributeNames);
+
+        $this->trigger(self::EVENT_AFTER_SAVE);
+
+        return $success;
     }
 
     /**

@@ -92,14 +92,14 @@ class DeveloperController extends Controller
         $feedback = new Feedback();
         $feedback->scenario = Feedback::SCENARIO_CREATE;
 
-        if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
-
-            if ($feedback->create()) {
-                return $this->redirect(Url::toRoute(['update-feedback', 'id' => $feedback->id]));
-            } else {
-                //TODO: add bootbox error
-            }
-        }
+//        if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
+//
+//            if ($feedback->create()) {
+//                return $this->redirect(Url::toRoute(['update-feedback', 'id' => $feedback->id]));
+//            } else {
+//                //TODO: add bootbox error
+//            }
+//        }
 
         return $this->render('/developer/create-update-feedback', [
             'feedback' => $feedback,
@@ -276,8 +276,6 @@ class DeveloperController extends Controller
         ]);
     }
 
-
-
     /**
      * Renders feedback stage templates page
      * @param $id
@@ -291,8 +289,6 @@ class DeveloperController extends Controller
         $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedback->annotate();
 
         //initialize fields group
         $devFieldGroup = new DevFieldsGroup();
@@ -393,6 +389,8 @@ class DeveloperController extends Controller
             ->orderBy([ConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
+        $feedback->annotate();
+
         return $this->render('/developer/feedback_page_templates', [
             'feedback'                   => $feedback,
             'devFieldGroup'              => $devFieldGroup,
@@ -419,8 +417,6 @@ class DeveloperController extends Controller
         $feedback = Feedback::getInstanceById($id);
 
         if (!$feedback) throw new NotFoundHttpException('Wrong id of feedback = ' . $id);
-
-        $feedback->annotate();
 
         //initialize fields group
         $devInputFieldGroup = new DevInputFieldsGroup();
@@ -512,6 +508,8 @@ class DeveloperController extends Controller
         $inputConditionTemplates = InputConditionTemplate::getListQuery($feedback->getInputConditionTemplateReference())
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
+
+        $feedback->annotate();
 
         return $this->render('/developer/feedback_input_templates', [
             'feedback'                => $feedback,

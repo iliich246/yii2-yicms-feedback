@@ -39,6 +39,26 @@ class InputCondition extends ActiveRecord implements
 {
     const SCENARIO_INPUT = 0x01;
 
+    /**
+     * @event Event that is triggered before load input condition value
+     */
+    const EVENT_BEFORE_LOAD = 'beforeLoad';
+
+    /**
+     * @event Event that is triggered after load input condition value
+     */
+    const EVENT_AFTER_LOAD = 'afterLoad';
+
+    /**
+     * @event Event that is triggered before save input condition value
+     */
+    const EVENT_BEFORE_SAVE = 'beforeSave';
+
+    /**
+     * @event Event that is triggered after save input condition value
+     */
+    const EVENT_AFTER_SAVE = 'afterSave';
+
     /** @var string value of condition */
     public $value;
     /** @var InputConditionTemplate instance of input condition template */
@@ -220,8 +240,12 @@ class InputCondition extends ActiveRecord implements
     {
         if ($this->isNonexistent()) return false;
 
+        $this->trigger(self::EVENT_BEFORE_LOAD);
+
         if (parent::load($data, $formName)) {
             $this->isLoaded = true;
+            $this->trigger(self::EVENT_AFTER_LOAD);
+
             return true;
         }
 
@@ -285,6 +309,8 @@ class InputCondition extends ActiveRecord implements
      */
     public function save($runValidation = true, $attributeNames = null)
     {
+        $this->trigger(self::EVENT_BEFORE_SAVE);
+
         if ($this->getTemplate()->type == InputConditionTemplate::TYPE_CHECKBOX) {
             if (!$this->value)
                 $this->checkbox_state = false;
@@ -294,7 +320,11 @@ class InputCondition extends ActiveRecord implements
             $this->feedback_value_id = $this->value;
         }
 
-        return parent::save($runValidation, $attributeNames);
+        $success = parent::save($runValidation, $attributeNames);
+
+        $this->trigger(self::EVENT_AFTER_SAVE);
+
+        return $success;
     }
 
     /**

@@ -54,6 +54,26 @@ class InputImagesBlock extends AbstractEntityBlock implements
     const TYPE_ONE_IMAGE    = 0;
     const TYPE_MULTIPLICITY = 1;
 
+    /**
+     * @event Event that is triggered before load input images block value
+     */
+    const EVENT_BEFORE_LOAD = 'beforeLoad';
+
+    /**
+     * @event Event that is triggered after load input images block value
+     */
+    const EVENT_AFTER_LOAD = 'afterLoad';
+
+    /**
+     * @event Event that is triggered before save input images block value
+     */
+    const EVENT_BEFORE_SAVE = 'beforeSave';
+
+    /**
+     * @event Event that is triggered after save input images block value
+     */
+    const EVENT_AFTER_SAVE = 'afterSave';
+
     /** @var UploadedFile[]|UploadedFile loaded input image */
     public $inputImage;
     /** @var ValidatorBuilder instance */
@@ -187,6 +207,8 @@ class InputImagesBlock extends AbstractEntityBlock implements
     {
         if ($this->isNonexistent()) return false;
 
+        $this->trigger(self::EVENT_BEFORE_LOAD);
+
         if ($this->type == InputImagesBlock::TYPE_ONE_IMAGE) {
             $this->inputImage =
                 UploadedFile::getInstance($this, '[' . $this->id . ']inputImage');
@@ -197,6 +219,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
 
         if ($this->inputImage) {
             $this->isLoaded = true;
+            $this->trigger(self::EVENT_AFTER_LOAD);
             return true;
         }
 
@@ -245,12 +268,18 @@ class InputImagesBlock extends AbstractEntityBlock implements
      */
     public function saveInputImage()
     {
+        $this->trigger(self::EVENT_BEFORE_SAVE);
+
         if (!is_array($this->inputImage)) {
-            return $this->physicalSaveInputImage($this->inputImage);
+            $success = $this->physicalSaveInputImage($this->inputImage);
+            $this->trigger(self::EVENT_AFTER_SAVE);
+            return $success;
         } else {
             /** @var UploadedFile $inputImage */
             foreach($this->inputImage as $inputImage)
                 if (!$this->physicalSaveInputImage($inputImage)) return false;
+
+            $this->trigger(self::EVENT_AFTER_SAVE);
 
             return true;
         }

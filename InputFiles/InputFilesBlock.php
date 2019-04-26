@@ -53,6 +53,26 @@ class InputFilesBlock extends AbstractEntityBlock implements
     const TYPE_ONE_FILE     = 0;
     const TYPE_MULTIPLICITY = 1;
 
+    /**
+     * @event Event that is triggered before load input files block value
+     */
+    const EVENT_BEFORE_LOAD = 'beforeLoad';
+
+    /**
+     * @event Event that is triggered after load input files block value
+     */
+    const EVENT_AFTER_LOAD = 'afterLoad';
+
+    /**
+     * @event Event that is triggered before save input files block value
+     */
+    const EVENT_BEFORE_SAVE = 'beforeSave';
+
+    /**
+     * @event Event that is triggered after save input files block value
+     */
+    const EVENT_AFTER_SAVE = 'afterSave';
+
     /** @var UploadedFile[]|UploadedFile loaded input file */
     public $inputFile;
     /** @var string inputFileReference for what files group must be fetched */
@@ -179,6 +199,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
     {
         if ($this->isNonexistent()) return false;
 
+        $this->trigger(self::EVENT_BEFORE_LOAD);
+
         if ($this->type == InputFilesBlock::TYPE_ONE_FILE) {
             $this->inputFile =
                 UploadedFile::getInstance($this, '[' . $this->id . ']inputFile');
@@ -189,6 +211,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
         if ($this->inputFile) {
             $this->isLoaded = true;
+            $this->trigger(self::EVENT_AFTER_LOAD);
+
             return true;
         }
 
@@ -227,7 +251,6 @@ class InputFilesBlock extends AbstractEntityBlock implements
         /** @var InputFilesBlock $model */
         foreach ($models as $model) {
             if (!$model->isLoaded()) return false;
-
         }
 
         return true;
@@ -239,12 +262,18 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     public function saveInputFile()
     {
+        $this->trigger(self::EVENT_BEFORE_SAVE);
+
         if (!is_array($this->inputFile)) {
-            return $this->physicalSaveInputFile($this->inputFile);
+            $success = $this->physicalSaveInputFile($this->inputFile);
+            $this->trigger(self::EVENT_AFTER_SAVE);
+            return $success;
         } else {
             /** @var UploadedFile $inputFile */
             foreach($this->inputFile as $inputFile)
                 if (!$this->physicalSaveInputFile($inputFile)) return false;
+
+            $this->trigger(self::EVENT_AFTER_SAVE);
 
             return true;
         }
