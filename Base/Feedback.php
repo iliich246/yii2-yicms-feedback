@@ -360,7 +360,7 @@ class Feedback extends ActiveRecord implements
         if (in_array($name, self::$annotationExceptionWords))
             return parent::__get($name);
 
-        if ($this->scenario == self::SCENARIO_CREATE)
+        if ($this->scenario === self::SCENARIO_CREATE)
             return parent::__get($name);
 
         if (strpos($name, 'input_field_' === 0)) {
