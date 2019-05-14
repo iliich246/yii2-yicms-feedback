@@ -304,6 +304,8 @@ class Feedback extends ActiveRecord implements
 
         if ($feedback) {
             self::$feedbackBuffer[$feedback->id] = $feedback;
+            $feedback->initialize();
+
             return $feedback;
         }
 
@@ -723,13 +725,13 @@ class Feedback extends ActiveRecord implements
         else
             $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
 
-//        if ($inputConditionsLoaded)
-//            throw new \yii\base\Exception(print_r([
-//                $inputFieldsLoaded,
-//                $inputFilesLoaded,
-//                $inputImagesLoaded,
-//                $inputConditionsLoaded
-//            ], true));
+        //if ($inputConditionsLoaded)
+        throw new \yii\base\Exception(print_r([
+            $inputFieldsLoaded,
+            $inputFilesLoaded,
+            $inputImagesLoaded,
+            $inputConditionsLoaded
+        ], true));
 
         if ($inputFieldsLoaded && $inputFilesLoaded && $inputImagesLoaded && $inputConditionsLoaded)
             return true;

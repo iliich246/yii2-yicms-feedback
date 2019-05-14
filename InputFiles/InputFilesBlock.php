@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputFiles;
 
 use Yii;
+use yii\base\Model;
 use yii\db\ActiveQuery;
 use yii\validators\RequiredValidator;
 use yii\validators\SafeValidator;
@@ -75,6 +76,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /** @var UploadedFile[]|UploadedFile loaded input file */
     public $inputFile;
+    /** @var bool shows that loaded block has no files */
+    private $isEmpty = false;
     /** @var string inputFileReference for what files group must be fetched */
     public $currentInputFileReference;
     /** @inheritdoc */
@@ -216,6 +219,13 @@ class InputFilesBlock extends AbstractEntityBlock implements
             return true;
         }
 
+        if (isset(Yii::$app->request->post()[$this->formName()][$this->id])) {
+            $this->isLoaded = true;
+            $this->isEmpty  = true;
+
+            return true;
+        }
+
         return false;
     }
 
@@ -228,6 +238,32 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public function loadDev($data, $formName = null)
     {
         return parent::load($data, $formName);
+    }
+
+    /**
+     * Method for using instead standard loadMultiple for annotated input files block
+     * Standard Model::loadMultiple not work because he find $formName only once
+     * @param Model[] $models
+     * @param $data
+     * @return bool
+     */
+    public static function loadMultipleAnnotated($models, $data)
+    {
+        $success = false;
+
+        foreach ($models as $i => $model) {
+            $formName = $model->formName();
+
+            if ($formName == '') {
+                if (!empty($data[$i]) && $model->load($data[$i], '')) {
+                    $success = true;
+                }
+            } elseif (!empty($data[$formName][$i]) && $model->load($data[$formName][$i], '')) {
+                $success = true;
+            }
+        }
+
+        return $success;
     }
 
     /**

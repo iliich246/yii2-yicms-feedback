@@ -76,6 +76,8 @@ class InputImagesBlock extends AbstractEntityBlock implements
 
     /** @var UploadedFile[]|UploadedFile loaded input image */
     public $inputImage;
+    /** @var bool shows that loaded block has no files */
+    private $isEmpty = false;
     /** @var ValidatorBuilder instance */
     private $validatorBuilder;
     /** @var string inputImageReference for what images group must be fetched */
@@ -220,6 +222,14 @@ class InputImagesBlock extends AbstractEntityBlock implements
         if ($this->inputImage) {
             $this->isLoaded = true;
             $this->trigger(self::EVENT_AFTER_LOAD);
+
+            return true;
+        }
+
+        if (isset(Yii::$app->request->post()[$this->formName()][$this->id])) {
+            $this->isLoaded = true;
+            $this->isEmpty  = true;
+
             return true;
         }
 

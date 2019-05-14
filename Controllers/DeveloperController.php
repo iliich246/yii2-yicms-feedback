@@ -92,14 +92,14 @@ class DeveloperController extends Controller
         $feedback = new Feedback();
         $feedback->scenario = Feedback::SCENARIO_CREATE;
 
-//        if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
-//
-//            if ($feedback->create()) {
-//                return $this->redirect(Url::toRoute(['update-feedback', 'id' => $feedback->id]));
-//            } else {
-//                //TODO: add bootbox error
-//            }
-//        }
+        if ($feedback->loadDev(Yii::$app->request->post()) && $feedback->validateDev()) {
+
+            if ($feedback->create()) {
+                return $this->redirect(Url::toRoute(['update-feedback', 'id' => $feedback->id]));
+            } else {
+                //TODO: add bootbox error
+            }
+        }
 
         return $this->render('/developer/create-update-feedback', [
             'feedback' => $feedback,

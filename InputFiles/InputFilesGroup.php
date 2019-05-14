@@ -115,12 +115,6 @@ class InputFilesGroup extends AbstractGroup
             if (!$inputFile->validate()) $success = false;
 
         return $success;
-
-        Yii::error(print_r($this->inputFiles,true));
-
-        $a = Model::validateMultiple($this->inputFiles);
-
-
     }
 
     /**
@@ -130,9 +124,8 @@ class InputFilesGroup extends AbstractGroup
     {
         if (!$this->inputFiles) return true;
 
-        $a =  Model::loadMultiple($this->inputFiles, $data);
+        return  InputFilesBlock::loadMultipleAnnotated($this->inputFiles, $data);
 
-        return $a;
     }
 
     /**
