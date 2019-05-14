@@ -132,6 +132,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function attributeLabels()
     {
@@ -295,6 +296,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
     /**
      * Save input file or group of input files
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
     public function saveInputFile()
     {
@@ -319,6 +321,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      * Inner mechanism of input file saving
      * @param UploadedFile $inputFile
      * @return bool
+     * @throws \yii\base\InvalidConfigException
      */
     private function physicalSaveInputFile(UploadedFile $inputFile)
     {
@@ -396,6 +399,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
     /**
      * Returns dev name of input file block
      * @return string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function devName()
     {
@@ -420,7 +424,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * Returns dev description of input file block
-     * @return string
+     * @return bool|string
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function devDescription()
     {
@@ -463,7 +468,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * Renames parent method on concrete name
-     * @return InputFile
+     * @return InputFile|\Iliich246\YicmsCommon\Base\AbstractEntity
      */
     public function getInputFile()
     {
@@ -472,7 +477,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * Renames parent method on concrete name
-     * @return InputFile[]
+     * @return
+     * @return InputFile[]|\Iliich246\YicmsCommon\Base\AbstractEntity[]
      */
     public function getInputFiles()
     {
@@ -524,6 +530,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * @inheritdoc
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
     protected function deleteSequence()
     {

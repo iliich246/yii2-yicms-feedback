@@ -84,6 +84,7 @@ class InputFilesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
      */
     public function validate()
     {
@@ -122,7 +123,8 @@ class InputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
-        if (!$this->inputFiles) return true;
+        //if (!$this->inputFiles) return true;
+
 
         return  InputFilesBlock::loadMultipleAnnotated($this->inputFiles, $data);
 
@@ -130,6 +132,8 @@ class InputFilesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws \yii\base\Exception
+     * @throws \yii\base\InvalidConfigException
      */
     public function save()
     {

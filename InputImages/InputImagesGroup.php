@@ -34,6 +34,7 @@ class InputImagesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public function initialize($inputImageTemplateId = null)
     {
@@ -81,6 +82,7 @@ class InputImagesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws FeedbackException
      */
     public function validate()
     {
@@ -126,6 +128,7 @@ class InputImagesGroup extends AbstractGroup
 
     /**
      * @inheritdoc
+     * @throws \yii\base\Exception
      */
     public function save()
     {

@@ -288,8 +288,9 @@ class Feedback extends ActiveRecord implements
     /**
      * Return instance of page by her name
      * @param $programName
-     * @return self
+     * @return Feedback
      * @throws FeedbackException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
      */
     public static function getByName($programName)
     {
@@ -696,6 +697,7 @@ class Feedback extends ActiveRecord implements
      * @param array $data
      * @param null $formName
      * @return bool
+     * @throws \yii\base\Exception
      */
     public function load($data, $formName = null)
     {
@@ -705,33 +707,41 @@ class Feedback extends ActiveRecord implements
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
+        $isSomethingLoaded = false;
+
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsLoaded = true;
         else
-            $inputFieldsLoaded = $this->inputFieldsGroup->load($data);
+           if ($inputFieldsLoaded = $this->inputFieldsGroup->load($data))
+               $isSomethingLoaded = true;
 
         if (!$this->inputFilesGroup->isActiveInputFiles())
             $inputFilesLoaded = true;
         else
-            $inputFilesLoaded = $this->inputFilesGroup->load($data);
+            if ($inputFilesLoaded = $this->inputFilesGroup->load($data))
+                $isSomethingLoaded = true;
 
         if (!$this->inputImagesGroup->isActiveInputImages())
             $inputImagesLoaded = true;
         else
-            $inputImagesLoaded = $this->inputImagesGroup->load($data);
+            if ($inputImagesLoaded = $this->inputImagesGroup->load($data))
+                $isSomethingLoaded = true;
 
         if (!$this->inputConditionsGroup->isActiveInputConditions())
             $inputConditionsLoaded = true;
         else
-            $inputConditionsLoaded = $this->inputConditionsGroup->load($data);
+            if ($inputConditionsLoaded = $this->inputConditionsGroup->load($data))
+                $isSomethingLoaded = true;
 
         //if ($inputConditionsLoaded)
-        throw new \yii\base\Exception(print_r([
-            $inputFieldsLoaded,
-            $inputFilesLoaded,
-            $inputImagesLoaded,
-            $inputConditionsLoaded
-        ], true));
+//        throw new \yii\base\Exception(print_r([
+//            $inputFieldsLoaded,
+//            $inputFilesLoaded,
+//            $inputImagesLoaded,
+//            $inputConditionsLoaded
+//        ], true));
+        
+        if ($isSomethingLoaded) return true;
 
         if ($inputFieldsLoaded && $inputFilesLoaded && $inputImagesLoaded && $inputConditionsLoaded)
             return true;
@@ -748,30 +758,32 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
+        Yii::error('feedback validation');
+
         if (!$this->inputFieldsGroup->isActiveInputFields() &&
             !$this->inputFilesGroup->isActiveInputFiles() &&
             !$this->inputImagesGroup->isActiveInputImages() &&
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
-        if (!$this->inputFieldsGroup->isActiveInputFields())
-            $inputFieldsValidated = true;
-        else
+//        if (!$this->inputFieldsGroup->isActiveInputFields())
+//            $inputFieldsValidated = true;
+////        else
             $inputFieldsValidated = $this->inputFieldsGroup->validate();
 
-        if (!$this->inputFilesGroup->isActiveInputFiles())
-            $inputFilesValidated = true;
-        else
+//        if (!$this->inputFilesGroup->isActiveInputFiles())
+//            $inputFilesValidated = true;
+//        else
             $inputFilesValidated = $this->inputFilesGroup->validate();
 
-        if (!$this->inputImagesGroup->isActiveInputImages())
-            $inputImagesValidated = true;
-        else
+//        if (!$this->inputImagesGroup->isActiveInputImages())
+//            $inputImagesValidated = true;
+//        else
             $inputImagesValidated = $this->inputImagesGroup->validate();
 
-        if (!$this->inputConditionsGroup->isActiveInputConditions())
-            $inputConditionsValidated = true;
-        else
+//        if (!$this->inputConditionsGroup->isActiveInputConditions())
+//            $inputConditionsValidated = true;
+//        else
             $inputConditionsValidated = $this->inputConditionsGroup->validate();
 
 //        throw new \yii\base\Exception(print_r([
