@@ -123,11 +123,7 @@ class InputFilesGroup extends AbstractGroup
      */
     public function load($data)
     {
-        //if (!$this->inputFiles) return true;
-
-
         return  InputFilesBlock::loadMultipleAnnotated($this->inputFiles, $data);
-
     }
 
     /**
@@ -164,5 +160,16 @@ class InputFilesGroup extends AbstractGroup
     public function render(ActiveForm $form)
     {
         throw new FeedbackException('Not implemented for developer input file group (not necessary)');
+    }
+
+    /**
+     * This method clear all input files in group
+     * @return void
+     */
+    public function clear()
+    {
+        foreach($this->inputFiles as $inputFile) {
+            $inputFile->inputFile = null;
+        }
     }
 }

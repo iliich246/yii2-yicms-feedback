@@ -155,9 +155,9 @@ class Feedback extends ActiveRecord implements
     private $isFictive = true;
     /** @var FeedbackState|null current state of this feedback */
     private $currentState = null;
-    /** @var null|integer count of states for this feedback  */
+    /** @var null|integer count of states for this feedback */
     private $countStates = null;
-    /** @var null|integer count of new states of this feedback  */
+    /** @var null|integer count of new states of this feedback */
     private $countNewStates = null;
     /** @var bool state of annotation necessity */
     private $needToAnnotate = true;
@@ -201,11 +201,11 @@ class Feedback extends ActiveRecord implements
      */
     public function init()
     {
-        $this->active                  = true;
-        $this->editable                = true;
-        $this->admin_can_edit_fields   = false;
+        $this->active = true;
+        $this->editable = true;
+        $this->admin_can_edit_fields = false;
         $this->admin_can_delete_states = true;
-        $this->count_states_on_page    = 50;
+        $this->count_states_on_page = 50;
 
         parent::init();
     }
@@ -216,12 +216,12 @@ class Feedback extends ActiveRecord implements
     public function attributeLabels()
     {
         return [
-            'program_name'            => 'Program name',
-            'editable'                => 'Editable',
-            'active'                  => 'Active',
-            'admin_can_edit_fields'   => 'Admin can edit page fields',
+            'program_name' => 'Program name',
+            'editable' => 'Editable',
+            'active' => 'Active',
+            'admin_can_edit_fields' => 'Admin can edit page fields',
             'admin_can_delete_states' => 'Admin can delete states',
-            'count_states_on_page'    => 'Count states on feedback page'
+            'count_states_on_page' => 'Count states on feedback page'
         ];
     }
 
@@ -281,7 +281,7 @@ class Feedback extends ActiveRecord implements
                 $pagesQuery->andWhere(['not in', 'program_name', $this->getOldAttribute('program_name')]);
 
             $pages = $pagesQuery->all();
-            if ($pages)$this->addError($attribute, 'Page with same name already exist in system');
+            if ($pages) $this->addError($attribute, 'Page with same name already exist in system');
         }
     }
 
@@ -294,7 +294,7 @@ class Feedback extends ActiveRecord implements
      */
     public static function getByName($programName)
     {
-        foreach(self::$feedbackBuffer as $feedback)
+        foreach (self::$feedbackBuffer as $feedback)
             if ($feedback->program_name == $programName)
                 return $feedback;
 
@@ -459,7 +459,7 @@ class Feedback extends ActiveRecord implements
         }
 
         if (!$this->save(false))
-            throw new FeedbackException('Can not create feedback'. $this->program_name);
+            throw new FeedbackException('Can not create feedback' . $this->program_name);
 
         return true;
     }
@@ -492,6 +492,15 @@ class Feedback extends ActiveRecord implements
     }
 
     /**
+     * Returns active state name in admin panel
+     * @return string
+     */
+    public function stateAdminName()
+    {
+        return $this->getActiveState()->adminName();
+    }
+
+    /**
      * Returns description of feedback
      * @param LanguagesDb|null $language
      * @return string
@@ -519,7 +528,7 @@ class Feedback extends ActiveRecord implements
             'feedback_id' => $this->id,
         ])->all();
 
-        foreach($feedbackNames as $feedbackName)
+        foreach ($feedbackNames as $feedbackName)
             $feedbackName->delete();
 
         /** @var FeedbackState[] $feedbackStates */
@@ -535,7 +544,7 @@ class Feedback extends ActiveRecord implements
             'input_field_template_reference' => $this->getInputFieldTemplateReference()
         ])->all();
 
-        foreach($inputFieldTemplates as $inputFieldTemplate)
+        foreach ($inputFieldTemplates as $inputFieldTemplate)
             $inputFieldTemplate->delete();
 
         /** @var InputFilesBlock[] $inputFilesBlocks */
@@ -551,7 +560,7 @@ class Feedback extends ActiveRecord implements
             'input_image_template_reference' => $this->getInputImageTemplateReference()
         ])->all();
 
-        foreach($inputImagesBlocks as $inputImagesBlock)
+        foreach ($inputImagesBlocks as $inputImagesBlock)
             $inputImagesBlock->delete();
 
         /** @var InputConditionTemplate[] $inputConditionTemplates */
@@ -559,7 +568,7 @@ class Feedback extends ActiveRecord implements
             'input_condition_template_reference' => $this->getInputConditionTemplateReference()
         ])->all();
 
-        foreach($inputConditionTemplates as $inputConditionTemplate)
+        foreach ($inputConditionTemplates as $inputConditionTemplate)
             $inputConditionTemplate->delete();
 
         /** @var FieldTemplate[] $fieldTemplates */
@@ -567,7 +576,7 @@ class Feedback extends ActiveRecord implements
             'field_template_reference' => $this->getFieldTemplateReference(),
         ])->all();
 
-        foreach($fieldTemplates as $fieldTemplate)
+        foreach ($fieldTemplates as $fieldTemplate)
             $fieldTemplate->delete();
 
         /** @var FilesBlock[] $filesBlocks */
@@ -575,7 +584,7 @@ class Feedback extends ActiveRecord implements
             'file_template_reference' => $this->getFileTemplateReference(),
         ])->all();
 
-        foreach($filesBlocks as $fileBlock)
+        foreach ($filesBlocks as $fileBlock)
             $fileBlock->delete();
 
         /** @var ImagesBlock[] $imageBlocks */
@@ -583,7 +592,7 @@ class Feedback extends ActiveRecord implements
             'image_template_reference' => $this->getImageTemplateReference(),
         ])->all();
 
-        foreach($imageBlocks as $imageBlock)
+        foreach ($imageBlocks as $imageBlock)
             $imageBlock->delete();
 
         /** @var ConditionTemplate[] $conditionTemplates */
@@ -591,7 +600,7 @@ class Feedback extends ActiveRecord implements
             'condition_template_reference' => $this->getConditionTemplateReference(),
         ])->all();
 
-        foreach($conditionTemplates as $conditionTemplate)
+        foreach ($conditionTemplates as $conditionTemplate)
             $conditionTemplate->delete();
 
         return parent::delete();
@@ -655,7 +664,7 @@ class Feedback extends ActiveRecord implements
 
         return $this->countNewStates = FeedbackState::find()->where([
             'feedback_id' => $this->id,
-            'is_handled'  => false
+            'is_handled' => false
         ])->count();
     }
 
@@ -712,8 +721,8 @@ class Feedback extends ActiveRecord implements
         if (!$this->inputFieldsGroup->isActiveInputFields())
             $inputFieldsLoaded = true;
         else
-           if ($inputFieldsLoaded = $this->inputFieldsGroup->load($data))
-               $isSomethingLoaded = true;
+            if ($inputFieldsLoaded = $this->inputFieldsGroup->load($data))
+                $isSomethingLoaded = true;
 
         if (!$this->inputFilesGroup->isActiveInputFiles())
             $inputFilesLoaded = true;
@@ -740,7 +749,7 @@ class Feedback extends ActiveRecord implements
 //            $inputImagesLoaded,
 //            $inputConditionsLoaded
 //        ], true));
-        
+
         if ($isSomethingLoaded) return true;
 
         if ($inputFieldsLoaded && $inputFilesLoaded && $inputImagesLoaded && $inputConditionsLoaded)
@@ -758,33 +767,16 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
-        Yii::error('feedback validation');
-
         if (!$this->inputFieldsGroup->isActiveInputFields() &&
             !$this->inputFilesGroup->isActiveInputFiles() &&
             !$this->inputImagesGroup->isActiveInputImages() &&
             !$this->inputConditionsGroup->isActiveInputConditions()
         ) return false;
 
-//        if (!$this->inputFieldsGroup->isActiveInputFields())
-//            $inputFieldsValidated = true;
-////        else
-            $inputFieldsValidated = $this->inputFieldsGroup->validate();
-
-//        if (!$this->inputFilesGroup->isActiveInputFiles())
-//            $inputFilesValidated = true;
-//        else
-            $inputFilesValidated = $this->inputFilesGroup->validate();
-
-//        if (!$this->inputImagesGroup->isActiveInputImages())
-//            $inputImagesValidated = true;
-//        else
-            $inputImagesValidated = $this->inputImagesGroup->validate();
-
-//        if (!$this->inputConditionsGroup->isActiveInputConditions())
-//            $inputConditionsValidated = true;
-//        else
-            $inputConditionsValidated = $this->inputConditionsGroup->validate();
+        $inputFieldsValidated     = $this->inputFieldsGroup->validate();
+        $inputFilesValidated      = $this->inputFilesGroup->validate();
+        $inputImagesValidated     = $this->inputImagesGroup->validate();
+        $inputConditionsValidated = $this->inputConditionsGroup->validate();
 
 //        throw new \yii\base\Exception(print_r([
 //            $inputFieldsValidated,
@@ -797,7 +789,8 @@ class Feedback extends ActiveRecord implements
         if ($inputFieldsValidated &&
             $inputFilesValidated &&
             $inputImagesValidated &&
-            $inputConditionsValidated)
+            $inputConditionsValidated
+        )
             return true;
 
         return false;
@@ -818,9 +811,9 @@ class Feedback extends ActiveRecord implements
         $this->currentState->is_handled = false;
         $this->currentState->save(false);
 
-        $inputFieldsSaved     = $this->inputFieldsGroup->save();
-        $inputFilesSaved      = $this->inputFilesGroup->save();
-        $inputImagesSaved     = $this->inputImagesGroup->save();
+        $inputFieldsSaved = $this->inputFieldsGroup->save();
+        $inputFilesSaved = $this->inputFilesGroup->save();
+        $inputImagesSaved = $this->inputImagesGroup->save();
         $inputConditionsSaved = $this->inputConditionsGroup->save();
 
 //        throw new \yii\base\Exception(print_r([
@@ -833,7 +826,16 @@ class Feedback extends ActiveRecord implements
 
         $this->trigger(self::EVENT_AFTER_HANDLE);
 
-        return true;
+        if ($inputFieldsSaved &&
+            $inputFilesSaved &&
+            $inputImagesSaved &&
+            $inputConditionsSaved
+        ) {
+            $this->clear();
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -843,6 +845,9 @@ class Feedback extends ActiveRecord implements
     public function clear()
     {
         $this->inputFieldsGroup->clear();
+        $this->inputFilesGroup->clear();
+        $this->inputImagesGroup->clear();
+        $this->inputConditionsGroup->clear();
     }
 
     /**
@@ -1200,7 +1205,7 @@ class Feedback extends ActiveRecord implements
         if (!$this->fileInputHandler)
             $this->fileInputHandler = new FilesInputHandler($this);
 
-            return $this->fileInputHandler;
+        return $this->fileInputHandler;
     }
 
     /**
@@ -1216,7 +1221,7 @@ class Feedback extends ActiveRecord implements
      */
     public function isInputFileBlock($name)
     {
-       return $this->getInputFileHandler()->isInputFileBlock($name);
+        return $this->getInputFileHandler()->isInputFileBlock($name);
     }
 
     /**
@@ -1568,7 +1573,7 @@ class Feedback extends ActiveRecord implements
     public static function getAnnotationTemplateFile()
     {
         $class = new \ReflectionClass(self::class);
-        return dirname($class->getFileName())  . '/annotations/feedback.php';
+        return dirname($class->getFileName()) . '/annotations/feedback.php';
     }
 
     /**
@@ -1577,7 +1582,7 @@ class Feedback extends ActiveRecord implements
     public static function getAnnotationFileNamespace()
     {
         return CommonModule::getInstance()->yicmsNamespace . '\\' .
-               FeedbackModule::getInstance()->getModuleName() . '\\' .
-               CommonModule::getInstance()->annotationsDirectory;
+        FeedbackModule::getInstance()->getModuleName() . '\\' .
+        CommonModule::getInstance()->annotationsDirectory;
     }
 }

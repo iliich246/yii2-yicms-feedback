@@ -103,8 +103,6 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function load($data)
     {
-        if (!$this->inputConditions) return true;
-
         return InputCondition::loadMultipleAnnotated($this->inputConditions, $data);
     }
 
@@ -133,5 +131,16 @@ class InputConditionsGroup extends AbstractGroup
     public function render(ActiveForm $form)
     {
         throw new FeedbackException('Not implemented for developer input condition group (not necessary)');
+    }
+
+    /**
+     * This method clear all input conditions in group
+     * @return void
+     */
+    public function clear()
+    {
+        foreach($this->inputConditions as $inputCondition) {
+            $inputCondition->value = null;
+        }
     }
 }

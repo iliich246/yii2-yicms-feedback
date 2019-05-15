@@ -121,9 +121,9 @@ class InputImagesGroup extends AbstractGroup
      */
     public function load($data)
     {
-        if (!$this->inputImages) return true;
+        //if (!$this->inputImages) return true;
 
-        return Model::loadMultiple($this->inputImages, $data);
+        return InputImagesBlock::loadMultipleAnnotated($this->inputImages, $data);
     }
 
     /**
@@ -158,5 +158,16 @@ class InputImagesGroup extends AbstractGroup
     public function render(ActiveForm $form)
     {
         throw new FeedbackException('Not implemented for developer input image group (not necessary)');
+    }
+
+    /**
+     * This method clear all input images in group
+     * @return void
+     */
+    public function clear()
+    {
+        foreach($this->inputImages as $inputImage) {
+            $inputImage->inputImage = null;
+        }
     }
 }

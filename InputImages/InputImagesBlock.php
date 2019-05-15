@@ -3,6 +3,7 @@
 namespace Iliich246\YicmsFeedback\InputImages;
 
 use Yii;
+use yii\base\Model;
 use yii\db\ActiveQuery;
 use yii\helpers\FileHelper;
 use yii\validators\RequiredValidator;
@@ -97,19 +98,19 @@ class InputImagesBlock extends AbstractEntityBlock implements
     /** @var AnnotatorFileInterface instance */
     private static $parentFileAnnotator;
     /** @var array of exception words for magical getter/setter */
-    protected static $annotationExceptionWords = [
-        'id',
-        'isNewRecord',
-        'scenario',
-        'program_name',
-        'input_image_template_reference',
-        'validator_reference',
-        'type',
-        'input_image_order',
-        'editable',
-        'active',
-        'max_files',
-    ];
+//    protected static $annotationExceptionWords = [
+//        'id',
+//        'isNewRecord',
+//        'scenario',
+//        'program_name',
+//        'input_image_template_reference',
+//        'validator_reference',
+//        'type',
+//        'input_image_order',
+//        'editable',
+//        'active',
+//        'max_files',
+//    ];
 
     /**
      * @inheritdoc
@@ -245,6 +246,32 @@ class InputImagesBlock extends AbstractEntityBlock implements
     public function loadDev($data, $formName = null)
     {
         return parent::load($data, $formName);
+    }
+
+    /**
+     * Method for using instead standard loadMultiple for annotated input images block
+     * Standard Model::loadMultiple not work because he find $formName only once
+     * @param Model[] $models
+     * @param $data
+     * @return bool
+     */
+    public static function loadMultipleAnnotated($models, $data)
+    {
+        $success = false;
+
+        foreach ($models as $i => $model) {
+            $formName = $model->formName();
+
+            if ($formName == '') {
+                if (!empty($data[$i]) && $model->load($data[$i], '')) {
+                    $success = true;
+                }
+            } elseif (!empty($data[$formName][$i]) && $model->load($data[$formName][$i], '')) {
+                $success = true;
+            }
+        }
+
+        return $success;
     }
 
     /**
@@ -679,7 +706,7 @@ class InputImagesBlock extends AbstractEntityBlock implements
 
         foreach ($validators as $validator) {
 
-            if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
+            //if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
 
             $validator->attributes = ['inputImage'];
             $this->validators[] = $validator;

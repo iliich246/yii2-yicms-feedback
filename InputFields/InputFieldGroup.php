@@ -104,8 +104,6 @@ class InputFieldGroup extends AbstractGroup
      */
     public function load($data)
     {
-        if (!$this->inputFields) return true;
-
         return InputField::loadMultipleAnnotated($this->inputFields, $data);
     }
 

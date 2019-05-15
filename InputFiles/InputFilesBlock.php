@@ -51,7 +51,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
     /**
      * Input files types
      */
-    const TYPE_ONE_FILE     = 0;
+    const TYPE_ONE_FILE = 0;
     const TYPE_MULTIPLICITY = 1;
 
     /**
@@ -97,20 +97,20 @@ class InputFilesBlock extends AbstractEntityBlock implements
     /** @var AnnotatorFileInterface instance */
     private static $parentFileAnnotator;
     /** @var array of exception words for magical getter/setter */
-    protected static $annotationExceptionWords = [
-        'id',
-        'isNewRecord',
-        'scenario',
-        'program_name',
-        'input_file_template_reference',
-        'validator_reference',
-        'type',
-        'input_file_order',
-        'editable',
-        'visible',
-        'active',
-        'max_files',
-    ];
+//    protected static $annotationExceptionWords = [
+//        'id',
+//        'isNewRecord',
+//        'scenario',
+//        'program_name',
+//        'input_file_template_reference',
+//        'validator_reference',
+//        'type',
+//        'input_file_order',
+//        'editable',
+//        'visible',
+//        'active',
+//        'max_files',
+//    ];
 
     /**
      * @inheritdoc
@@ -125,7 +125,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     public function init()
     {
-        $this->active   = true;
+        $this->active = true;
         $this->editable = true;
         parent::init();
     }
@@ -136,7 +136,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     public function attributeLabels()
     {
-        return array_merge(parent::attributeLabels(),[
+        return array_merge(parent::attributeLabels(), [
             'inputFile' => $this->name(),
             'max_files' => 'Maximum files in block'
         ]);
@@ -222,7 +222,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
         if (isset(Yii::$app->request->post()[$this->formName()][$this->id])) {
             $this->isLoaded = true;
-            $this->isEmpty  = true;
+            $this->isEmpty = true;
 
             return true;
         }
@@ -308,7 +308,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
             return $success;
         } else {
             /** @var UploadedFile $inputFile */
-            foreach($this->inputFile as $inputFile)
+            foreach ($this->inputFile as $inputFile)
                 if (!$this->physicalSaveInputFile($inputFile)) return false;
 
             $this->trigger(self::EVENT_AFTER_SAVE);
@@ -334,8 +334,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
         $inputFileRecord->feedback_input_files_template_id = $this->id;
         $inputFileRecord->input_file_reference = $this->currentInputFileReference;
         $inputFileRecord->system_name = $name;
-        $inputFileRecord->original_name =  $inputFile->baseName;
-        $inputFileRecord->size =  $inputFile->size;
+        $inputFileRecord->original_name = $inputFile->baseName;
+        $inputFileRecord->size = $inputFile->size;
         $inputFileRecord->type = FileHelper::getMimeType($path . $name);
 
         return $inputFileRecord->save(false);
@@ -461,7 +461,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
     {
         if (InputFile::find()->where([
             'feedback_input_files_template_id' => $this->id
-        ])->one()) return true;
+        ])->one()
+        ) return true;
 
         return false;
     }
@@ -477,7 +478,6 @@ class InputFilesBlock extends AbstractEntityBlock implements
 
     /**
      * Renames parent method on concrete name
-     * @return
      * @return InputFile[]|\Iliich246\YicmsCommon\Base\AbstractEntity[]
      */
     public function getInputFiles()
@@ -505,7 +505,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
                     'feedback_input_files_template_id' => $this->id,
                 ])
                 ->indexBy('id');
-                //->orderBy(['input_file_order' => SORT_ASC]);
+            //->orderBy(['input_file_order' => SORT_ASC]);
 
             if ($this->currentInputFileReference)
                 $fileQuery->andWhere([
@@ -535,7 +535,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
      */
     protected function deleteSequence()
     {
-        foreach(InputFilesNamesTranslatesDb::find()->where([
+        foreach (InputFilesNamesTranslatesDb::find()->where([
             'feedback_input_files_template_id' => $this->id,
         ])->all() as $inputFileName)
             if (!$inputFileName->delete()) return false;
@@ -545,10 +545,10 @@ class InputFilesBlock extends AbstractEntityBlock implements
         ])->all();
 
         if ($validators)
-            foreach($validators as $validator)
+            foreach ($validators as $validator)
                 $validator->delete();
 
-        foreach(InputFile::find()->where([
+        foreach (InputFile::find()->where([
             'feedback_input_files_template_id' => $this->id,
         ])->all() as $inputFile)
             $inputFile->delete();
@@ -566,8 +566,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
         if (!array_key_exists($language->id, $this->inputFilesNamesTranslations)) {
             $this->inputFilesNamesTranslations[$language->id] =
                 InputFilesNamesTranslatesDb::find()->where([
-                    'feedback_input_files_template_id'  => $this->id,
-                    'common_language_id'                => $language->id,
+                    'feedback_input_files_template_id' => $this->id,
+                    'common_language_id' => $language->id,
                 ])->one();
         }
 
@@ -693,8 +693,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
         }
 
         foreach ($validators as $validator) {
-
-            if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
+            //if ($validator instanceof RequiredValidator && !$this->isNewRecord) continue;
 
             $validator->attributes = ['inputFile'];
             $this->validators[] = $validator;
@@ -826,12 +825,13 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public function getAnnotationFilePath()
     {
         if (!is_dir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
-            self::$parentFileAnnotator->getAnnotationFileName()))
+            self::$parentFileAnnotator->getAnnotationFileName())
+        )
             mkdir(self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
                 self::$parentFileAnnotator->getAnnotationFileName());
 
         return self::$parentFileAnnotator->getAnnotationFilePath() . '/' .
-            self::$parentFileAnnotator->getAnnotationFileName() . '/InputFiles';
+        self::$parentFileAnnotator->getAnnotationFileName() . '/InputFiles';
     }
 
     /**
@@ -857,7 +857,7 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public static function getAnnotationTemplateFile()
     {
         $class = new \ReflectionClass(self::class);
-        return dirname($class->getFileName())  . '/annotations/input_file_block.php';
+        return dirname($class->getFileName()) . '/annotations/input_file_block.php';
     }
 
     /**
@@ -866,8 +866,8 @@ class InputFilesBlock extends AbstractEntityBlock implements
     public static function getAnnotationFileNamespace()
     {
         return self::$parentFileAnnotator->getAnnotationFileNamespace() . '\\'
-            . self::$parentFileAnnotator->getAnnotationFileName() . '\\'
-            . 'InputFiles';
+        . self::$parentFileAnnotator->getAnnotationFileName() . '\\'
+        . 'InputFiles';
     }
 
     /**
