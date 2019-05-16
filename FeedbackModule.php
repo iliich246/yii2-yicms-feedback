@@ -94,6 +94,14 @@ class FeedbackModule extends AbstractConfigurableModule implements
     /**
      * @inherited
      */
+    public function getModuleDir()
+    {
+        return __DIR__;
+    }
+
+    /**
+     * @inherited
+     */
     public static function getModuleName()
     {
         return 'Feedback';
