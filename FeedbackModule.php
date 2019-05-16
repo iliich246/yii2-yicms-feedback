@@ -2,9 +2,9 @@
 
 namespace Iliich246\YicmsFeedback;
 
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Yii;
 use yii\base\BootstrapInterface;
+use Iliich246\YicmsCommon\Base\Generator;
 use Iliich246\YicmsCommon\Base\YicmsModuleInterface;
 use Iliich246\YicmsCommon\Base\AbstractConfigurableModule;
 
@@ -62,11 +62,11 @@ class FeedbackModule extends AbstractConfigurableModule implements
 
     /**
      * @inheritdoc
-     * @throws FeedbackException
      */
     public function bootstrap($app)
     {
-
+        $generator = new Generator($this);
+        $generator->generate();
     }
 
     /**
@@ -97,6 +97,14 @@ class FeedbackModule extends AbstractConfigurableModule implements
     public function getModuleDir()
     {
         return __DIR__;
+    }
+
+    /**
+     * @inherited
+     */
+    public function isNeedGenerate()
+    {
+        return false;
     }
 
     /**
