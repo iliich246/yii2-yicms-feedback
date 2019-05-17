@@ -2,15 +2,16 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
-use Iliich246\YicmsCommon\Base\CommonException;
-use Iliich246\YicmsCommon\Base\CommonHashForm;
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Yii;
 use yii\base\Model;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\BadRequestHttpException;
+use Iliich246\YicmsCommon\Base\DevFilter;
+use Iliich246\YicmsCommon\Base\CommonHashForm;
 use Iliich246\YicmsCommon\Languages\Language;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Iliich246\YicmsFeedback\InputConditions\InputConditionValues;
 use Iliich246\YicmsFeedback\InputConditions\InputConditionTemplate;
 use Iliich246\YicmsFeedback\InputConditions\DevInputConditionsGroup;
@@ -30,9 +31,12 @@ class DeveloperInputConditionsController extends Controller
     public function behaviors()
     {
         return [
-//            'root' => [
-//                'class' => DevFilter::className(),
-//            ],
+            'dev' => [
+                'class' => DevFilter::class,
+                'redirect' => function() {
+                    return $this->redirect(Url::home());
+                }
+            ],
         ];
     }
 

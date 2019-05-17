@@ -2,21 +2,20 @@
 
 namespace app\yicms\Feedback\Controllers;
 
-use app\yicms\Feedback\Models\Debug;
-use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Yii;
 use yii\data\Pagination;
 use yii\helpers\Url;
-use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use Iliich246\YicmsCommon\CommonModule;
+use Iliich246\YicmsCommon\Base\AdminFilter;
 use Iliich246\YicmsCommon\Files\FilesBlock;
 use Iliich246\YicmsCommon\Fields\FieldsGroup;
 use Iliich246\YicmsCommon\Images\ImagesBlock;
 use Iliich246\YicmsCommon\Conditions\ConditionsGroup;
 use Iliich246\YicmsFeedback\Base\Feedback;
 use Iliich246\YicmsFeedback\Base\FeedbackState;
+use Iliich246\YicmsFeedback\Base\FeedbackException;
 use Iliich246\YicmsFeedback\InputFields\InputFieldTemplate;
 use Iliich246\YicmsFeedback\InputFiles\InputFile;
 use Iliich246\YicmsFeedback\InputFiles\InputFilesBlock;
@@ -47,10 +46,12 @@ class AdminController extends Controller
     public function behaviors()
     {
         return [
-//            'root' => [
-//                'class' => AdminFilter::className(),
-//                'except' => ['login-as-root'],
-//            ],
+            'admin' => [
+                'class' => AdminFilter::class,
+                'redirect' => function() {
+                    return $this->redirect(Url::toRoute('/common/admin/login'));
+                }
+            ],
         ];
     }
 

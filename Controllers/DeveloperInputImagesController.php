@@ -3,9 +3,11 @@
 namespace Iliich246\YicmsFeedback\Controllers;
 
 use Yii;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\web\BadRequestHttpException;
+use Iliich246\YicmsCommon\Base\DevFilter;
 use Iliich246\YicmsCommon\Base\CommonHashForm;
 use Iliich246\YicmsCommon\Base\CommonException;
 use Iliich246\YicmsFeedback\InputImages\InputImagesBlock;
@@ -25,9 +27,12 @@ class DeveloperInputImagesController extends Controller
     public function behaviors()
     {
         return [
-//            'root' => [
-//                'class' => DevFilter::className(),
-//            ],
+            'dev' => [
+                'class' => DevFilter::class,
+                'redirect' => function() {
+                    return $this->redirect(Url::home());
+                }
+            ],
         ];
     }
 
