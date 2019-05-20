@@ -66,6 +66,12 @@ class FeedbackModule extends AbstractConfigurableModule implements
 
         $this->inputImagesWebPath = Yii::$app->homeUrl . $this->inputImagesWebPath;
 
+        Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
+            DIRECTORY_SEPARATOR .
+            'iliich246' .
+            DIRECTORY_SEPARATOR .
+            'yii2-yicms-feedback');
+
         parent::init();
     }
 
