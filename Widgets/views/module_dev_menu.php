@@ -22,6 +22,10 @@ use yii\helpers\Url;
             href="<?= Url::toRoute('/feedback/dev/create-feedback') ?>">
             Create/update feedback
         </a>
+        <a <?php if ($widget->route == 'feedback/dev/maintenance'): ?> class="active" <?php endif; ?>
+            href="<?= Url::toRoute('/feedback/dev/maintenance') ?>">
+            Maintenance
+        </a>
     </div>
 </div>
 <hr>

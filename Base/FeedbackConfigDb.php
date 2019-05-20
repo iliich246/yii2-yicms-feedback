@@ -7,7 +7,8 @@ use Iliich246\YicmsCommon\Base\AbstractModuleConfiguratorDb;
 /**
  * Class FeedbackConfigDb
  *
- * @property int $id
+ * @property integer $isGenerated
+ * @property integer $strongGenerating
  *
  * @author iliich246 <iliich246@gmail.com>
  */
@@ -19,5 +20,15 @@ class FeedbackConfigDb extends AbstractModuleConfiguratorDb
     public static function tableName()
     {
         return '{{%feedback_config}}';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function rules()
+    {
+        return [
+            [['isGenerated', 'strongGenerating'], 'boolean'],
+        ];
     }
 }

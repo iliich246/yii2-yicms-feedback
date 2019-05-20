@@ -17,6 +17,16 @@ class FeedbackModule extends AbstractConfigurableModule implements
     BootstrapInterface,
     YicmsModuleInterface
 {
+    /** @var bool keeps true if for this module was generated changeable admin files */
+    public $isGenerated = false;
+    /** @var bool if true generator will be generate in strong mode, even existed files will be replaced */
+    public $strongGenerating = false;
+
+    /** @inheritdoc */
+    public $configurable = [
+        'isGenerated',
+    ];
+
     /**
      * Block of fields with various paths
      */
@@ -105,6 +115,14 @@ class FeedbackModule extends AbstractConfigurableModule implements
     public function isNeedGenerate()
     {
         return false;
+    }
+
+    /**
+     * @inherited
+     */
+    public function isGeneratorInStrongMode()
+    {
+        return !!$this->strongGenerating;
     }
 
     /**

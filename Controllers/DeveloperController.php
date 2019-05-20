@@ -2,6 +2,7 @@
 
 namespace Iliich246\YicmsFeedback\Controllers;
 
+use Iliich246\YicmsFeedback\Base\FeedbackConfigDb;
 use Yii;
 use yii\base\Model;
 use yii\helpers\Url;
@@ -523,4 +524,30 @@ class DeveloperController extends Controller
             'devInputConditionsGroup' => $devInputConditionsGroup,
             'inputConditionTemplates' => $inputConditionTemplates
         ]);
-    }}
+    }
+
+    /**
+     * Maintenance action for feedback module
+     * @return string
+     * @throws FeedbackException
+     */
+    public function actionMaintenance()
+    {
+        $config = FeedbackConfigDb::getInstance();
+
+        if ($config->load(Yii::$app->request->post()) && $config->validate()) {
+            if ($config->save()) {
+                return $this->render('/developer/maintenance', [
+                    'config'  => $config,
+                    'success' => true,
+                ]);
+            }
+
+            throw new FeedbackException('Can`t save data in database');
+        }
+
+        return $this->render('/developer/maintenance', [
+            'config' => $config
+        ]);
+    }
+}
