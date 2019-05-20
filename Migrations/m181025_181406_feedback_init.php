@@ -46,7 +46,7 @@ class m181025_181406_feedback_init extends Migration
          */
         $this->createTable('{{%feedback_config}}', [
             'id'               => $this->primaryKey(),
-            'is_generated'     => $this->boolean(),
+            'isGenerated'     => $this->boolean(),
             'strongGenerating' => $this->boolean(),
         ]);
 
