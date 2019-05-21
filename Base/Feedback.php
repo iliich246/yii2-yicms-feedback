@@ -216,12 +216,12 @@ class Feedback extends ActiveRecord implements
     public function attributeLabels()
     {
         return [
-            'program_name' => 'Program name',
-            'editable' => 'Editable',
-            'active' => 'Active',
-            'admin_can_edit_fields' => 'Admin can edit page fields',
+            'program_name'            => 'Program name',
+            'editable'                => 'Editable',
+            'active'                  => 'Active',
+            'admin_can_edit_fields'   => 'Admin can edit page fields',
             'admin_can_delete_states' => 'Admin can delete states',
-            'count_states_on_page' => 'Count states on feedback page'
+            'count_states_on_page'    => 'Count states on feedback page'
         ];
     }
 
@@ -1493,8 +1493,6 @@ class Feedback extends ActiveRecord implements
         $this->getAnnotator()->addAnnotationArray(
             InputConditionTemplate::getAnnotationsStringArray($this->getInputConditionTemplateReference())
         );
-
-        //throw new \yii\base\Exception('There');
 
         $this->getAnnotator()->finish();
     }

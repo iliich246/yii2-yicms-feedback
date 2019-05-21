@@ -168,6 +168,8 @@ class InputFilesGroup extends AbstractGroup
      */
     public function clear()
     {
+        if (!$this->inputFiles) return;
+        
         foreach($this->inputFiles as $inputFile) {
             $inputFile->inputFile = null;
         }

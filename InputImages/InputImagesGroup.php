@@ -166,6 +166,8 @@ class InputImagesGroup extends AbstractGroup
      */
     public function clear()
     {
+        if (!$this->inputImages) return;
+
         foreach($this->inputImages as $inputImage) {
             $inputImage->inputImage = null;
         }

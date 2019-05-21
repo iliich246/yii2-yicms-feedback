@@ -4,9 +4,11 @@ namespace Iliich246\YicmsFeedback;
 
 use Yii;
 use yii\base\BootstrapInterface;
+use Iliich246\YicmsCommon\CommonModule;
 use Iliich246\YicmsCommon\Base\Generator;
 use Iliich246\YicmsCommon\Base\YicmsModuleInterface;
 use Iliich246\YicmsCommon\Base\AbstractConfigurableModule;
+use Iliich246\YicmsFeedback\Base\FeedbackConfigDb;
 
 /**
  * Class FeedbackModule
@@ -58,14 +60,6 @@ class FeedbackModule extends AbstractConfigurableModule implements
      */
     public function init()
     {
-        //TODO: makes correct build of controller map via common->$yicmsLocation
-        $this->controllerMap['admin'] = 'app\yicms\Feedback\Controllers\AdminController';
-
-        $this->inputFilesPatch = Yii::$app->basePath . $this->inputFilesPatch;
-        $this->inputImagesPath = Yii::$app->basePath . $this->inputImagesPath;
-
-        $this->inputImagesWebPath = Yii::$app->homeUrl . $this->inputImagesWebPath;
-
         Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
             DIRECTORY_SEPARATOR .
             'iliich246' .
@@ -73,8 +67,16 @@ class FeedbackModule extends AbstractConfigurableModule implements
             'yii2-yicms-feedback');
 
         parent::init();
-    }
 
+        $namespace = CommonModule::getInstance()->yicmsNamespace . '\Feedback\Controllers\\';
+
+        $this->controllerMap['admin'] = $namespace . 'AdminController';
+
+        $this->inputFilesPatch = Yii::$app->basePath . $this->inputFilesPatch;
+        $this->inputImagesPath = Yii::$app->basePath . $this->inputImagesPath;
+
+        $this->inputImagesWebPath = Yii::$app->homeUrl . $this->inputImagesWebPath;
+    }
 
     /**
      * @inheritdoc
@@ -118,9 +120,20 @@ class FeedbackModule extends AbstractConfigurableModule implements
     /**
      * @inherited
      */
-    public function isNeedGenerate()
+    public function isGenerated()
     {
-        return false;
+        return !!$this->isGenerated;
+    }
+
+    /**
+     * @inherited
+     */
+    public function setAsGenerated()
+    {
+        $config = FeedbackConfigDb::getInstance();
+        $config->isGenerated = true;
+
+        $config->save(false);
     }
 
     /**

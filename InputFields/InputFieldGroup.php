@@ -140,6 +140,8 @@ class InputFieldGroup extends AbstractGroup
      */
     public function clear()
     {
+        if (!$this->inputFields) return;
+
         foreach($this->inputFields as $inputField) {
             $inputField->value = null;
         }

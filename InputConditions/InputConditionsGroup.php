@@ -139,6 +139,8 @@ class InputConditionsGroup extends AbstractGroup
      */
     public function clear()
     {
+        if (!$this->inputConditions) return;
+
         foreach($this->inputConditions as $inputCondition) {
             $inputCondition->value = null;
         }
