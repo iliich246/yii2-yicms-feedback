@@ -78,7 +78,7 @@ $js = <<<JS
 
         var isValidatorResponse = !!($('.validator-response').length);
 
-        if (isValidatorResponse) return loadModal($(addInputCondition).data('currentSelectedInputFileBlock'));
+        if (isValidatorResponse) return loadModal($(addInputCondition).data('currentSelectedInputConditionTemplate'));
 
         if (!$(event.target).find('form').is('[data-yicms-saved]')) return false;
 

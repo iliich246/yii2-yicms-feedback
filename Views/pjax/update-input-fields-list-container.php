@@ -80,7 +80,7 @@ $js = <<<JS
 
         var isValidatorResponse = !!($('.validator-response').length);
 
-        if (isValidatorResponse) return loadModal($(addField).data('currentSelectedFieldTemplate'));
+        if (isValidatorResponse) return loadModal($(addField).data('currentSelectedInputFieldTemplate'));
 
         if (!$(event.target).find('form').is('[data-yicms-saved]')) return false;
 

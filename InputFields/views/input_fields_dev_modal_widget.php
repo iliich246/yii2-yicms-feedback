@@ -108,6 +108,8 @@ JS;
 
 $this->registerJs($js, $this::POS_READY);
 
+$this->registerAssetBundle(\Iliich246\YicmsCommon\Assets\LodashAsset::className());
+
 if ($widget->devInputFieldGroup->scenario == DevInputFieldsGroup::SCENARIO_CREATE &&
     $widget->devInputFieldGroup->justSaved)
     $redirectToUpdate = 'true';
@@ -228,6 +230,10 @@ else
                     </script>
 
                     <hr>
+
+                    <pre>
+                        <?php print_r($widget->devInputFieldGroup->inputFieldTemplate->id)?>
+                    </pre>
 
                     <?= ValidatorsListWidget::widget([
                         'validatorReference'     => $widget->devInputFieldGroup->inputFieldTemplate,
