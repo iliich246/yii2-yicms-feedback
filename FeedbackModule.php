@@ -54,17 +54,16 @@ class FeedbackModule extends AbstractConfigurableModule implements
         'dev-input-conditions'  => 'Iliich246\YicmsFeedback\Controllers\DeveloperInputConditionsController',
     ];
 
-
     /**
      * @inheritdoc
      */
     public function init()
     {
-        Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
-            DIRECTORY_SEPARATOR .
-            'iliich246' .
-            DIRECTORY_SEPARATOR .
-            'yii2-yicms-feedback');
+//        Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
+//            DIRECTORY_SEPARATOR .
+//            'iliich246' .
+//            DIRECTORY_SEPARATOR .
+//            'yii2-yicms-feedback');
 
         parent::init();
 

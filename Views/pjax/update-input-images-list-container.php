@@ -38,7 +38,7 @@ $js = <<<JS
         var inputImageBlockHidden = $('#input-image-block-id-hidden');
 
         if ($(inputImageBlockHidden).val())
-            $(addInputImage).data('currentSelectedInputImageTemplate', $(inputImageBlockHidden).val());
+            $(addInputImage).data('currentSelectedInputImageBlock', $(inputImageBlockHidden).val());
 
         var fileForm = $('#create-update-input-images');
 

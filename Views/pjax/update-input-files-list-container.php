@@ -38,7 +38,7 @@ $js = <<<JS
         var inputFileBlockHidden = $('#input-file-block-id-hidden');
 
         if ($(inputFileBlockHidden).val())
-            $(addInputFile).data('currentSelectedInputFileTemplate', $(inputFileBlockHidden).val());
+            $(addInputFile).data('currentSelectedInputFileBlock', $(inputFileBlockHidden).val());
 
         var fileForm = $('#create-update-input-files');
 
@@ -76,8 +76,6 @@ $js = <<<JS
         }
 
         var isValidatorResponse = !!($('.validator-response').length);
-        
-        console.log($(addInputFile).data('currentSelectedInputFileBlock'))
 
         if (isValidatorResponse) return loadModal($(addInputFile).data('currentSelectedInputFileBlock'));
 
