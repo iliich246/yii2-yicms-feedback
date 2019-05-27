@@ -59,11 +59,11 @@ class FeedbackModule extends AbstractConfigurableModule implements
      */
     public function init()
     {
-//        Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
-//            DIRECTORY_SEPARATOR .
-//            'iliich246' .
-//            DIRECTORY_SEPARATOR .
-//            'yii2-yicms-feedback');
+        Yii::setAlias('@yicms-feedback', Yii::getAlias('@vendor') .
+            DIRECTORY_SEPARATOR .
+            'iliich246' .
+            DIRECTORY_SEPARATOR .
+            'yii2-yicms-feedback');
 
         parent::init();
 
