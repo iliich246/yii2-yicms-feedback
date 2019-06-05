@@ -97,7 +97,7 @@ class DeveloperInputImagesController extends Controller
                 ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
                 ->all();
 
-            return $this->render('/pjax/update-input-images-list-container', [
+            return $this->render('@yicms-feedback/Views/pjax/update-input-images-list-container', [
                 'inputImageTemplateReference' => $inputImageTemplateReference,
                 'inputImagesBlocks'           => $inputImagesBlocks,
             ]);
@@ -138,7 +138,7 @@ class DeveloperInputImagesController extends Controller
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-images-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-images-list-container', [
             'inputImageTemplateReference' => $inputImageTemplateReference,
             'inputImagesBlocks'           => $inputImagesBlocks,
         ]);
@@ -167,7 +167,7 @@ class DeveloperInputImagesController extends Controller
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-images-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-images-list-container', [
             'inputImageTemplateReference' => $inputImageBlock->input_image_template_reference,
             'inputImagesBlocks'           => $inputImagesBlocks,
         ]);
@@ -196,7 +196,7 @@ class DeveloperInputImagesController extends Controller
             ->orderBy([InputImagesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-images-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-images-list-container', [
             'inputImageTemplateReference' => $inputImageBlock->input_image_template_reference,
             'inputImagesBlocks'           => $inputImagesBlocks,
         ]);

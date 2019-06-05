@@ -208,13 +208,6 @@ $inputConditionValue->isNewRecord ? $inputConditionValueId = '0' : $inputConditi
         ])
         ?>
 
-<!--        <pre>-->
-<!--            --><?php //print_r($_POST)?>
-<!--        </pre>-->
-<!--        <pre>-->
-<!--            --><?php //print_r($inputConditionValuesTranslates)?>
-<!--        </pre>-->
-
         <?php if ($inputConditionValue->scenario == InputConditionValues::SCENARIO_UPDATE): ?>
             <div class="row delete-button-row">
                 <div class="col-xs-12">

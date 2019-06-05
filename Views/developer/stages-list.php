@@ -69,7 +69,7 @@ $this->registerJs($js, $this::POS_READY);
                     </a>
                 </div>
             </div>
-            <?= $this->render('/pjax/update-feedback-stages-list-container', [
+            <?= $this->render('@yicms-feedback/Views/pjax/update-feedback-stages-list-container', [
                 'feedbackStages' => $feedbackStages
             ]) ?>
         </div>

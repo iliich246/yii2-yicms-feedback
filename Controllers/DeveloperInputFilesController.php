@@ -97,7 +97,7 @@ class DeveloperInputFilesController extends Controller
                 ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
                 ->all();
 
-            return $this->render('/pjax/update-input-files-list-container', [
+            return $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
                 'inputFileTemplateReference' => $inputFileTemplateReference,
                 'inputFilesBlocks'           => $inputFilesBlocks,
             ]);
@@ -138,7 +138,7 @@ class DeveloperInputFilesController extends Controller
                 ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
                 ->all();
 
-        return $this->render('/pjax/update-input-files-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
             'inputFileTemplateReference' => $inputFileTemplateReference,
             'inputFilesBlocks'           => $inputFilesBlocks,
         ]);
@@ -167,7 +167,7 @@ class DeveloperInputFilesController extends Controller
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-files-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
             'inputFileTemplateReference' => $inputFileBlock->input_file_template_reference,
             'inputFilesBlocks'           => $inputFilesBlocks,
         ]);
@@ -195,7 +195,7 @@ class DeveloperInputFilesController extends Controller
             ->orderBy([InputFilesBlock::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-files-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-files-list-container', [
             'inputFileTemplateReference' => $inputFileBlock->input_file_template_reference,
             'inputFilesBlocks'           => $inputFilesBlocks,
         ]);

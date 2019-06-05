@@ -79,7 +79,7 @@ class DeveloperController extends Controller
             'feedback_order' => SORT_ASC
         ])->all();
 
-        return $this->render('/developer/list', [
+        return $this->render('@yicms-feedback/Views/developer/list', [
             'feedback' => $feedback,
         ]);
     }
@@ -112,8 +112,10 @@ class DeveloperController extends Controller
      * Updates feedback
      * @param $id
      * @return string
+     * @throws FeedbackException
      * @throws NotFoundHttpException
-     * @throws \Iliich246\YicmsFeedback\Base\FeedbackException
+     * @throws \Iliich246\YicmsCommon\Base\CommonException
+     * @throws \ReflectionException
      */
     public function actionUpdateFeedback($id)
     {
@@ -133,13 +135,13 @@ class DeveloperController extends Controller
                 $success = false;
             }
 
-            return $this->render('/developer/create-update-feedback', [
+            return $this->render('@yicms-feedback/Views/developer/create-update-feedback', [
                 'feedback' => $feedback,
                 'success'  => $success
             ]);
         }
 
-        return $this->render('/developer/create-update-feedback', [
+        return $this->render('@yicms-feedback/Views/developer/create-update-feedback', [
             'feedback' => $feedback,
         ]);
     }
@@ -179,14 +181,14 @@ class DeveloperController extends Controller
                 $translateModel->save();
             }
 
-            return $this->render('/developer/feedback-translates', [
+            return $this->render('@yicms-feedback/Views/developer/feedback-translates', [
                 'feedback'        => $feedback,
                 'translateModels' => $translateModels,
                 'success'         => true,
             ]);
         }
 
-        return $this->render('/developer/feedback-translates', [
+        return $this->render('@yicms-feedback/Views/developer/feedback-translates', [
             'feedback'        => $feedback,
             'translateModels' => $translateModels,
         ]);
@@ -245,7 +247,7 @@ class DeveloperController extends Controller
             'feedback_order' => SORT_ASC
         ])->all();
 
-        return $this->render('/pjax/update-feedback-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-feedback-list-container', [
             'feedback' => $feedback,
         ]);
     }
@@ -273,7 +275,7 @@ class DeveloperController extends Controller
             'feedback_order' => SORT_ASC
         ])->all();
 
-        return $this->render('/pjax/update-feedback-list-container', [
+        return $this->render('@yicms-feedback/Viewsv/pjax/update-feedback-list-container', [
             'feedback' => $feedback,
         ]);
     }
@@ -393,7 +395,7 @@ class DeveloperController extends Controller
 
         $feedback->annotate();
 
-        return $this->render('/developer/feedback_page_templates', [
+        return $this->render('@yicms-feedback/Views/developer/feedback_page_templates', [
             'feedback'                   => $feedback,
             'devFieldGroup'              => $devFieldGroup,
             'fieldTemplatesTranslatable' => $fieldTemplatesTranslatable,
@@ -513,7 +515,7 @@ class DeveloperController extends Controller
 
         $feedback->annotate();
 
-        return $this->render('/developer/feedback_input_templates', [
+        return $this->render('@yicms-feedback/Views/developer/feedback_input_templates', [
             'feedback'                => $feedback,
             'devInputFieldGroup'      => $devInputFieldGroup,
             'inputFieldTemplates'     => $inputFieldTemplates,
@@ -537,7 +539,7 @@ class DeveloperController extends Controller
 
         if ($config->load(Yii::$app->request->post()) && $config->validate()) {
             if ($config->save()) {
-                return $this->render('/developer/maintenance', [
+                return $this->render('@yicms-feedback/Views/developer/maintenance', [
                     'config'  => $config,
                     'success' => true,
                 ]);
@@ -546,7 +548,7 @@ class DeveloperController extends Controller
             throw new FeedbackException('Can`t save data in database');
         }
 
-        return $this->render('/developer/maintenance', [
+        return $this->render('@yicms-feedback/Views/developer/maintenance', [
             'config' => $config
         ]);
     }

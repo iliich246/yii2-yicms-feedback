@@ -96,7 +96,7 @@ class DeveloperInputFieldsController extends Controller
                 ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
                 ->all();
 
-            return $this->render('/pjax/update-input-fields-list-container', [
+            return $this->render('@yicms-feedback/Views/pjax/update-input-fields-list-container', [
                 'inputFieldTemplateReference' => $inputFieldTemplateReference,
                 'inputFieldTemplates'         => $inputFieldTemplates,
             ]);
@@ -135,7 +135,7 @@ class DeveloperInputFieldsController extends Controller
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-fields-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-fields-list-container', [
             'inputFieldTemplateReference' => $inputFieldTemplateReference,
             'inputFieldTemplates'         => $inputFieldTemplates,
         ]);
@@ -163,7 +163,7 @@ class DeveloperInputFieldsController extends Controller
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-fields-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-fields-list-container', [
             'inputFieldTemplateReference' => $inputFieldTemplate->input_field_template_reference,
             'inputFieldTemplates'         => $inputFieldTemplates,
         ]);
@@ -191,7 +191,7 @@ class DeveloperInputFieldsController extends Controller
             ->orderBy([InputFieldTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-fields-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-fields-list-container', [
             'inputFieldTemplateReference' => $inputFieldTemplate->input_field_template_reference,
             'inputFieldTemplates'         => $inputFieldTemplates,
         ]);

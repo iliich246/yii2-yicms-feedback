@@ -101,7 +101,7 @@ class DeveloperInputConditionsController extends Controller
                 ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
                 ->all();
 
-            return $this->render('/pjax/update-input-conditions-list-container', [
+            return $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
                 'inputConditionTemplateReference' => $inputConditionTemplateReference,
                 'inputConditionTemplates'         => $inputConditionsTemplates,
             ]);
@@ -140,7 +140,7 @@ class DeveloperInputConditionsController extends Controller
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-conditions-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
             'inputConditionTemplateReference' => $inputConditionTemplateReference,
             'inputConditionTemplates'         => $inputConditionsTemplates,
         ]);
@@ -169,7 +169,7 @@ class DeveloperInputConditionsController extends Controller
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-conditions-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
             'inputConditionTemplateReference' => $inputConditionsTemplate->input_condition_template_reference,
             'inputConditionTemplates'         => $inputConditionsTemplates,
         ]);
@@ -198,7 +198,7 @@ class DeveloperInputConditionsController extends Controller
             ->orderBy([InputConditionTemplate::getOrderFieldName() => SORT_ASC])
             ->all();
 
-        return $this->render('/pjax/update-input-conditions-list-container', [
+        return $this->render('@yicms-feedback/Views/pjax/update-input-conditions-list-container', [
             'inputConditionTemplateReference' => $inputConditionsTemplate->input_condition_template_reference,
             'inputConditionTemplates'         => $inputConditionsTemplates,
         ]);
@@ -223,7 +223,7 @@ class DeveloperInputConditionsController extends Controller
             'input_condition_value_order' => SORT_ASC
         ])->all();
 
-        return $this->renderAjax('/pjax/input-conditions-value-list-container', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/input-conditions-value-list-container', [
             'inputConditionTemplate' => $inputConditionsTemplate,
             'inputConditionValues'   => $inputConditionValues
         ]);
@@ -280,7 +280,7 @@ class DeveloperInputConditionsController extends Controller
                 else
                     $returnBack = false;
 
-                return $this->renderAjax('/pjax/create-update-input-condition-value', [
+                return $this->renderAjax('@yicms-feedback/Views/pjax/create-update-input-condition-value', [
                     'inputConditionTemplate'         => $inputConditionTemplate,
                     'inputConditionValue'            => $inputConditionValue,
                     'inputConditionValuesTranslates' => $inputConditionValuesTranslates,
@@ -290,7 +290,7 @@ class DeveloperInputConditionsController extends Controller
             }
         }
 
-        return $this->renderAjax('/pjax/create-update-input-condition-value', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/create-update-input-condition-value', [
             'inputConditionTemplate'         => $inputConditionTemplate,
             'inputConditionValue'            => $inputConditionValue,
             'inputConditionValuesTranslates' => $inputConditionValuesTranslates,
@@ -350,7 +350,7 @@ class DeveloperInputConditionsController extends Controller
                 else
                     $returnBack = false;
 
-                return $this->renderAjax('/pjax/create-update-input-condition-value', [
+                return $this->renderAjax('@yicms-feedback/Viewsv/pjax/create-update-input-condition-value', [
                     'inputConditionTemplate'         => $inputConditionTemplate,
                     'inputConditionValue'            => $inputConditionValue,
                     'inputConditionValuesTranslates' => $inputConditionValuesTranslates,
@@ -359,7 +359,7 @@ class DeveloperInputConditionsController extends Controller
             }
         }
 
-        return $this->renderAjax('/pjax/create-update-input-condition-value', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/create-update-input-condition-value', [
             'inputConditionTemplate'         => $inputConditionTemplate,
             'inputConditionValue'            => $inputConditionValue,
             'inputConditionValuesTranslates' => $inputConditionValuesTranslates,
@@ -398,7 +398,7 @@ class DeveloperInputConditionsController extends Controller
             'input_condition_value_order' => SORT_ASC
         ])->all();
 
-        return $this->renderAjax('/pjax/input-conditions-value-list-container', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/input-conditions-value-list-container', [
             'inputConditionTemplate' => $inputConditionTemplate,
             'inputConditionValues'   => $inputConditionValues
         ]);
@@ -430,7 +430,7 @@ class DeveloperInputConditionsController extends Controller
             'input_condition_value_order' => SORT_ASC
         ])->all();
 
-        return $this->renderAjax('/pjax/input-conditions-value-list-container', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/input-conditions-value-list-container', [
             'inputConditionTemplate' => $inputConditionTemplate,
             'inputConditionValues'   => $inputConditionValues
         ]);
@@ -462,7 +462,7 @@ class DeveloperInputConditionsController extends Controller
             'input_condition_value_order' => SORT_ASC
         ])->all();
 
-        return $this->renderAjax('/pjax/input-conditions-value-list-container', [
+        return $this->renderAjax('@yicms-feedback/Views/pjax/input-conditions-value-list-container', [
             'inputConditionTemplate' => $inputConditionTemplate,
             'inputConditionValues'   => $inputConditionValues
         ]);

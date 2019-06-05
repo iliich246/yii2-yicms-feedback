@@ -52,7 +52,7 @@ use Iliich246\YicmsFeedback\InputConditions\InputConditionsDevModalWidget;
         </div>
     </div>
 
-    <?= $this->render('@yicms-feedback/views/pjax/update-input-fields-list-container', [
+    <?= $this->render('@yicms-feedback/Views/pjax/update-input-fields-list-container', [
         'inputFieldTemplateReference' => $feedback->getInputFieldTemplateReference(),
         'inputFieldTemplates'         => $inputFieldTemplates
     ]) ?>
