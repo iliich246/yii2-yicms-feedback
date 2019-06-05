@@ -684,6 +684,8 @@ class Feedback extends ActiveRecord implements
      */
     public function initialize()
     {
+        if ($this->isNonexistent()) return false;
+
         $this->inputFieldsGroup = new InputFieldGroup();
         $this->inputFieldsGroup->setFieldInputReference($this);
         $this->inputFieldsGroup->initialize();
@@ -710,6 +712,8 @@ class Feedback extends ActiveRecord implements
      */
     public function load($data, $formName = null)
     {
+        if ($this->isNonexistent()) return false;
+
         if (!$this->inputFieldsGroup->isActiveInputFields() &&
             !$this->inputFilesGroup->isActiveInputFiles() &&
             !$this->inputImagesGroup->isActiveInputImages() &&
@@ -767,6 +771,8 @@ class Feedback extends ActiveRecord implements
      */
     public function validate($attributeNames = null, $clearErrors = true)
     {
+        if ($this->isNonexistent()) return false;
+
         if (!$this->inputFieldsGroup->isActiveInputFields() &&
             !$this->inputFilesGroup->isActiveInputFiles() &&
             !$this->inputImagesGroup->isActiveInputImages() &&
@@ -804,6 +810,8 @@ class Feedback extends ActiveRecord implements
      */
     public function handle($runValidation = true, $attributeNames = null)
     {
+        if ($this->isNonexistent()) return false;
+
         $this->trigger(self::EVENT_BEFORE_HANDLE);
 
         $this->currentState = new FeedbackState();
