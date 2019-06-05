@@ -103,7 +103,7 @@ class DeveloperController extends Controller
             }
         }
 
-        return $this->render('/developer/create-update-feedback', [
+        return $this->render('@yicms-feedback/Views/developer/create-update-feedback', [
             'feedback' => $feedback,
         ]);
     }
